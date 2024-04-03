@@ -8,7 +8,9 @@ const styles = StyleSheet.create({
         marginBottom:15,
         paddingHorizontal:10
     },
-
+    bgImg:{
+        flex:1,
+    },
     view:{
         marginTop:20,
         backgroundColor:"midnightblue",
@@ -18,13 +20,14 @@ const styles = StyleSheet.create({
         padding:25,
         flexDirection:"row",
         justifyContent:"center",
-        elevation:5,
-       
+        elevation:6,
+        shadowRadius:50,
+        
     },
     headview:{
-        justifyContent:"space-between",
-      
-        height:110
+        justifyContent:"space-around",
+        height:120,
+        marginBottom:15
     },
     subview:{
         flex:2,
@@ -42,7 +45,8 @@ const styles = StyleSheet.create({
         height:45,
         backgroundColor:"white",
         justifyContent:"space-evenly",
-        alignItems:"center"
+        alignItems:"center",
+        marginTop:15
     },
     Alarm:{
         width:"100%",     
@@ -83,32 +87,42 @@ const styles = StyleSheet.create({
         height:20,
         tintColor:"white"
     },
+
+    delete:{
+        width:35,
+        height:35,
+        tintColor:"orangered"
+    },
     add:{
         borderRadius:50,
-        width:100,
-        height:100,
+        width:80,
+        height:80,
         backgroundColor:"white",
         zIndex:2,
         position:"absolute",
         bottom:20,
-        right:15
+        right:5
     },
     addTaskText:{
-        fontSize:70,
+        fontSize:60,
         alignSelf:"center",
         fontWeight:"300"
     },
 
     headingtext:{
+        color:"white",
         marginTop:30,
         height:50,
         width:"100%",
         borderBottomWidth:1,
         padding:15,
         fontSize:20,
-        fontStyle:"italic"
+        fontStyle:"italic",
+        borderColor:"white",
     },
     descriptext:{
+        color:"white",
+        borderColor:"white",
         marginTop:30,
         borderRadius:20,
         minHeight:150,
@@ -125,6 +139,8 @@ const styles = StyleSheet.create({
         alignItems:"center"
     },
     pallets:{
+        justifyContent:"center",
+        alignItems:"center",
         marginTop:30,
         borderRadius:50,
         width:40,
@@ -167,7 +183,7 @@ const styles = StyleSheet.create({
         height:55,
         alignItems:"center",
         justifyContent:"space-evenly",
-
+        borderColor:"white"
     },
 
     setreminder:{
@@ -176,7 +192,8 @@ const styles = StyleSheet.create({
         height:35,
         borderRadius:50,
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        borderColor:"white"
 
     },
     addtaskview:{

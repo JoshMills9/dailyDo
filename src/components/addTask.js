@@ -1,82 +1,148 @@
-import { Image, SafeAreaView, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
-
+import { Image, KeyboardAvoidingView,  Platform, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from "../styles/styles";
 import { useState } from "react";
 
 
-const AddTask = ({navigation})=>{
+const AddTask = ({navigation}) => {
 
-    const [addTask, setaddTask] = useState("")
+    //state to update header input
+    const [addTask, setaddTask] = useState("");
+
+    //state to update description input
     const [adddescrip, setdescrip] = useState("");
-    const [selectedItem, setSelectedItem] = useState(false);
 
-    const currentDate = new Date();
-    const formattedDate = currentDate.toDateString();
-    const currentHour = currentDate.getHours();
-    const currentMinutes = currentDate.getMinutes();
+    //state to update the datetime
+    const [date, setDate] = useState(new Date());
 
-    const time = `${currentHour}:${currentMinutes}`;
+    //state to update the mode of datetime (date or time)
+    const [mode, setMode] = useState('');
 
-    const obj= {
+    const [show, setShow] = useState(false);
+
+    //state to update the display of datetime (calendar or clock)
+    const [display, setDisplay] = useState("")
+
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dayOfWeek = daysOfWeek[date.getDay()];
+    const dayOfMonth = date.getDate();
+    const monthOfYear = monthsOfYear[date.getMonth()];
+    const year = date.getFullYear();
+
+    let suffix = 'th';
+    if (dayOfMonth === 1 || dayOfMonth === 21 || dayOfMonth === 31) {
+        suffix = 'st';
+    } else if (dayOfMonth === 2 || dayOfMonth === 22) {
+        suffix = 'nd';
+    } else if (dayOfMonth === 3 || dayOfMonth === 23) {
+        suffix = 'rd';
+    }
+
+    const formattedDate = `${dayOfWeek}, ${dayOfMonth}${suffix} ${monthOfYear}, ${year}`;
+
+    let hour = date.getHours();
+    const amOrPm = hour < 12 ? 'AM' : 'PM';
+    hour = hour % 12 || 12;
+    
+    const formattedTime = `${hour}:${String(date.getMinutes()).padStart(2, '0')} ${amOrPm}`;
+
+
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    };
+
+    //function to update the dateTime
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShow(Platform.OS === 'ios');
+        setDate(currentDate);
+
+    };
+    
+
+    //state to update the reminder
+    const [reminder, setreminder ] = useState("");
+
+    //state to update the color
+    const [Color, setColor] = useState("");
+
+
+    
+
+    //Obj to be transfered to the other screen
+    const obj = {
         header: addTask,
         description: adddescrip,
-        color: selectedItem,
-        calendar:formattedDate,
-        alarm:time
+        calendar: formattedDate,
+        alarm: formattedTime,
+        reminder: reminder,
+        color: Color,
+    };
 
-    }
-      
-     
-    return(
+    return (
         <SafeAreaView style={styles.container}>
             <StatusBar styles="auto"/>
-            
-            <View >
-                <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)} placeholder="Add a Heading"/>
-            </View>
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+                <ScrollView>
+                    <View>
+                        <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)} placeholder="Add a Heading" placeholderTextColor={"white"}/>
+                    </View>
+                    <View>
+                        <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => setdescrip(text)} placeholder="Add a short description" placeholderTextColor={"white"}/>
+                    </View>
+                    <View style={styles.colors}>
+                        <TouchableOpacity  onPress={() => setColor("red")} style={[styles.pallets, Color==="red"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"red", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                        <TouchableOpacity  onPress={() => setColor("yellow")} style={[styles.pallets, Color==="yellow"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"yellow", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                        <TouchableOpacity  onPress={() => setColor("black")} style={[styles.pallets, Color==="black"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"black", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                        <TouchableOpacity  onPress={() => setColor("magenta")} style={[styles.pallets, Color==="magenta"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"magenta", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                        <TouchableOpacity  onPress={() => setColor("green")} style={[styles.pallets, Color==="green"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"green", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                        <TouchableOpacity  onPress={() => setColor("cyan")} style={[styles.pallets, Color==="cyan"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"cyan", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                    </View>
+                    <View style={styles.ac}>
+                        <View style={styles.calendarview}> 
+                            <TouchableOpacity onPress={() => showMode("time") && setDisplay("clock")}  style={styles.calendarsbg}><Image style={styles.calendars} source={require("../images/alarm.png")}/></TouchableOpacity>
+                            <TouchableOpacity onPress={() => showMode("date") && setDisplay("calendar")} style={styles.calendarsbg}><Image style={styles.calendars} source={require("../images/calendar.png")}/></TouchableOpacity>
+                            
+                        </View>
+                        <View style={styles.audioview}>
+                            <Text style={[styles.medtext, { fontSize:25}]}>Audio</Text>
+                            <TouchableOpacity><Image style={[styles.calendars,]} source={require("../images/down-arrow.png")}/></TouchableOpacity>
+                        </View>
+                    </View>
 
-            <View>
-                <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => setdescrip(text)} placeholder="Add a short description"/>
-            </View>
+                    <View style={[styles.colors,{marginTop:30}]}>
 
-            <View style={styles.colors}>
-                <TouchableOpacity onPress={() =>setSelectedItem(true)} style={[styles.pallets, {backgroundColor:"red"}, selectedItem && styles.selectedItem]} ></TouchableOpacity>
-                <View style={[styles.pallets, {backgroundColor:"yellow"}]}></View>
-                <View style={[styles.pallets, {backgroundColor:"black"}]}></View>
-                <View style={[styles.pallets, {backgroundColor:"magenta"}]}></View>
-                <View style={[styles.pallets, {backgroundColor:"green"}]}></View>
-                <View style={[styles.pallets, {backgroundColor:"cyan"}]}></View>
-            </View>
+                        <Text style={[styles.medtext, {fontSize:25}]}>Set Reminder</Text>
 
-            <View style={styles.ac}>
-                <View style={styles.calendarview}> 
-                     <TouchableOpacity style={styles.calendarsbg}><Image style={styles.calendars} source={require("../images/alarm.png")}/></TouchableOpacity>
-                     <TouchableOpacity style={styles.calendarsbg}><Image style={styles.calendars} source={require("../images/calendar.png")}/></TouchableOpacity>
-                </View>
-                <View style={styles.audioview}>
-                    <Text style={[styles.medtext, {color:"black", fontSize:25}]}>Audio</Text>
-                    <TouchableOpacity><Image style={[styles.calendars, {tintColor:"black"}]} source={require("../images/down-arrow.png")}/></TouchableOpacity>
-                </View>
-            </View>
+                        <TouchableOpacity onPress={() => setreminder("1 min")} style={[styles.setreminder, reminder === "1 min" ? { backgroundColor: 'white' }: ""]}>
+                            <Text style={[styles.medtext, reminder === "1 min" ? { color: 'navy' }: {color:"white"}, {fontSize:18, }]}>1</Text>
+                        </TouchableOpacity>
 
-            <View style={[styles.colors,{marginTop:30}]}>
-                <Text style={[styles.medtext, {color:"black", fontSize:25}]}>Set Reminder</Text>
-                <TouchableOpacity style={styles.setreminder}><Text style={[styles.medtext, {color:"black", fontSize:18}]}>1</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.setreminder}><Text style={[styles.medtext, {color:"black", fontSize:18}]}>2</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.setreminder}><Text style={[styles.medtext, {color:"black", fontSize:18}]}>5</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.setreminder}><Text style={[styles.medtext, {color:"black", fontSize:18}]}>10</Text></TouchableOpacity>
-               
-            </View>
+                        <TouchableOpacity onPress={() => setreminder("2 mins")} style={[styles.setreminder, reminder === "2 mins" ? { backgroundColor: 'white' }: ""]}>
+                            <Text style={[styles.medtext, reminder === "2 mins" ? { color: 'navy' }: {color:"white"}, {fontSize:18, }]}>2</Text>
+                        </TouchableOpacity>
 
-            <View style={styles.addtaskview}> 
-                <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>
-                    Add Task</Text></TouchableOpacity>
-            </View>
-            
+                        <TouchableOpacity onPress={() => setreminder("5 mins")} style={[styles.setreminder, reminder === "5 mins" ? { backgroundColor: 'white' }: ""]}>
+                            <Text style={[styles.medtext,  reminder === "5 mins" ? { color: 'navy' }: {color:"white"}, {fontSize:18, }]}>5</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => setreminder("10 mins")} style={[styles.setreminder,  reminder === "10 mins" ? { backgroundColor: 'white' }: ""]}>
+                            <Text style={[styles.medtext,  reminder === "10 mins" ? { color: 'navy' }: {color:"white"}, {fontSize:18, }]}>10</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.addtaskview}> 
+                        <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>Add Task</Text></TouchableOpacity>
+                    </View>
+                </ScrollView>
+
+                {show && (<DateTimePicker testID="dateTimePicker" value={date} mode={mode} 
+                is24Hour={false} display={display} onChange={onChange}/>
+                )}
+            </KeyboardAvoidingView>
         </SafeAreaView>
-       
-    )
+    );
 };
-
 
 export default AddTask;
