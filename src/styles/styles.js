@@ -180,7 +180,8 @@ const styles = StyleSheet.create({
         height:55,
         alignItems:"center",
         justifyContent:"center",
-        padding:5
+        paddingRight:15,
+        paddingLeft:10
     },
 
     setreminder:{

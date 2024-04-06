@@ -111,12 +111,12 @@ const AddTask = ({navigation}) => {
                             
                         </View>
                         <View style={styles.audioview}>
-                            <View style={{flex:1,}}><Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.medtext, { fontSize:24, color:"black"}]}>{selectedValue || "Audio"}</Text></View>
+                            <View style={{flex:1,}}><Text adjustsFontSizeToFit={true} numberOfLines={1}  style={[styles.medtext, { fontSize:24, color:"black"}]}>{selectedValue || "Audio"}</Text></View>
                             <Picker
                                 selectedValue={selectedValue}
                            
-                                style={{ height:50, width: 50, }}
-                                mode="dropdown"
+                                style={{ height:20, width:30 }}
+                              
                                 onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
                             >
                                 <Picker.Item label="Clingcling" value="Clingcling" />
