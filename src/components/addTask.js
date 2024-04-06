@@ -116,7 +116,7 @@ const AddTask = ({navigation}) => {
                                 selectedValue={selectedValue}
                            
                                 style={{ height:50, width: 50, }}
-                                
+                                mode="dropdown"
                                 onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
                             >
                                 <Picker.Item label="Clingcling" value="Clingcling" />
