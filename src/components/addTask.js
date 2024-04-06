@@ -2,6 +2,8 @@ import { Image, KeyboardAvoidingView,  Platform, SafeAreaView, ScrollView, Statu
 import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from "../styles/styles";
 import { useState } from "react";
+import {Picker} from '@react-native-picker/picker';
+
 
 
 const AddTask = ({navigation}) => {
@@ -40,13 +42,14 @@ const AddTask = ({navigation}) => {
     }
 
     const formattedDate = `${dayOfWeek}, ${dayOfMonth}${suffix} ${monthOfYear}, ${year}`;
+    
 
     let hour = date.getHours();
     const amOrPm = hour < 12 ? 'AM' : 'PM';
     hour = hour % 12 || 12;
     
     const formattedTime = `${hour}:${String(date.getMinutes()).padStart(2, '0')} ${amOrPm}`;
-
+    
 
     const showMode = (currentMode) => {
         setShow(true);
@@ -68,7 +71,7 @@ const AddTask = ({navigation}) => {
     //state to update the color
     const [Color, setColor] = useState("");
 
-
+    const [selectedValue, setSelectedValue] = useState("");
     
 
     //Obj to be transfered to the other screen
@@ -79,6 +82,7 @@ const AddTask = ({navigation}) => {
         alarm: formattedTime,
         reminder: reminder,
         color: Color,
+        song: selectedValue,
     };
 
     return (
@@ -87,10 +91,10 @@ const AddTask = ({navigation}) => {
             <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
                 <ScrollView>
                     <View>
-                        <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)} placeholder="Add a Heading" placeholderTextColor={"white"}/>
+                        <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)}  placeholder="Add a Heading" />
                     </View>
                     <View>
-                        <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => setdescrip(text)} placeholder="Add a short description" placeholderTextColor={"white"}/>
+                        <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => setdescrip(text)} placeholder="Add a short description" />
                     </View>
                     <View style={styles.colors}>
                         <TouchableOpacity  onPress={() => setColor("red")} style={[styles.pallets, Color==="red"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"red", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
@@ -107,29 +111,42 @@ const AddTask = ({navigation}) => {
                             
                         </View>
                         <View style={styles.audioview}>
-                            <Text style={[styles.medtext, { fontSize:25}]}>Audio</Text>
-                            <TouchableOpacity><Image style={[styles.calendars,]} source={require("../images/down-arrow.png")}/></TouchableOpacity>
+                            <View style={{flex:1,}}><Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.medtext, { fontSize:24, color:"black"}]}>{selectedValue || "Audio"}</Text></View>
+                            <Picker
+                                selectedValue={selectedValue}
+                           
+                                style={{ height:50, width: 50, }}
+                                
+                                onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+                            >
+                                <Picker.Item label="Clingcling" value="Clingcling" />
+                                <Picker.Item label="Cockcrow" value="Cockcrow" />
+                                <Picker.Item label="Clock" value="Clock" />
+                                <Picker.Item label="Fairy" value="Fairy" />
+                                <Picker.Item label="Bell" value="Bell" />
+
+                            </Picker>
                         </View>
                     </View>
 
                     <View style={[styles.colors,{marginTop:30}]}>
 
-                        <Text style={[styles.medtext, {fontSize:25}]}>Set Reminder</Text>
+                        <Text style={[styles.medtext, {fontSize:25,color:"black"}]}>Set Reminder</Text>
 
-                        <TouchableOpacity onPress={() => setreminder("1 min")} style={[styles.setreminder, reminder === "1 min" ? { backgroundColor: 'white' }: ""]}>
-                            <Text style={[styles.medtext, reminder === "1 min" ? { color: 'navy' }: {color:"white"}, {fontSize:18, }]}>1</Text>
+                        <TouchableOpacity onPress={() => setreminder("1 min")} style={[styles.setreminder, reminder === "1 min" ? { backgroundColor: 'navy' }: ""]}>
+                            <Text style={[styles.medtext, reminder === "1 min" ? { color: 'white' }: {color:"black"}, {fontSize:18, }]}>1</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => setreminder("2 mins")} style={[styles.setreminder, reminder === "2 mins" ? { backgroundColor: 'white' }: ""]}>
-                            <Text style={[styles.medtext, reminder === "2 mins" ? { color: 'navy' }: {color:"white"}, {fontSize:18, }]}>2</Text>
+                        <TouchableOpacity onPress={() => setreminder("2 mins")} style={[styles.setreminder, reminder === "2 mins" ? { backgroundColor: 'navy' }: ""]}>
+                            <Text style={[styles.medtext, reminder === "2 mins" ? { color: 'white' }: {color:"black"}, {fontSize:18, }]}>2</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => setreminder("5 mins")} style={[styles.setreminder, reminder === "5 mins" ? { backgroundColor: 'white' }: ""]}>
-                            <Text style={[styles.medtext,  reminder === "5 mins" ? { color: 'navy' }: {color:"white"}, {fontSize:18, }]}>5</Text>
+                        <TouchableOpacity onPress={() => setreminder("5 mins")} style={[styles.setreminder, reminder === "5 mins" ? { backgroundColor: 'navy' }: ""]}>
+                            <Text style={[styles.medtext,  reminder === "5 mins" ? { color: 'white' }: {color:"black"}, {fontSize:18, }]}>5</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => setreminder("10 mins")} style={[styles.setreminder,  reminder === "10 mins" ? { backgroundColor: 'white' }: ""]}>
-                            <Text style={[styles.medtext,  reminder === "10 mins" ? { color: 'navy' }: {color:"white"}, {fontSize:18, }]}>10</Text>
+                        <TouchableOpacity onPress={() => setreminder("10 mins")} style={[styles.setreminder,  reminder === "10 mins" ? { backgroundColor: 'navy' }: ""]}>
+                            <Text style={[styles.medtext,  reminder === "10 mins" ? { color: 'white' }: {color:"black"}, {fontSize:18, }]}>10</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.addtaskview}> 
@@ -140,6 +157,8 @@ const AddTask = ({navigation}) => {
                 {show && (<DateTimePicker testID="dateTimePicker" value={date} mode={mode} 
                 is24Hour={false} display={display} onChange={onChange}/>
                 )}
+
+            
             </KeyboardAvoidingView>
         </SafeAreaView>
     );

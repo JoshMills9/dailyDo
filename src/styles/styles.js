@@ -26,8 +26,8 @@ const styles = StyleSheet.create({
     },
     headview:{
         justifyContent:"space-around",
-        height:120,
-        marginBottom:15
+        height:130,
+        marginBottom:10
     },
     subview:{
         flex:2,
@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
     },
 
     headingtext:{
-        color:"white",
         marginTop:30,
         height:50,
         width:"100%",
@@ -118,11 +117,9 @@ const styles = StyleSheet.create({
         padding:15,
         fontSize:20,
         fontStyle:"italic",
-        borderColor:"white",
+        
     },
     descriptext:{
-        color:"white",
-        borderColor:"white",
         marginTop:30,
         borderRadius:20,
         minHeight:150,
@@ -182,8 +179,8 @@ const styles = StyleSheet.create({
         width:150,
         height:55,
         alignItems:"center",
-        justifyContent:"space-evenly",
-        borderColor:"white"
+        justifyContent:"center",
+        padding:10
     },
 
     setreminder:{
@@ -193,7 +190,6 @@ const styles = StyleSheet.create({
         borderRadius:50,
         justifyContent:"center",
         alignItems:"center",
-        borderColor:"white"
 
     },
     addtaskview:{

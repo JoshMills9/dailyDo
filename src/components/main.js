@@ -11,11 +11,10 @@ const Stack = createNativeStackNavigator();
 const MainComponent= ()=> {
     return(
         <NavigationContainer>
-            <Stack.Navigator screenOptions={{headerStyle:{backgroundColor:"midnightblue"}, headerTitleStyle:{fontWeight:"bold"},
-            headerTintColor:"#fff", contentStyle:{backgroundColor:"rgba(0, 0, 128, 0.6)"}}}>
+            <Stack.Navigator screenOptions={{headerTitleStyle:{fontWeight:"bold"}}}>
 
                 <Stack.Screen name="To-Do List" component={TodoLists} options={{headerRight:
-                     () => (<TouchableOpacity><Image style={{height:30, width:30, tintColor:"#fff"}} source={require("../images/bell.png")}/></TouchableOpacity>)}} />
+                     () => (<TouchableOpacity><Image style={{height:30, width:30, }} source={require("../images/bell.png")}/></TouchableOpacity>)}} />
 
                 <Stack.Screen name="Add New Task" component={AddTask} />
         
