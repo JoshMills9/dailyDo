@@ -6,7 +6,8 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         marginBottom:15,
-        paddingHorizontal:15
+        paddingHorizontal:15,
+       
     },
     bgImg:{
         flex:1,
@@ -24,6 +25,8 @@ const styles = StyleSheet.create({
         shadowRadius:50,
         
     },
+
+
     headview:{
         justifyContent:"space-around",
         height:130,

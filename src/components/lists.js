@@ -6,15 +6,42 @@ import { Audio } from "expo-av";
 const TodoLists=({navigation, route}) =>{
 
     //destructuring the route params
-    const {header,description, alarm, calendar, color, reminder,song} = route.params || {};
+    const {header,description, alarm, calendar, color, reminder,song, index} = route.params || {};
     //state to handle list
     const [list , setlist] = useState([])
+    console.log(reminder)
+    console.log(color)
     
     //using useEffect hook to automatically update the list with the properties header, description , alarm, calendar , color, reminder, song
-    useEffect(()=>{
-        setlist(prevList => [...prevList, { header, description , alarm, calendar , color, reminder, song}]);
-    },[header,description])
+    useEffect(() => {
+        if ((header !== undefined || description !== undefined) && index === undefined) {
+            // Add new item to the list
+            setlist(prevList => [
+                ...prevList, 
+                { header, description, alarm, calendar, color, reminder, song }
+            ]);
+        } else if (header !== undefined || description !== undefined || alarm !== undefined 
+            || calendar !== undefined || color !== undefined || reminder !== undefined || song !== undefined && index !== undefined) {
+            // Update existing item in the list
+            setlist(prevList => {
+                // Update the item at the specified index
+                const updatedList = [...prevList];
+                updatedList[index] = { header, description, alarm, calendar, color, reminder, song };
+                return updatedList;
+            });
+        }
+    }, [header, description, alarm, calendar, color, reminder,song, index]);
     
+
+    
+    const [usertime, setUsertime] = useState([]);
+
+    const [isUserTime, setIsUserTime] = useState();
+   
+
+    useEffect(()=>{
+        setUsertime(prevList => [...prevList, {alarm,calendar}])
+    },[alarm,calendar])
     
     //function to delete an item from the list
     const deleteList = (key) => {
@@ -24,18 +51,20 @@ const TodoLists=({navigation, route}) =>{
     
 
         const [sound, setSound] = useState();
-        const [currentTimeIndex, setCurrentTimeIndex] = useState(-1);
+        const [currentTimeIndex, setCurrentTimeIndex] = useState("");
+ 
         //use effect to handle how music plays
         useEffect(() => {
             const interval = setInterval(() => {
+
+
                 const currentDate = new Date();
-    
                 let hour = currentDate.getHours();
                 const amOrPm = hour < 12 ? 'AM' : 'PM';
                 hour = hour % 12 || 12;
     
                 const currentFormattedTime = `${hour}:${String(currentDate.getMinutes()).padStart(2, '0')} ${amOrPm}`;
-                console.log(currentFormattedTime, alarm)
+
 
 
                 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -55,9 +84,16 @@ const TodoLists=({navigation, route}) =>{
                 }
 
                 const formattedDate = `${dayOfWeek}, ${dayOfMonth}${suffix} ${monthOfYear}, ${year}`;
-                console.log(formattedDate, calendar)
 
-                if (song === "Clingcling" && currentFormattedTime === alarm && formattedDate === calendar) {
+                usertime.forEach(item => {
+                    
+                    if ((item.alarm === currentFormattedTime) && (item.calendar === formattedDate)) {
+                        setIsUserTime(item.alarm);
+                    }
+                });
+                
+
+                if (song === "Clingcling" && isUserTime === currentFormattedTime) {
                     const loadSound = async () => {
                         try {
                             console.log('Loading Sound');
@@ -71,7 +107,8 @@ const TodoLists=({navigation, route}) =>{
                     };
             
                     loadSound();
-                } else if (song === "Cockcrow"  && currentFormattedTime === alarm && formattedDate === calendar) {
+                    setUsertime(prevList => prevList.filter(item => item.alarm !== currentFormattedTime))
+                } else if (song === "Cockcrow"  && isUserTime === currentFormattedTime) {
                     const loadSound = async () => {
                         try {
                             console.log('Loading Sound');
@@ -85,8 +122,9 @@ const TodoLists=({navigation, route}) =>{
                     };
             
                     loadSound();
+                    setUsertime(usertime.filter(item => item.alarm !== currentFormattedTime))
                 }
-                else if (song === "Bell"  && currentFormattedTime === alarm && formattedDate === calendar) {
+                else if (song === "Bell"  && isUserTime === currentFormattedTime) {
                     const loadSound = async () => {
                         try {
                             console.log('Loading Sound');
@@ -100,8 +138,9 @@ const TodoLists=({navigation, route}) =>{
                     };
             
                     loadSound();
+                   setUsertime(usertime.filter(item => item.alarm !== currentFormattedTime))
                 }
-                else if (song === "Fairy"  && currentFormattedTime === alarm && formattedDate === calendar) {
+                else if (song === "Fairy"  && isUserTime === currentFormattedTime) {
                     const loadSound = async () => {
                         try {
                             console.log('Loading Sound');
@@ -115,8 +154,9 @@ const TodoLists=({navigation, route}) =>{
                     };
             
                     loadSound();
+                    setUsertime(usertime.filter(item => item.alarm !== currentFormattedTime))
                 }
-                else if (song === "Clock"  && currentFormattedTime === alarm && formattedDate === calendar) {
+                else if (song === "Clock"  && isUserTime === currentFormattedTime) {
                     const loadSound = async () => {
                         try {
                             console.log('Loading Sound');
@@ -130,6 +170,8 @@ const TodoLists=({navigation, route}) =>{
                     };
             
                     loadSound();
+                    setUsertime(usertime.filter(item => item.alarm !== currentFormattedTime))
+                    
                 }
 
                 const currentIndex = list.findIndex((item, index) => index.toString() &&
@@ -138,23 +180,58 @@ const TodoLists=({navigation, route}) =>{
                 setCurrentTimeIndex(currentIndex)
 
                 //console.log(currentFormattedTime); // Log current formatted time
-            }, 1000 * 15); // Update every second
+            }, 1000 * 10); // Update every second
             return () => clearInterval(interval);
             // Log current formatted time here, it won't be accessible outside the useEffect hook
-        }, [list]);
-        
+            
+        }, [usertime,isUserTime,list]);
+
+    const [Editindex, setIndex] = useState("");
+    const [editHeader, setEditHeader] = useState("");
+    const [editDescription, setEditDescription] = useState("");
+    const [editAlarm, setEditAlarm] = useState("");
+    const [editCalendar, setEditCalendar] = useState("");
+    const [editReminder, setEditReminder] = useState("");
+    const [editColor, setEditColor] = useState("")
+    const [editSong, setEditSong] = useState("")
+
+    const getIndex = (key, header, description, alarm, calendar,color,reminder,song) => {
+        setIndex(key);
+        setEditHeader(header);
+        setEditDescription(description);
+        setEditAlarm(alarm);
+        setEditCalendar(calendar);
+        setEditReminder(reminder);
+        setEditColor(color);
+        setEditSong(song)
+    }
+
+    const editObj = {
+        Header: editHeader,
+        Description: editDescription,
+        Alarm:editAlarm,
+        Calendar:editCalendar,
+        Colors:editColor,
+        Reminder:editReminder,
+        Song:editSong,
+        Index:Editindex
+    }
+
 
     return(
         <SafeAreaView style={styles.container}>
             <StatusBar styles="auto"/>
 
             <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={styles.bgImg}>
+            
             <FlatList
                 data={list}
                 keyExtractor={(item,index) => index.toString()}
                 renderItem={({item, index})=> {
                     return(
-                    <>
+                    <TouchableOpacity onPress={()=> {navigation.navigate("Add New Task", editObj) ;
+                     getIndex(index.toString(), item.header, item.description, item.alarm, item.calendar,item.color,item.reminder,item.song)}}>
+
                         {(item.header || item.description) && 
                         
                         <View style={styles.view}>
@@ -174,12 +251,12 @@ const TodoLists=({navigation, route}) =>{
                                    {item.calendar}
                                 </Text>
                             </View>
-                            {(currentTimeIndex === index.toString()) &&
+                            {(currentTimeIndex === index) ? 
                                 <View style={[styles.timeview,  {backgroundColor:"orangered"}]}>
                                     <Image style={ {tintColor:"white", height:20,width:20}} source={require("../images/clock.png")}/>
                                     <Text style={{fontSize:24, fontWeight:500, color:"white"}}>{item.alarm}</Text>
                                 </View>
-                            ||   <View style={[styles.timeview]}>
+                            :   <View style={[styles.timeview]}>
                                     <Image style={ {tintColor:"black", height:20,width:20}} source={require("../images/clock.png")}/>
                                     <Text style={{fontSize:24, fontWeight:500}}>{item.alarm}</Text>
                                 </View>
@@ -187,7 +264,7 @@ const TodoLists=({navigation, route}) =>{
                         </View>
                         
                         <View style={styles.subview2}>
-                            <View style={[styles.color, {backgroundColor: item.color || "white"}]}>
+                            <View style={[styles.color, {backgroundColor: item.color }]}>
         
                             </View>
 
@@ -212,7 +289,7 @@ const TodoLists=({navigation, route}) =>{
                         </View>
                             </View>
                    
-                }</>
+                }</TouchableOpacity>
                         )
                 }}
             />

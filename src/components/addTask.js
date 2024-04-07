@@ -1,18 +1,30 @@
 import { Image, KeyboardAvoidingView,  Platform, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from "../styles/styles";
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import {Picker} from '@react-native-picker/picker';
 
 
 
-const AddTask = ({navigation}) => {
+const AddTask = ({navigation,route}) => {
+     //destructuring the route params for editing
+    const {Header,Description, Alarm, Calendar, Colors, Reminder,Song, Index} = route.params || {};
+    console.log(Header)
+
+    const [isEdit, setisEdit] =useState(false);
+    console.log(isEdit)
+
+    useEffect(() =>{
+        if (Header !== undefined || Description !== undefined || Alarm !== undefined || Calendar !== undefined || Colors !== undefined || Reminder !== undefined || Song !== undefined || Index !== undefined) {
+            setisEdit(true);
+        }
+    }, [Header, Description, Alarm, Calendar, Colors, Reminder, Song, Index]);
 
     //state to update header input
-    const [addTask, setaddTask] = useState("");
+    const [addTask, setaddTask] = useState(Header);
 
     //state to update description input
-    const [adddescrip, setdescrip] = useState("");
+    const [adddescrip, setdescrip] = useState(Description);
 
     //state to update the datetime
     const [date, setDate] = useState(new Date());
@@ -66,12 +78,12 @@ const AddTask = ({navigation}) => {
     
 
     //state to update the reminder
-    const [reminder, setreminder ] = useState("");
+    const [reminder, setreminder ] = useState("1 min");
 
     //state to update the color
-    const [Color, setColor] = useState("");
+    const [Color, setColor] = useState("white");
 
-    const [selectedValue, setSelectedValue] = useState("");
+    const [selectedValue, setSelectedValue] = useState("Clingcling");
     
 
     //Obj to be transfered to the other screen
@@ -83,19 +95,33 @@ const AddTask = ({navigation}) => {
         reminder: reminder,
         color: Color,
         song: selectedValue,
+        index: Index
     };
+
 
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar styles="auto"/>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
                 <ScrollView>
+                    {(isEdit)? 
+                    <View>
+                        <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)}  placeholder="Edit Heading" />
+                    </View>
+                    :
                     <View>
                         <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)}  placeholder="Add a Heading" />
                     </View>
+                    }
+                    {(isEdit)?
+                    <View>
+                        <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => setdescrip(text)} placeholder="Edit description" />
+                    </View>
+                    :
                     <View>
                         <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => setdescrip(text)} placeholder="Add a short description" />
                     </View>
+                    }
                     <View style={styles.colors}>
                         <TouchableOpacity  onPress={() => setColor("red")} style={[styles.pallets, Color==="red"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"red", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
                         <TouchableOpacity  onPress={() => setColor("yellow")} style={[styles.pallets, Color==="yellow"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"yellow", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
@@ -128,11 +154,11 @@ const AddTask = ({navigation}) => {
                             </Picker>
                         </View>
                     </View>
-
+                    
                     <View style={[styles.colors,{marginTop:30}]}>
 
                         <Text style={[styles.medtext, {fontSize:25,color:"black"}]}>Set Reminder</Text>
-
+                
                         <TouchableOpacity onPress={() => setreminder("1 min")} style={[styles.setreminder, reminder === "1 min" ? { backgroundColor: 'navy' }: ""]}>
                             <Text style={[styles.medtext, reminder === "1 min" ? { color: 'white' }: {color:"black"}, {fontSize:18, }]}>1</Text>
                         </TouchableOpacity>
@@ -148,10 +174,18 @@ const AddTask = ({navigation}) => {
                         <TouchableOpacity onPress={() => setreminder("10 mins")} style={[styles.setreminder,  reminder === "10 mins" ? { backgroundColor: 'navy' }: ""]}>
                             <Text style={[styles.medtext,  reminder === "10 mins" ? { color: 'white' }: {color:"black"}, {fontSize:18, }]}>10</Text>
                         </TouchableOpacity>
+                        
                     </View>
+    
+                    {(isEdit) ?
+                    <View style={styles.addtaskview}> 
+                        <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>Edit Task</Text></TouchableOpacity>
+                    </View>
+                    :
                     <View style={styles.addtaskview}> 
                         <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>Add Task</Text></TouchableOpacity>
                     </View>
+                    }
                 </ScrollView>
 
                 {show && (<DateTimePicker testID="dateTimePicker" value={date} mode={mode} 
