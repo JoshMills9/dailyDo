@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
         flex:1,
         marginBottom:15,
         paddingHorizontal:15,
-       
+        
     },
     bgImg:{
         flex:1,
