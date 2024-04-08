@@ -6,11 +6,11 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         marginBottom:15,
-        paddingHorizontal:15,
         
     },
     bgImg:{
         flex:1,
+        paddingHorizontal:15
     },
     view:{
         marginTop:20,
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
         zIndex:2,
         position:"absolute",
         bottom:20,
-        right:5
+        right:15
     },
     addTaskText:{
         fontSize:60,

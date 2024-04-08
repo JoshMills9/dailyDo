@@ -6,13 +6,17 @@ import {Picker} from '@react-native-picker/picker';
 
 
 
-const AddTask = ({navigation,route}) => {
-
+const EditTask = ({navigation,route}) => {
+     //destructuring the route params for editing
+    const {Header,Description, Alarm, Calendar, Colors, Reminder,Song, Index} = route.params || {};
+ 
+    console.log(Index)
+    console.log(Header)
     //state to update header input
-    const [addTask, setaddTask] = useState("");
+    const [addTask, setaddTask] = useState(Header);
 
     //state to update description input
-    const [adddescrip, setdescrip] = useState("");
+    const [adddescrip, setdescrip] = useState(Description);
 
     //state to update the datetime
     const [date, setDate] = useState(new Date());
@@ -66,12 +70,12 @@ const AddTask = ({navigation,route}) => {
     
 
     //state to update the reminder
-    const [reminder, setreminder ] = useState("1 min");
+    const [reminder, setreminder ] = useState(Reminder);
 
     //state to update the color
-    const [Color, setColor] = useState("red");
+    const [Color, setColor] = useState(Colors);
 
-    const [selectedValue, setSelectedValue] = useState("Clingcling");
+    const [selectedValue, setSelectedValue] = useState(Song);
     
 
     //Obj to be transfered to the other screen
@@ -83,6 +87,7 @@ const AddTask = ({navigation,route}) => {
         reminder: reminder,
         color: Color,
         song: selectedValue,
+        index: Index
     };
 
 
@@ -92,12 +97,12 @@ const AddTask = ({navigation,route}) => {
                 <ScrollView>
                     
                     <View>
-                        <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)}  placeholder="Add Heading" />
+                        <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)}  placeholder="Edit Heading" />
                     </View>
                    
                    
                     <View>
-                        <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => setdescrip(text)} placeholder="Add a short description" />
+                        <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => setdescrip(text)} placeholder="Edit description" />
                     </View>
                    
                    
@@ -159,7 +164,7 @@ const AddTask = ({navigation,route}) => {
     
                     
                     <View style={styles.addtaskview}> 
-                        <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>Add Task</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>Edit Task</Text></TouchableOpacity>
                     </View>
                    
                 </ScrollView>
@@ -174,4 +179,4 @@ const AddTask = ({navigation,route}) => {
     );
 };
 
-export default AddTask;
+export default EditTask;

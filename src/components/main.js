@@ -4,25 +4,30 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import TodoLists from "./lists";
 import AddTask from "./addTask";
-import { Image, TouchableOpacity } from 'react-native';
+import EditTask from './editTask';
+import { Image, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import styles from '../styles/styles';
 
 const Stack = createNativeStackNavigator();
 
 const MainComponent= ()=> {
     return(
-        <NavigationContainer>
-            <Stack.Navigator screenOptions={{headerTitleStyle:{fontWeight:"bold"}}}>
+        <SafeAreaView style={styles.container}>
+            <StatusBar styles="auto"/>
+            <NavigationContainer>
+                <Stack.Navigator screenOptions={{headerTitleStyle:{fontWeight:"bold"}}}>
 
-                <Stack.Screen name="To-Do List" component={TodoLists} options={{headerRight:
-                     () => (<TouchableOpacity><Image style={{height:30, width:30, }} source={require("../images/bell.png")}/></TouchableOpacity>)}} />
+                    <Stack.Screen name="To-Do List" component={TodoLists} options={{headerRight:
+                        () => (<TouchableOpacity><Image style={{height:30, width:30, }} source={require("../images/bell.png")}/></TouchableOpacity>)}} />
 
-                <Stack.Screen name="Add New Task" component={AddTask} />
+                    <Stack.Screen name="Add New Task" component={AddTask} />
+                    <Stack.Screen name="Edit Task" component={EditTask} />
         
-            </Stack.Navigator>
+                </Stack.Navigator>
            
-        </NavigationContainer>
+             </NavigationContainer>
        
-
+        </SafeAreaView>
     )
 };
 

@@ -9,8 +9,7 @@ const TodoLists=({navigation, route}) =>{
     const {header,description, alarm, calendar, color, reminder,song, index} = route.params || {};
     //state to handle list
     const [list , setlist] = useState([])
-    console.log(reminder)
-    console.log(color)
+   
     
     //using useEffect hook to automatically update the list with the properties header, description , alarm, calendar , color, reminder, song
     useEffect(() => {
@@ -181,8 +180,12 @@ const TodoLists=({navigation, route}) =>{
 
                 //console.log(currentFormattedTime); // Log current formatted time
             }, 1000 * 10); // Update every second
-            return () => clearInterval(interval);
-            // Log current formatted time here, it won't be accessible outside the useEffect hook
+            return () => {
+                clearInterval(interval); // Clear any intervals
+                if (sound) {
+                    sound.unloadAsync(); // Unload the sound resource
+                }
+            };
             
         }, [usertime,isUserTime,list]);
 
@@ -194,17 +197,6 @@ const TodoLists=({navigation, route}) =>{
     const [editReminder, setEditReminder] = useState("");
     const [editColor, setEditColor] = useState("")
     const [editSong, setEditSong] = useState("")
-
-    const getIndex = (key, header, description, alarm, calendar,color,reminder,song) => {
-        setIndex(key);
-        setEditHeader(header);
-        setEditDescription(description);
-        setEditAlarm(alarm);
-        setEditCalendar(calendar);
-        setEditReminder(reminder);
-        setEditColor(color);
-        setEditSong(song)
-    }
 
     const editObj = {
         Header: editHeader,
@@ -219,9 +211,6 @@ const TodoLists=({navigation, route}) =>{
 
 
     return(
-        <SafeAreaView style={styles.container}>
-            <StatusBar styles="auto"/>
-
             <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={styles.bgImg}>
             
             <FlatList
@@ -229,8 +218,18 @@ const TodoLists=({navigation, route}) =>{
                 keyExtractor={(item,index) => index.toString()}
                 renderItem={({item, index})=> {
                     return(
-                    <TouchableOpacity onPress={()=> {navigation.navigate("Add New Task", editObj) ;
-                     getIndex(index.toString(), item.header, item.description, item.alarm, item.calendar,item.color,item.reminder,item.song)}}>
+                    <TouchableOpacity onPress={() => {
+                        setIndex(index.toString());
+                        setEditHeader(item.header);
+                        setEditDescription(item.description);
+                        setEditAlarm(item.alarm);
+                        setEditCalendar(item.calendar);
+                        setEditColor(item.color);
+                        setEditReminder(item.reminder);
+                        setEditSong(item.song);
+                        navigation.push("Edit Task", editObj);
+                      }}
+                      >
 
                         {(item.header || item.description) && 
                         
@@ -298,7 +297,7 @@ const TodoLists=({navigation, route}) =>{
             </TouchableOpacity>
 
             </ImageBackground>
-        </SafeAreaView>
+   
     )
 };
 
