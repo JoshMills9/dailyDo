@@ -189,6 +189,7 @@ const TodoLists=({navigation, route}) =>{
             
         }, [usertime,isUserTime,list]);
 
+    //states to edit a list
     const [Editindex, setIndex] = useState("");
     const [editHeader, setEditHeader] = useState("");
     const [editDescription, setEditDescription] = useState("");
@@ -196,8 +197,9 @@ const TodoLists=({navigation, route}) =>{
     const [editCalendar, setEditCalendar] = useState("");
     const [editReminder, setEditReminder] = useState("");
     const [editColor, setEditColor] = useState("")
-    const [editSong, setEditSong] = useState("")
+    const [editSong, setEditSong] = useState("");
 
+    //edit list object to b routed
     const editObj = {
         Header: editHeader,
         Description: editDescription,
@@ -209,6 +211,22 @@ const TodoLists=({navigation, route}) =>{
         Index:Editindex
     }
 
+    //useeffect to handle navigation to edit screen
+    useEffect(() =>{
+        navigation.navigate("Edit Task", editObj);
+        
+    },[Editindex])
+
+    const editFunc = (key,header, description,alarm,calendar,color,reminder,song) => {
+        setIndex(key);
+        setEditHeader(header);
+        setEditDescription(description);
+        setEditAlarm(alarm);
+        setEditCalendar(calendar);
+        setEditColor(color);
+        setEditReminder(reminder);
+        setEditSong(song);
+    }
 
     return(
             <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={styles.bgImg}>
@@ -218,17 +236,16 @@ const TodoLists=({navigation, route}) =>{
                 keyExtractor={(item,index) => index.toString()}
                 renderItem={({item, index})=> {
                     return(
-                    <TouchableOpacity onPress={() => {
-                        setIndex(index.toString());
-                        setEditHeader(item.header);
-                        setEditDescription(item.description);
-                        setEditAlarm(item.alarm);
-                        setEditCalendar(item.calendar);
-                        setEditColor(item.color);
-                        setEditReminder(item.reminder);
-                        setEditSong(item.song);
-                        navigation.push("Edit Task", editObj);
-                      }}
+                    <TouchableOpacity onPress={() => editFunc(
+                        index.toString(),
+                        item.header,
+                        item.description,
+                        item.alarm,
+                        item.calendar,
+                        item.color,
+                        item.reminder,
+                        item.song)
+                      }
                       >
 
                         {(item.header || item.description) && 
