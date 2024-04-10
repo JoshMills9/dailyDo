@@ -2,7 +2,8 @@ import { Text, View,SafeAreaView, StatusBar, Image,FlatList,  TouchableOpacity, 
 import styles from "../styles/styles";
 import { useEffect, useState } from "react";
 import { Audio } from "expo-av";
-import { Header } from "react-native/Libraries/NewAppScreen";
+
+
 
 const TodoLists=({navigation, route}) =>{
 
