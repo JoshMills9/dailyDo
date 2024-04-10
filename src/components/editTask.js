@@ -9,9 +9,7 @@ import {Picker} from '@react-native-picker/picker';
 const EditTask = ({navigation,route}) => {
      //destructuring the route params for editing
     const {Header,Description, Alarm, Calendar, Colors, Reminder,Song, Index} = route.params || {};
- 
-    console.log(Index)
-    console.log(Header)
+
     //state to update header input
     const [addTask, setaddTask] = useState(Header);
 

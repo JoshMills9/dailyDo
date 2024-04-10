@@ -2,6 +2,7 @@ import { Text, View,SafeAreaView, StatusBar, Image,FlatList,  TouchableOpacity, 
 import styles from "../styles/styles";
 import { useEffect, useState } from "react";
 import { Audio } from "expo-av";
+import { Header } from "react-native/Libraries/NewAppScreen";
 
 const TodoLists=({navigation, route}) =>{
 
@@ -211,11 +212,7 @@ const TodoLists=({navigation, route}) =>{
         Index:Editindex
     }
 
-    //useeffect to handle navigation to edit screen
-    useEffect(() =>{
-        navigation.navigate("Edit Task", editObj);
-        
-    },[Editindex])
+    console.log(editHeader)
 
     const editFunc = (key,header, description,alarm,calendar,color,reminder,song) => {
         setIndex(key);
@@ -226,6 +223,8 @@ const TodoLists=({navigation, route}) =>{
         setEditColor(color);
         setEditReminder(reminder);
         setEditSong(song);
+
+        navigation.navigate("Edit Task", editObj)
     }
 
     return(
@@ -237,7 +236,7 @@ const TodoLists=({navigation, route}) =>{
                 renderItem={({item, index})=> {
                     return(
                     <TouchableOpacity onPress={() => editFunc(
-                        index.toString(),
+                        index,
                         item.header,
                         item.description,
                         item.alarm,
