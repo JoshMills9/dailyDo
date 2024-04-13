@@ -2,7 +2,7 @@ import { Text, View,SafeAreaView, StatusBar, Image,FlatList,  TouchableOpacity, 
 import styles from "../styles/styles";
 import { useEffect, useState } from "react";
 import { Audio } from "expo-av";
-
+import * as Notifications from 'expo-notifications';
 
 
 const TodoLists=({navigation, route}) =>{
@@ -10,8 +10,7 @@ const TodoLists=({navigation, route}) =>{
     //destructuring the route params
     const {header,description, alarm, calendar, color, reminder,song, index} = route.params || {};
     //state to handle list
-    const [list , setlist] = useState([])
-   
+    const [list , setlist] = useState([])   
     
     //using useEffect hook to automatically update the list with the properties header, description , alarm, calendar , color, reminder, song
     useEffect(() => {
@@ -51,8 +50,13 @@ const TodoLists=({navigation, route}) =>{
         }
     
 
+
+
+
         const [sound, setSound] = useState();
         const [currentTimeIndex, setCurrentTimeIndex] = useState("");
+
+
  
         //use effect to handle how music plays
         useEffect(() => {
@@ -190,40 +194,20 @@ const TodoLists=({navigation, route}) =>{
             };
             
         }, [usertime,isUserTime,list]);
-
-    //states to edit a list
-    const [Editindex, setIndex] = useState("");
-    const [editHeader, setEditHeader] = useState("");
-    const [editDescription, setEditDescription] = useState("");
-    const [editAlarm, setEditAlarm] = useState("");
-    const [editCalendar, setEditCalendar] = useState("");
-    const [editReminder, setEditReminder] = useState("");
-    const [editColor, setEditColor] = useState("")
-    const [editSong, setEditSong] = useState("");
-
-    //edit list object to b routed
-    const editObj = {
-        Header: editHeader,
-        Description: editDescription,
-        Alarm:editAlarm,
-        Calendar:editCalendar,
-        Colors:editColor,
-        Reminder:editReminder,
-        Song:editSong,
-        Index:Editindex
-    }
-
-    console.log(editHeader)
-
-    const editFunc = (key,header, description,alarm,calendar,color,reminder,song) => {
-        setIndex(key);
-        setEditHeader(header);
-        setEditDescription(description);
-        setEditAlarm(alarm);
-        setEditCalendar(calendar);
-        setEditColor(color);
-        setEditReminder(reminder);
-        setEditSong(song);
+   
+        //function to send data to the edit screen
+    const editFunc = (Key,Header, Description,Alarm,Calendar,Color,Reminder,Song) => {
+        //edit list object to b routed
+        const editObj = {
+        Header: Header,
+        Description: Description,
+        Alarm:Alarm,
+        Calendar:Calendar,
+        Colors:Color,
+        Reminder:Reminder,
+        Song:Song,
+        Index:Key
+    };
 
         navigation.navigate("Edit Task", editObj)
     }
@@ -236,20 +220,7 @@ const TodoLists=({navigation, route}) =>{
                 keyExtractor={(item,index) => index.toString()}
                 renderItem={({item, index})=> {
                     return(
-                    <TouchableOpacity onPress={() => editFunc(
-                        index,
-                        item.header,
-                        item.description,
-                        item.alarm,
-                        item.calendar,
-                        item.color,
-                        item.reminder,
-                        item.song)
-                      }
-                      >
-
-                        {(item.header || item.description) && 
-                        
+                        (item.header || item.description) && 
                         <View style={styles.view}>
 
                         <View style={styles.subview}> 
@@ -287,6 +258,13 @@ const TodoLists=({navigation, route}) =>{
                             <View>
                                 <TouchableOpacity onPress={() => deleteList(index.toString())}  ><Image style={styles.delete}  source={require("../images/trash.png")}/></TouchableOpacity>
                             </View>
+
+                            <View>
+                                <TouchableOpacity onPress={() => editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
+                                item.reminder,item.song)} >
+                                <Image style={styles.edit}  source={require("../images/edit.png")}/></TouchableOpacity>
+                            </View>
+                            
         
                             <View style={styles.Alarm}>
         
@@ -303,10 +281,10 @@ const TodoLists=({navigation, route}) =>{
                             </View>
         
                         </View>
-                            </View>
+                     </View>
                    
-                }</TouchableOpacity>
-                        )
+                                
+                )
                 }}
             />
             <TouchableOpacity style={styles.add} onPress={() => navigation.navigate("Add New Task")}>

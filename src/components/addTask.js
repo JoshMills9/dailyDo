@@ -6,7 +6,8 @@ import {Picker} from '@react-native-picker/picker';
 
 
 
-const AddTask = ({navigation,route}) => {
+
+const AddTask = ({navigation}) => {
 
     //state to update header input
     const [addTask, setaddTask] = useState("");
@@ -84,7 +85,6 @@ const AddTask = ({navigation,route}) => {
         color: Color,
         song: selectedValue,
     };
-
 
     return (
         <View style={styles.bgImg}>

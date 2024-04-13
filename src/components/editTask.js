@@ -1,14 +1,14 @@
 import { Image, KeyboardAvoidingView,  Platform, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from "../styles/styles";
-import { useState , useEffect} from "react";
+import { useState ,} from "react";
 import {Picker} from '@react-native-picker/picker';
 
 
 
 const EditTask = ({navigation,route}) => {
      //destructuring the route params for editing
-    const {Header,Description, Alarm, Calendar, Colors, Reminder,Song, Index} = route.params || {};
+    const {Header,Description, Colors, Reminder,Song, Index} = route.params || {};
 
     //state to update header input
     const [addTask, setaddTask] = useState(Header);

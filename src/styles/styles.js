@@ -96,6 +96,13 @@ const styles = StyleSheet.create({
         height:35,
         tintColor:"orangered"
     },
+
+    edit:{
+        width:27,
+        height:27,
+        tintColor:"white"
+    },
+
     add:{
         borderRadius:50,
         width:80,
@@ -220,6 +227,7 @@ const styles = StyleSheet.create({
         shadowColor: 'rgba(0, 0, 0, 0.9)',
     }
 
+    
 
 
 });
