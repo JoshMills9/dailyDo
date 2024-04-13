@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     subview2:{
         alignItems:"flex-end",
         flex:1,
-        justifyContent:"space-between"
+        justifyContent:"space-between",
     },
     timeview:{
         borderRadius:50,
@@ -89,6 +89,14 @@ const styles = StyleSheet.create({
         width:20,
         height:20,
         tintColor:"white"
+    },
+
+    delEdit:{
+        alignItems:"center",
+        flexDirection:"row",
+        width:"100%",
+        justifyContent:"space-between",
+        paddingLeft:10
     },
 
     delete:{

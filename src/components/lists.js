@@ -2,7 +2,7 @@ import { Text, View,SafeAreaView, StatusBar, Image,FlatList,  TouchableOpacity, 
 import styles from "../styles/styles";
 import { useEffect, useState } from "react";
 import { Audio } from "expo-av";
-import * as Notifications from 'expo-notifications';
+
 
 
 const TodoLists=({navigation, route}) =>{
@@ -255,17 +255,20 @@ const TodoLists=({navigation, route}) =>{
         
                             </View>
 
-                            <View>
-                                <TouchableOpacity onPress={() => deleteList(index.toString())}  ><Image style={styles.delete}  source={require("../images/trash.png")}/></TouchableOpacity>
-                            </View>
+                            <View style={styles.delEdit}>
 
-                            <View>
-                                <TouchableOpacity onPress={() => editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
-                                item.reminder,item.song)} >
-                                <Image style={styles.edit}  source={require("../images/edit.png")}/></TouchableOpacity>
+                                <View>
+                                    <TouchableOpacity onPress={() => editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
+                                    item.reminder,item.song)} >
+                                    <Image style={styles.edit}  source={require("../images/edit.png")}/></TouchableOpacity>
+                                </View>
+
+                                <View>
+                                    <TouchableOpacity onPress={() => deleteList(index.toString())}  ><Image style={styles.delete}  source={require("../images/trash.png")}/></TouchableOpacity>
+                                </View>
+
                             </View>
                             
-        
                             <View style={styles.Alarm}>
         
                                 <View style={styles.alarm}>
