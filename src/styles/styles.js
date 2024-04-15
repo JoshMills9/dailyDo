@@ -53,13 +53,23 @@ const styles = StyleSheet.create({
     },
     Alarm:{
         width:"100%",     
-        
+   
     },
     alarm:{
         flexDirection:"row",        
         justifyContent:"space-between",
         alignItems:"center",
-        margin:8
+        marginBottom:15,
+        marginRight:10,
+        paddingLeft:10,
+    },
+    alarm1:{
+        flexDirection:"row",        
+        justifyContent:"space-between",
+        alignItems:"center",
+        marginBottom:5,
+        paddingLeft:5,
+        marginRight:8
     },
     color:{
         backgroundColor:"red",
@@ -96,7 +106,7 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         width:"100%",
         justifyContent:"space-between",
-        paddingLeft:10
+        paddingLeft:25
     },
 
     delete:{
@@ -113,14 +123,18 @@ const styles = StyleSheet.create({
 
     add:{
         borderRadius:50,
-        width:80,
-        height:80,
+        width:60,
+        height:60,
         backgroundColor:"white",
         zIndex:2,
         position:"absolute",
-        bottom:20,
-        right:15
+        bottom:5,
+        right:18,
+        justifyContent:"center",
+        alignItems:"center"
+        
     },
+
     addTaskText:{
         fontSize:60,
         alignSelf:"center",

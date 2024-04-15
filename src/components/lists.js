@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Audio } from "expo-av";
 
 
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const TodoLists=({navigation, route}) =>{
 
@@ -260,11 +262,11 @@ const TodoLists=({navigation, route}) =>{
                                 <View>
                                     <TouchableOpacity onPress={() => editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
                                     item.reminder,item.song)} >
-                                    <Image style={styles.edit}  source={require("../images/edit.png")}/></TouchableOpacity>
+                                    <MaterialIcons  name="edit" size={30} color="white" /></TouchableOpacity>
                                 </View>
 
                                 <View>
-                                    <TouchableOpacity onPress={() => deleteList(index.toString())}  ><Image style={styles.delete}  source={require("../images/trash.png")}/></TouchableOpacity>
+                                    <TouchableOpacity onPress={() => deleteList(index.toString())}><Image style={styles.delete}  source={require("../images/trash.png")}/></TouchableOpacity>
                                 </View>
 
                             </View>
@@ -272,11 +274,11 @@ const TodoLists=({navigation, route}) =>{
                             <View style={styles.Alarm}>
         
                                 <View style={styles.alarm}>
-                                    <Text style={[styles.text, {fontSize:15}]}>{item.song}</Text>
+                                    <Text style={[styles.text, {fontSize:20, marginLeft:-8, alignSelf:"center", flex:1}]} adjustsFontSizeToFit={true} numberOfLines={1}>{item.song}</Text>
                                     <Image style={styles.img} source={require("../images/music.png")}/>
                                 </View>
         
-                                <View style={styles.alarm}>
+                                <View style={styles.alarm1}>
                                     <Text style={styles.text}>{item.reminder}</Text>
                                     <Image style={styles.img} source={require("../images/bell.png")}/>
                                 </View>
@@ -291,7 +293,7 @@ const TodoLists=({navigation, route}) =>{
                 }}
             />
             <TouchableOpacity style={styles.add} onPress={() => navigation.navigate("Add New Task")}>
-                <Text style={styles.addTaskText}>+</Text>
+                <Ionicons name="add" size={40} color="black"  />
             </TouchableOpacity>
 
             </ImageBackground>
