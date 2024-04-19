@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         justifyContent:"space-between",
         alignItems:"center",
         marginBottom:5,
-        paddingLeft:15
+     
     },
     color:{
         backgroundColor:"red",

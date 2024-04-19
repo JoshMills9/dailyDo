@@ -218,6 +218,7 @@ const TodoLists=({navigation, route}) =>{
     }
         //state to delete item by index
         const [del, setDel] = useState("");
+        console.log(del)
         //state to store indexes
         const [selectedIndexes, setSelectedIndexes] = useState([]);
 
@@ -238,7 +239,7 @@ const TodoLists=({navigation, route}) =>{
         
             // Remove the item at the specified index
             updatedList.splice(index, 1);
-        
+
             // Update the state with the modified list
             setlist(updatedList);
         };
@@ -257,8 +258,8 @@ const TodoLists=({navigation, route}) =>{
         };
 
         //state to store selected index
-        const [complete, setcomplete] = useState(null)
-
+   
+        const complete= selectedIndexes.includes(del);
    
     
     
@@ -267,14 +268,17 @@ const TodoLists=({navigation, route}) =>{
             <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={styles.bgImg}>
             <FlatList
                 data={list}
-                keyExtractor={(item,index) => index.toString()}
+                keyExtractor={(item, index) => {
+                    // Generate a unique key using both the item's header and index
+                    return `${item.header.toString()}_${index}`;
+                }}
                 ListEmptyComponent={()=>{return(
                     <View style={{flex:1,marginTop:300,justifyContent:"center",alignItems:"center"}}>
                         <Text style={[styles.medtext,{color:"black", opacity:0.4}]}>add a To-Do</Text></View>
                 )}}
                 renderItem={({item, index})=> {
-                    const selected = selectedIndexes.includes(index.toString());  // Check if the index is selected
-                    setcomplete(selected)
+                    const selectedKey = index.toString(); // Generate unique key
+                    const selected = selectedIndexes.includes(selectedKey); // Check if the item is selected
                     return(
                         (item.header || item.description) && 
                      <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
