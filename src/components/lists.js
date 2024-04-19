@@ -190,10 +190,11 @@ const TodoLists=({navigation, route}) =>{
             
         }, [usertime,isUserTime,list]);
 
-
+        //state to toggle modal screen
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [newEdit,  setEdit] = useState(null);
- 
+    
+        //function to toggle modal
     const togglePopup = () => {
         setIsPopupVisible(!isPopupVisible);
     };
@@ -215,8 +216,9 @@ const TodoLists=({navigation, route}) =>{
         togglePopup();
 
     }
-
+        //state to delete item by index
         const [del, setDel] = useState("");
+        //state to store indexes
         const [selectedIndexes, setSelectedIndexes] = useState([]);
 
         // Function to toggle selection of an index
@@ -228,15 +230,15 @@ const TodoLists=({navigation, route}) =>{
             }
         };
 
+        //function to delete item by index
         const deleteList = (index) => {
-            // Create a copy of the savedData array
-            const updatedList = [...list];
+             const updatedList = [...list];
             // Remove the item at the specified index
             updatedList.splice(index, 1);
-            // Update the savedData state with the modified array
             setlist(updatedList);
         };
         
+        //function to handle user choice from modal
         const handleOptionSelect = (option) => {
             if (option === "Edit") {
                 navigation.navigate("Edit Task", newEdit);
@@ -248,7 +250,7 @@ const TodoLists=({navigation, route}) =>{
             setIsPopupVisible(false)
         };
 
-
+        //state to store selected index
         const [complete, setcomplete] = useState(null)
 
    
