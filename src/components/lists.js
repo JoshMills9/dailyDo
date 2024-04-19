@@ -273,7 +273,7 @@ const TodoLists=({navigation, route}) =>{
                         <Text style={[styles.medtext,{color:"black", opacity:0.4}]}>add a To-Do</Text></View>
                 )}}
                 renderItem={({item, index})=> {
-                    const selected = selectedIndexes.includes(item.header.toString());  // Check if the index is selected
+                    const selected = selectedIndexes.includes(index.toString());  // Check if the index is selected
                     setcomplete(selected)
                     return(
                         (item.header || item.description) && 
