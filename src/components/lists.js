@@ -193,7 +193,7 @@ const TodoLists=({navigation, route}) =>{
         //state to toggle modal screen
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [newEdit,  setEdit] = useState(null);
-    
+
         //function to toggle modal
     const togglePopup = () => {
         setIsPopupVisible(!isPopupVisible);
@@ -232,11 +232,17 @@ const TodoLists=({navigation, route}) =>{
 
         //function to delete item by index
         const deleteList = (index) => {
-             const updatedList = [...list];
+        
+            // Create a copy of the original list
+            const updatedList = [...list];
+        
             // Remove the item at the specified index
             updatedList.splice(index, 1);
+        
+            // Update the state with the modified list
             setlist(updatedList);
         };
+        
         
         //function to handle user choice from modal
         const handleOptionSelect = (option) => {
@@ -261,7 +267,7 @@ const TodoLists=({navigation, route}) =>{
             <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={styles.bgImg}>
             <FlatList
                 data={list}
-                keyExtractor={(item) => item.header.toString()}
+                keyExtractor={(item,index) => index.toString()}
                 ListEmptyComponent={()=>{return(
                     <View style={{flex:1,marginTop:300,justifyContent:"center",alignItems:"center"}}>
                         <Text style={[styles.medtext,{color:"black", opacity:0.4}]}>add a To-Do</Text></View>
@@ -273,7 +279,7 @@ const TodoLists=({navigation, route}) =>{
                         (item.header || item.description) && 
                      <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
                         onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
-                            item.reminder,item.song); setDel(item.header.toString())}}>
+                            item.reminder,item.song); setDel(index.toString())}}>
 
                      <View style={[styles.view,{backgroundColor: selected ? 'gray' : "midnightblue"}]}>
 
