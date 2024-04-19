@@ -91,8 +91,8 @@ const EditTask = ({navigation,route}) => {
 
     return (
         <View style={styles.bgImg}>
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-                <ScrollView>
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : null}>
+                <ScrollView style={{flexGrow:1}}>
                     
                     <View>
                         <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)}  placeholder="Edit Heading" />

@@ -5,32 +5,34 @@ const styles = StyleSheet.create({
 
     container:{
         flex:1,
-        marginBottom:15,
-        
+           
     },
     bgImg:{
         flex:1,
         paddingHorizontal:15
     },
     view:{
-        marginTop:20,
+        marginTop:15,
         backgroundColor:"midnightblue",
         width:"100%",
-        minHeight:250,
+        minHeight:200,
         borderRadius:40,
-        padding:25,
+        padding:20,
         flexDirection:"row",
         justifyContent:"center",
         elevation:6,
         shadowRadius:50,
-        
+        marginBottom:10
     },
 
+    highlight:{
+        borderRadius:40,
+    },
 
     headview:{
         justifyContent:"space-around",
         height:130,
-        marginBottom:10
+        marginBottom:10,
     },
     subview:{
         flex:2,
@@ -40,6 +42,7 @@ const styles = StyleSheet.create({
         alignItems:"flex-end",
         flex:1,
         justifyContent:"space-between",
+        backgroundColor:"red"
     },
     timeview:{
         borderRadius:50,
@@ -49,27 +52,26 @@ const styles = StyleSheet.create({
         backgroundColor:"white",
         justifyContent:"space-evenly",
         alignItems:"center",
-        marginTop:15
     },
-    Alarm:{
-        width:"100%",     
-   
+    Alarm:{    
+     
+       width:100
     },
     alarm:{
         flexDirection:"row",        
         justifyContent:"space-between",
         alignItems:"center",
         marginBottom:15,
-        marginRight:10,
-        paddingLeft:10,
+        width:100,
+     
+   
     },
     alarm1:{
         flexDirection:"row",        
         justifyContent:"space-between",
         alignItems:"center",
         marginBottom:5,
-        paddingLeft:5,
-        marginRight:8
+        paddingLeft:15
     },
     color:{
         backgroundColor:"red",
@@ -128,7 +130,7 @@ const styles = StyleSheet.create({
         backgroundColor:"white",
         zIndex:2,
         position:"absolute",
-        bottom:5,
+        bottom:15,
         right:18,
         justifyContent:"center",
         alignItems:"center"
@@ -247,10 +249,50 @@ const styles = StyleSheet.create({
     selectedItem:{
         elevation:5,
         shadowColor: 'rgba(0, 0, 0, 0.9)',
-    }
+    },
 
-    
+    CompletedView:{
+        width:"100%",
+        backgroundColor:"rgba(255, 255, 255, 0.7)",
+        borderTopRightRadius: 15,
+        borderTopLeftRadius: 15,
+        borderBottomRightRadius:10,
+        borderBottomLeftRadius:10,
+        paddingHorizontal:10,
+        paddingTop:5
+    },
+    dateDescrip:{
+        flexDirection:"row",
+        justifyContent:"space-between",
+        alignItems:"center",
+        paddingVertical:2
+    },
+    compheader:{
+        flexDirection:"row",
+        justifyContent:"space-between",
+        alignItems:"center",
+    },
+    title:{
+        flex:1
+    },
 
+    popup: {
+        position: 'absolute',
+        bottom:10,
+        left: 15,
+        right: 15,
+        backgroundColor: 'white',
+        borderTopRightRadius: 15,
+        borderTopLeftRadius: 15,
+        borderBottomRightRadius:10,
+        borderBottomLeftRadius:10,
+        zIndex: 10,
+        elevation: 9, // For Android elevation
+      },
+      option: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+      },
 
 });
 
