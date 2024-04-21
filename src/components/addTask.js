@@ -1,7 +1,7 @@
-import { Image, KeyboardAvoidingView,  Platform, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, KeyboardAvoidingView,  Platform,Switch,ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from "../styles/styles";
-import { useState , useEffect} from "react";
+import { useState ,} from "react";
 import {Picker} from '@react-native-picker/picker';
 
 
@@ -74,6 +74,10 @@ const AddTask = ({navigation}) => {
 
     const [selectedValue, setSelectedValue] = useState("Clingcling");
     
+    //state to toggle switch
+    const [isEnabled, setIsEnabled] = useState(false);
+    //function to handle switch toggler
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
     //Obj to be transfered to the other screen
     const obj = {
@@ -84,11 +88,12 @@ const AddTask = ({navigation}) => {
         reminder: reminder,
         color: Color,
         song: selectedValue,
+        toggler: isEnabled
     };
 
     return (
         <View style={styles.bgImg}>
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "padding"}>
                 <ScrollView>
                     
                     <View>
@@ -157,7 +162,20 @@ const AddTask = ({navigation}) => {
                         
                     </View>
     
-                    
+                    <View style={[styles.colors,{marginTop:20,justifyContent:"space-between",paddingHorizontal:15}]}>
+
+                        <Text style={[styles.medtext, {fontSize:20,fontWeight:"500",color:"black"}]}>Mark as Important?</Text>
+
+                        <Switch
+                                trackColor={{false: 'darkgray', true: '#81b0ff'}}
+                                thumbColor={isEnabled ? 'navy' : 'gray'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={toggleSwitch}
+                                value={isEnabled}
+                                style={{ transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }] }}
+                            />
+                    </View>
+
                     <View style={styles.addtaskview}> 
                         <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>Add Task</Text></TouchableOpacity>
                     </View>

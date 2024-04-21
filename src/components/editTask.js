@@ -1,14 +1,15 @@
-import { Image, KeyboardAvoidingView,  Platform, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, KeyboardAvoidingView,Switch,  Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from "../styles/styles";
-import { useState ,} from "react";
+import { useState , } from "react";
 import {Picker} from '@react-native-picker/picker';
 
 
 
 const EditTask = ({navigation,route}) => {
      //destructuring the route params for editing
-    const {Header,Description, Colors, Reminder,Song, Index} = route.params || {};
+    const {Header,Description, Colors, Reminder,Song, Index, Toggler} = route.params || {};
+   
 
     //state to update header input
     const [addTask, setaddTask] = useState(Header);
@@ -74,7 +75,12 @@ const EditTask = ({navigation,route}) => {
     const [Color, setColor] = useState(Colors);
 
     const [selectedValue, setSelectedValue] = useState(Song);
-    
+
+      //state to toggle switch
+      const [isEnabled, setIsEnabled] = useState(Toggler);
+      //function to handle switch toggler
+      const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
 
     //Obj to be transfered to the other screen
     const obj = {
@@ -85,7 +91,8 @@ const EditTask = ({navigation,route}) => {
         reminder: reminder,
         color: Color,
         song: selectedValue,
-        index: Index
+        index: Index,
+        toggler: isEnabled
     };
 
 
@@ -159,7 +166,20 @@ const EditTask = ({navigation,route}) => {
                         </TouchableOpacity>
                         
                     </View>
-    
+
+                    <View style={[styles.colors,{marginTop:20,justifyContent:"space-between",paddingHorizontal:15}]}>
+
+                        <Text style={[styles.medtext, {fontSize:20,fontWeight:"500",color:"black"}]}>Mark as Important?</Text>
+
+                        <Switch
+                                trackColor={{false: 'darkgray', true: '#81b0ff'}}
+                                thumbColor={isEnabled ? 'navy' : 'gray'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={toggleSwitch}
+                                value={isEnabled}
+                                style={{ transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }] }}
+                            />
+                    </View>
                     
                     <View style={styles.addtaskview}> 
                         <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>Edit Task</Text></TouchableOpacity>

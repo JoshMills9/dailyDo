@@ -11,10 +11,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 const TodoLists=({navigation, route}) =>{
 
     //destructuring the route params
-    const {header,description, alarm, calendar, color, reminder,song, index} = route.params || {};
+    const {header,description, alarm, calendar, color, reminder,song, index, toggler} = route.params || {};
     //state to handle list
     const [list , setlist] = useState([])   
-  
     
     //using useEffect hook to automatically update the list with the properties header, description , alarm, calendar , color, reminder, song
     useEffect(() => {
@@ -22,19 +21,19 @@ const TodoLists=({navigation, route}) =>{
             // Add new item to the list
             setlist(prevList => [
                 ...prevList, 
-                { header, description, alarm, calendar, color, reminder, song }
+                { header, description, alarm, calendar, color, reminder, song , toggler}
             ]);
         } else if ((header !== undefined || description !== undefined || alarm !== undefined 
-            || calendar !== undefined || color !== undefined || reminder !== undefined || song !== undefined) && index !== undefined) {
+            || calendar !== undefined || color !== undefined || reminder !== undefined || song !== undefined || toggler !== undefined) && index !== undefined) {
             // Update existing item in the list
             setlist(prevList => {
                 // Update the item at the specified index
                 const updatedList = [...prevList];
-                updatedList[index] = { header, description, alarm, calendar, color, reminder, song };
+                updatedList[index] = { header, description, alarm, calendar, color, reminder, song,toggler };
                 return updatedList;
             });
         }
-    }, [header, description, alarm, calendar, color, reminder,song, index]);
+    }, [header, description, alarm, calendar, color, reminder,song, index,toggler]);
     
 
     
@@ -200,7 +199,7 @@ const TodoLists=({navigation, route}) =>{
     };
    
         //function to send data to the edit screen
-    const editFunc = (Key,Header, Description,Alarm,Calendar,Color,Reminder,Song) => {
+    const editFunc = (Key,Header, Description,Alarm,Calendar,Color,Reminder,Song,Toggler) => {
         //edit list object to b routed
         const editObj = {
         Header: Header,
@@ -210,7 +209,8 @@ const TodoLists=({navigation, route}) =>{
         Colors:Color,
         Reminder:Reminder,
         Song:Song,
-        Index:Key
+        Index:Key,
+        Toggler: Toggler
     };
         setEdit(editObj);
         togglePopup();
@@ -218,7 +218,6 @@ const TodoLists=({navigation, route}) =>{
     }
         //state to delete item by index
         const [del, setDel] = useState("");
-        console.log(del)
         //state to store indexes
         const [selectedIndexes, setSelectedIndexes] = useState([]);
 
@@ -244,7 +243,33 @@ const TodoLists=({navigation, route}) =>{
             setlist(updatedList);
         };
         
+            //function to show priority
+        const [isImportant, setIsImportant] = useState(null);
+
+        useEffect(() =>{
+            if (newEdit && newEdit.Toggler !== null){
+            setIsImportant(newEdit.Toggler)
+            }
+        },[newEdit?.Toggler])
         
+
+        // Function to toggle important status for the corresponding item in the list
+        const toggleImportant = (index) => {
+            // Create a copy of the original list
+            const updatedList = [...list];
+            
+            // Toggle the toggler property of the item at the specified index
+            updatedList[index].toggler = !updatedList[index].toggler;
+            
+            // Update the state with the modified list
+            setlist(updatedList);
+        };
+
+        // Function to handle toggling important status
+        const handleToggleImportant = () => {
+            setIsImportant(true); // Toggle the state to show or hide important tasks
+        };
+
         //function to handle user choice from modal
         const handleOptionSelect = (option) => {
             if (option === "Edit") {
@@ -253,6 +278,8 @@ const TodoLists=({navigation, route}) =>{
                 deleteList(del);
             } else if (option === "Completed") {
                 completed(del); // Pass the selected index (del) to the completed function
+            }else if (option === "Important"){
+                 handleToggleImportant();
             }
             setIsPopupVisible(false)
         };
@@ -272,31 +299,40 @@ const TodoLists=({navigation, route}) =>{
                     // Generate a unique key using both the item's header and index
                     return `${item.header.toString()}_${index}`;
                 }}
+
                 ListEmptyComponent={()=>{return(
                     <View style={{flex:1,marginTop:300,justifyContent:"center",alignItems:"center"}}>
                         <Text style={[styles.medtext,{color:"black", opacity:0.4}]}>add a To-Do</Text></View>
                 )}}
+
                 renderItem={({item, index})=> {
                     const selectedKey = index.toString(); // Generate unique key
                     const selected = selectedIndexes.includes(selectedKey); // Check if the item is selected
+                    
                     return(
-                        (item.header || item.description) && 
+                        (item.header && item.description && index.toString()) ? 
+
                      <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
                         onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
-                            item.reminder,item.song); setDel(index.toString())}}>
+                            item.reminder,item.song,item.toggler); setDel(index.toString())}}>
 
                      <View style={[styles.view,{backgroundColor: selected ? 'gray' : "midnightblue"}]}>
 
                         <View style={styles.subview}> 
                             <View style={styles.headview}>
-                                <View style={{flexDirection:"row" , justifyContent:"space-between" }}>
+                                <View style={{flexDirection:"row" , justifyContent:"space-between",marginTop:-6}}>
                                     <View style={{width:260}}>
                                         <Text style={styles.header} adjustsFontSizeToFit={true} numberOfLines={2}>
                                             {item.header}
                                         </Text>
                                     </View>
                 
-                                    <View style={[styles.color, {backgroundColor: item.color, marginTop:-10,marginRight:-3 }]}></View>
+                                    <View style={{height:80, justifyContent:"space-between",alignItems:"center"}}>
+                                        <View style={[styles.color, {backgroundColor: item.color, marginRight:-3 }]}></View>
+                                        { item.toggler ?
+                                        <View><MaterialIcons name="star" size={30} color="white" /></View> : null}
+                                    </View>
+                                    
                                 </View>
                                
                                 <Text style={styles.description}>
@@ -337,19 +373,76 @@ const TodoLists=({navigation, route}) =>{
                                 }
                                 <View style={{ width:150,height:40, alignItems:"flex-end", justifyContent:"center"}}>
                                     <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.text,{fontSize:14, fontWeight:"500"}]}>
-                                        Status: {selected ? <Text style={[styles.text,{fontSize:15, fontWeight:"bold", color:"lightgreen" }]}>COMPLETED</Text> : <Text style={[styles.text,{fontSize:12,fontWeight:"400", color:"lightgray"}]}>UNCOMPLETED</Text>}</Text>
+                                        Status: {selected ? <Text style={[styles.text,{fontSize:13, fontWeight:"bold", color:"lightgreen" }]}>COMPLETED</Text> : <Text style={[styles.text,{fontSize:12,fontWeight:"400", color:"lightgray"}]}>PENDING</Text>}</Text>
                                 </View>
                              </View>
                         </View>
                         
                      </View>
-                </Pressable>    
+                </Pressable>
+
+                :
+                
+                <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
+                        onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
+                            item.reminder,item.song,item.toggler); setDel(index.toString())}}>
+
+                    <View style={[styles.container, { marginTop:15,marginBottom:5}]}>
+                            <View style={[{width:"100%",paddingHorizontal:20,paddingVertical:10,elevation:6,borderRadius:30,shadowRadius:50,backgroundColor: selected ? 'gray' : "midnightblue"}]}>
+                                <View style={styles.compheader}>
+                                    <View style={styles.title}>
+                                        <Text style={[styles.header,{fontSize:25}]} adjustsFontSizeToFit={true} numberOfLines={1}>
+                                            {item.header.length > 20 ? `${item.header.slice(0, 20)} .....` : item.header}
+                                        </Text>
+                                    </View>
+                                    <View style={[styles.color, {backgroundColor: item.color , width:25,height:25, marginLeft:5}]}></View>
+                                </View>
+                                <View style={[styles.dateDescrip, { justifyContent:"space-between"}]}>
+                                    <View>
+                                        <Text style={[styles.medtext,  { fontSize:15}]}>
+                                            {item.calendar}
+                                        </Text>
+                                    </View>
+                                 
+                                    {(item.toggler)   ?
+                                        <View><MaterialIcons name="star" size={25} color="white" /></View> : null}
+                                    
+                                </View>
+                                <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center" }}>
+                                
+                                {(currentTimeIndex === index) ? 
+                                    <View style={[styles.timeview,  {backgroundColor:"orangered", width:120, height:25}]}>
+                                        <Image style={ {tintColor:"white", height:15,width:15}} source={require("../images/clock.png")}/>
+                                        <Text style={{fontSize:15, fontWeight:"500", color:"white"}}>{item.alarm}</Text>
+                                    </View>
+                                :   <View style={[styles.timeview,{backgroundColor: selected ? "darkgray" : "white", width:120, height:25}]}>
+                                        <Image style={ {tintColor:selected? "white": "black", height:15,width:15}} source={require("../images/clock.png")}/>
+                                        <Text style={{fontSize:15, fontWeight:"500", color: selected ? "white" : "black"}}>{item.alarm}</Text>
+                                    </View>
+                                }
+                                    <View>
+                                        <View style={{ width:150,height:40, alignItems:"flex-end", justifyContent:"center"}}>
+                                            <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.text,{fontSize:14, fontWeight:"500"}]}>
+                                            Status: {selected ? <Text style={[styles.text,{fontSize:13, fontWeight:"bold", color:"lightgreen" }]}>COMPLETED</Text> : <Text style={[styles.text,{fontSize:12,fontWeight:"400", color:"lightgray"}]}>PENDING</Text>}</Text>
+                                        </View>
+                                    </View>
+                                        
+                                </View>
+                            </View>
+                        </View>
+                    </Pressable>
+
                 )
                 }}
             />
-            <TouchableOpacity style={styles.add} onPress={() => navigation.navigate("Add New Task")}>
-                <Ionicons name="add" size={40} color="black"  />
-            </TouchableOpacity>
+
+            <View style={styles.add}>
+                <TouchableOpacity style={{width:60,height:60,position:"absolute",backgroundColor:"white",borderRadius:50,alignItems:"center",justifyContent:"center", elevation:6}} onPress={() => navigation.navigate("Add New Task")}>
+                    <View>
+                        <Ionicons name="add" size={25} color="black" />
+                    </View>
+                </TouchableOpacity>
+            </View>
 
             {(isPopupVisible && del) &&  (
                    <BottomSheet
@@ -364,7 +457,7 @@ const TodoLists=({navigation, route}) =>{
                  <View style={{flex:1,padding:15}}>
                         {/*view to display item selected*/}
                    { newEdit && ( 
-                    <View style={[styles.container, { paddingVertical:5,justifyContent:"flex-end",marginBottom:160 }]}>
+                    <View style={[styles.container, { paddingVertical:5,justifyContent:"flex-end",marginBottom:210 }]}>
                         <View style={styles.CompletedView}>
                             <View style={styles.compheader}>
                                 <View style={styles.title}>
@@ -380,15 +473,27 @@ const TodoLists=({navigation, route}) =>{
                                         {newEdit.Calendar}
                                     </Text>
                                 </View>
-                                <View style={{flex:1,marginLeft:10, marginRight:8}} >
-                                    <Text style={[styles.description, {color:"black",fontSize:16, fontWeight:"500"}]}>
+                                <View style={{flex:1, flexDirection:"row", marginLeft:10, marginRight:5, justifyContent:"space-between",alignItems:"center"}} >
+                                    <Text style={[styles.description, {color:"black",fontSize:17, fontWeight:"500"}]}>
                                         {newEdit.Description.length > 15 ? `${newEdit.Description.slice(0, 15)} .....` : newEdit.Description}
                                     </Text>
+
+                                    {(newEdit.Toggler)   ?
+                                        <MaterialIcons name="star" size={25} color="white" />: null}
                                 </View>
                             </View>
-                            <View style={{flexDirection:"row", marginBottom:5, justifyContent:"flex-start", alignItems:"center"}}>
-                                    <Image style={ {tintColor: "black", height:15,width:15, marginRight:8}} source={require("../images/clock.png")}/>
+                            <View style={{flexDirection:"row", marginBottom:5, justifyContent:"space-between", alignItems:"center"}}>
+                                   <View style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
+                                     <Image style={ {tintColor: "black", height:15,width:15, marginRight:8}} source={require("../images/clock.png")}/>
                                     <Text style={{fontSize:15, color:  "black"}}>{newEdit.Alarm}</Text>
+                                    </View>
+
+                                    <View>
+                                        <View style={{ width:150,height:40, alignItems:"flex-end", justifyContent:"center"}}>
+                                            <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.text,{color:"black",fontSize:14, fontWeight:"500"}]}>
+                                            Status: {complete ? <Text style={[styles.text,{fontSize:13, fontWeight:"bold", color:"green" }]}>COMPLETED</Text> : <Text style={[styles.text,{fontSize:12,fontWeight:"400", color:"white"}]}>PENDING</Text>}</Text>
+                                        </View>
+                                    </View>
                             </View>
                         </View>
                     </View>
@@ -412,10 +517,17 @@ const TodoLists=({navigation, route}) =>{
 
                         </TouchableHighlight>
 
-                        <TouchableHighlight onPress={() => handleOptionSelect('Completed')} underlayColor="#ccc" style={{width:"100%",borderBottomRightRadius:10,borderBottomLeftRadius:10}}>
+                        <TouchableHighlight onPress={() => handleOptionSelect('Completed')} underlayColor="#ccc" style={{width:"100%",borderBottomWidth: 1,borderBottomColor: '#ccc'}}>
                              <View style={{ flexDirection: "row", alignItems: "center", justifyContent:"space-between",justifyContent:"space-between",padding:10, }}>
-                                {complete ? <Text style={{fontSize:20, fontWeight:"500"}}>Uncompleted </Text> : <Text style={{fontSize:20, fontWeight:"500"}}>Completed </Text>}
-                                {complete ? <MaterialIcons name="remove-done" size={30} color="darkblue" />:<MaterialIcons name="done-all" size={30} color="darkblue" />}
+                                {complete ? <Text style={{fontSize:20, fontWeight:"500"}}>Pending</Text> : <Text style={{fontSize:20, fontWeight:"500"}}>Completed </Text>}
+                                {complete ? <MaterialIcons name="pending" size={30} color="darkblue" /> :<MaterialIcons name="done-all" size={30} color="darkblue" />}
+                            </View>
+                        </TouchableHighlight>
+
+                        <TouchableHighlight onPress={() => {handleOptionSelect('Important'); toggleImportant(del)}} underlayColor="#ccc" style={{width:"100%",borderBottomRightRadius:10,borderBottomLeftRadius:10}}>
+                             <View style={{ flexDirection: "row", alignItems: "center", justifyContent:"space-between",justifyContent:"space-between",padding:10, }}>
+                                {(isImportant && newEdit.Toggler) ? <Text style={{fontSize:20, fontWeight:"500"}}>Unmark as important</Text> : <Text style={{fontSize:20, fontWeight:"500"}}>Mark as important </Text>}
+                                {(isImportant && newEdit.Toggler) ? <MaterialIcons name="star-border" size={30} color="darkblue" />: <MaterialIcons name="star" size={30} color="darkblue" />}
                             </View>
                         </TouchableHighlight>
                     </View>

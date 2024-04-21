@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         elevation:6,
         shadowRadius:50,
-        marginBottom:10
+        marginBottom:5
     },
 
     highlight:{
@@ -31,8 +31,9 @@ const styles = StyleSheet.create({
 
     headview:{
         justifyContent:"space-around",
-        height:130,
-        marginBottom:10,
+        height:120,
+        marginBottom:5,
+    
     },
     subview:{
         flex:2,
@@ -125,16 +126,15 @@ const styles = StyleSheet.create({
 
     add:{
         borderRadius:50,
-        width:60,
-        height:60,
-        backgroundColor:"white",
+        width:90,
+        height:90,
+        backgroundColor:"rgba(1,1,1,0.2)",
         zIndex:2,
         position:"absolute",
-        bottom:15,
-        right:18,
+        bottom:10,
+        right:15,
         justifyContent:"center",
-        alignItems:"center"
-        
+        alignItems:"center",
     },
 
     addTaskText:{
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
 
     },
     addtaskview:{
-        marginTop:50,
+        marginTop:30,
         justifyContent:"center",
         alignItems:"center",
 
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius:10,
         borderBottomLeftRadius:10,
         paddingHorizontal:10,
-        paddingTop:5
+        paddingTop:8
     },
     dateDescrip:{
         flexDirection:"row",
