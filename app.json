@@ -4,7 +4,7 @@
     "slug": "To-Do",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon":  "./src/images/to-do-list.png",
+    "icon": "./src/images/to-do-list.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./src/images/to-do-list.png",
@@ -26,6 +26,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d52666c9-f210-4f05-8a5d-361222ceccf9"
+      }
     }
   }
 }

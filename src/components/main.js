@@ -14,7 +14,7 @@ const Stack = createNativeStackNavigator();
 const MainComponent= ()=> {
     return(
         <SafeAreaView style={styles.container}>
-            <StatusBar styles="auto"/>
+            <StatusBar  barStyle={"default"} showHideTransition={"fade"} hidden={false}/>
             <NavigationContainer>
                 <Stack.Navigator screenOptions={{headerTitleStyle:{fontWeight:"bold"}}}>
 

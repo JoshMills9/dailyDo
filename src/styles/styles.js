@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
 
     headview:{
         justifyContent:"space-around",
-        height:120,
-        marginBottom:5,
+        height:100,
+        marginBottom:20,
     
     },
     subview:{
@@ -55,8 +55,8 @@ const styles = StyleSheet.create({
         alignItems:"center",
     },
     Alarm:{    
-     
-       width:100
+       width:100,
+       marginRight:8
     },
     alarm:{
         flexDirection:"row",        
