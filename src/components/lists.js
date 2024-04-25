@@ -1,4 +1,4 @@
-import { Text, View, Image,FlatList, TouchableHighlight,Modal, TouchableOpacity, ImageBackground, Pressable, Alert, ScrollView } from "react-native";
+import { Text,ToastAndroid, View, Image,FlatList, TouchableHighlight,Modal, TouchableOpacity, ImageBackground, Pressable, Alert, ScrollView } from "react-native";
 import styles from "../styles/styles";
 import { useEffect, useState } from "react";
 import { Audio } from "expo-av";
@@ -110,8 +110,13 @@ const TodoLists=({navigation, route}) =>{
                     };
             
                     if (stopSound){
-                        const stop = async () => {await sound.stopAsync();
-                        alert("Alarm Stopped!")}
+                        const stop = async () => {if (sound !== null){
+                            await sound.stopAsync();
+                            function showToast() {
+                                ToastAndroid.show('Alarm Stopped Successfully!', ToastAndroid.LONG);
+                              };showToast() 
+                            }
+                            }
                         stop()
                
                     }else{
@@ -133,8 +138,13 @@ const TodoLists=({navigation, route}) =>{
                     };
                     
                     if (stopSound){
-                        const stop = async () => {await sound.stopAsync();
-                        alert("Alarm Stopped!")}
+                        const stop = async () => {if (sound !== null){
+                            await sound.stopAsync();
+                            function showToast() {
+                                ToastAndroid.show('Alarm Stopped Successfully!', ToastAndroid.LONG);
+                              };showToast() 
+                            }
+                            }
                         stop()
                
                     }else{
@@ -156,8 +166,13 @@ const TodoLists=({navigation, route}) =>{
                         }
                     };
                     if (stopSound){
-                        const stop = async () => {await sound.stopAsync();
-                        alert("Alarm Stopped!")}
+                        const stop = async () => {if (sound !== null){
+                            await sound.stopAsync();
+                            function showToast() {
+                                ToastAndroid.show('Alarm Stopped Successfully!', ToastAndroid.LONG);
+                              };showToast() 
+                            }
+                            }
                         stop()
                
                     }else{
@@ -180,10 +195,14 @@ const TodoLists=({navigation, route}) =>{
                         }
                     };
                     if (stopSound){
-                        const stop = async () => {await sound.stopAsync();
-                        alert("Alarm Stopped!")}
+                        const stop = async () => {if (sound !== null){
+                            await sound.stopAsync();
+                            function showToast() {
+                                ToastAndroid.show('Alarm Stopped Successfully!', ToastAndroid.LONG);
+                              };showToast() 
+                            }
+                            }
                         stop()
-               
                     }else{
                         loadSound();
                     }
@@ -204,8 +223,13 @@ const TodoLists=({navigation, route}) =>{
                     };
             
                     if (stopSound){
-                        const stop = async () => {await sound.stopAsync();
-                        alert("Alarm Stopped!")}
+                        const stop = async () => {if (sound !== null){
+                            await sound.stopAsync();
+                            function showToast() {
+                                ToastAndroid.show('Alarm Stopped Successfully!', ToastAndroid.LONG);
+                              };showToast() 
+                            }
+                            }
                         stop()
                
                     }else{
