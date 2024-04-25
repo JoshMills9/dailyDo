@@ -126,13 +126,13 @@ const styles = StyleSheet.create({
 
     add:{
         borderRadius:50,
-        width:90,
-        height:90,
-        backgroundColor:"rgba(1,1,1,0.2)",
+        width:60,
+        height:60,
+        backgroundColor:"white",
         zIndex:2,
         position:"absolute",
         bottom:10,
-        right:15,
+        right:18,
         justifyContent:"center",
         alignItems:"center",
     },

@@ -3,6 +3,13 @@ import styles from "../styles/styles";
 import { useEffect, useState } from "react";
 import { Audio } from "expo-av";
 import { BottomSheet } from 'react-native-btr';
+import Animated, {
+    useSharedValue,
+    withTiming,
+    useAnimatedStyle,
+    Easing,
+    
+  } from 'react-native-reanimated';
 
 
 import { Ionicons } from '@expo/vector-icons';
@@ -20,8 +27,7 @@ const TodoLists=({navigation, route}) =>{
         if ((header !== undefined || description !== undefined) && index === undefined) {
             // Add new item to the list
             setlist(prevList => [
-                ...prevList, 
-                { header, description, alarm, calendar, color, reminder, song , toggler}
+                { header, description, alarm, calendar, color, reminder, song , toggler}, ...prevList
             ]);
         } else if ((header !== undefined || description !== undefined || alarm !== undefined 
             || calendar !== undefined || color !== undefined || reminder !== undefined || song !== undefined || toggler !== undefined) && index !== undefined) {
@@ -47,7 +53,7 @@ const TodoLists=({navigation, route}) =>{
    
 
     useEffect(()=>{
-        setUsertime(prevList => [...prevList, {alarm,calendar}])
+        setUsertime(prevList => [{alarm,calendar}, ...prevList])
     },[alarm,calendar])
 
 
@@ -199,7 +205,7 @@ const TodoLists=({navigation, route}) =>{
                             await sound.stopAsync();
                             function showToast() {
                                 ToastAndroid.show('Alarm Stopped Successfully!', ToastAndroid.LONG);
-                              };showToast() 
+                              };showToast() ;
                             }
                             }
                         stop()
@@ -338,14 +344,7 @@ const TodoLists=({navigation, route}) =>{
             setIsImportant(true); // Toggle the state to show or hide important tasks
         };
 
-        //UseEffect to update stop sound state
-        useEffect(() => {
-            if (isUserTime !== normalTime){
-                setstopSound(false)
-            }
-        },[normalTime])
-        console.log(stopSound)
-        console.log(normalTime)
+
 
         //function to handle user choice from modal
         const handleOptionSelect = (option) => {
@@ -359,6 +358,7 @@ const TodoLists=({navigation, route}) =>{
                  handleToggleImportant();
             }else if (option === "Stop"){
                  setstopSound(true)
+                 setwiggle(false);
             }
             setIsPopupVisible(false)
         };
@@ -367,8 +367,49 @@ const TodoLists=({navigation, route}) =>{
    
         const complete= selectedIndexes.includes(del);
    
-    
-    
+
+        //add animation to flatlist view
+        
+        const translationX = useSharedValue(0);
+
+        const wiggleAnimation = () => {
+          translationX.value = withTiming(-10, { duration: 150, easing: Easing.linear }, () => {
+            translationX.value = withTiming(10, { duration: 150, easing: Easing.linear }, () => {
+              translationX.value = withTiming(0, { duration: 100, easing: Easing.linear });
+            });
+          });
+        };
+      
+        const animatedStyle = useAnimatedStyle(() => {
+          return {
+            transform: [{ translateX: translationX.value }],
+          };
+        });
+
+        const [wiggle, setwiggle] = useState(false);
+          //UseEffect to update stop sound state & wiggle state
+          useEffect(() => {
+            if (isUserTime !== normalTime){
+                setstopSound(false);
+                setwiggle(false)
+            }
+        },[normalTime])
+
+  
+        useEffect(()=>{
+            if(currentTimeIndex !== undefined){
+            setwiggle(true);
+           const interval = setInterval (() => {
+                wiggleAnimation();
+        }, 1000 * 1);
+
+        return (() =>{
+            clearInterval(interval)
+        })
+    }
+        },[currentTimeIndex])
+       
+
 
     return(
             <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={styles.bgImg}>
@@ -379,11 +420,6 @@ const TodoLists=({navigation, route}) =>{
                     return `${item.header.toString()}_${index}`;
                 }}
 
-                ListEmptyComponent={()=>{return(
-                    <View style={{flex:1,marginTop:300,justifyContent:"center",alignItems:"center"}}>
-                        <Text style={[styles.medtext,{color:"black", opacity:0.4}]}>add a To-Do</Text></View>
-                )}}
-
                 renderItem={({item, index})=> {
                     const selectedKey = index.toString(); // Generate unique key
                     const selected = selectedIndexes.includes(selectedKey); // Check if the item is selected
@@ -393,8 +429,72 @@ const TodoLists=({navigation, route}) =>{
 
                      <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
                         onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
-                            item.reminder,item.song,item.toggler); setDel(index.toString())}}>
+                            item.reminder,item.song,item.toggler); setDel(index.toString());}}>
 
+                     { (wiggle && index == currentTimeIndex) ? <Animated.View style={[styles.view,{backgroundColor: selected ? 'gray' : "midnightblue"}, animatedStyle]}>
+
+                        <View style={styles.subview}> 
+                            <View style={styles.headview}>
+                                <View style={{flexDirection:"row" , justifyContent:"space-between",marginTop:-6}}>
+                                    <View style={{width:270,height:60}}>
+                                        <Text style={styles.header} adjustsFontSizeToFit={true} numberOfLines={2}>
+                                            {item.header.length > 35 ? `${item.header.slice(0, 35)} .....` : item.header}
+                                        </Text>
+                                    </View>
+                
+                                    <View style={{height:80, justifyContent:"space-between",alignItems:"center",}}>
+                                        <View style={[styles.color, {backgroundColor: item.color, marginRight:-3 }]}></View>
+                                        { item.toggler ?
+                                        <View><MaterialIcons name="star" size={30} color="white" /></View> : null}
+                                    </View>
+                                    
+                                </View>
+                               
+                                <Text style={styles.description}>
+                                   {item.description.length > 35 ? `${item.description.slice(0, 35)} .....` : item.description}
+                                </Text>
+                            </View>
+        
+                            <View style={{flexDirection:"row", justifyContent:"space-between",alignItems:"center",}}>
+                                <Text style={styles.medtext}>
+                                   {item.calendar}
+                                </Text>
+
+                                <View style={styles.Alarm}>
+                                    
+                                    <View style={styles.alarm}>
+                                        <Text style={[styles.text, {fontSize:20,marginRight:8, alignSelf:"center", flex:1}]} adjustsFontSizeToFit={true} numberOfLines={1}>{item.song}</Text>
+                                        <Image style={styles.img} source={require("../images/music.png")}/>
+                                    </View>
+
+                                    <View style={styles.alarm1}>
+                                        <Text style={styles.text}>{item.reminder}</Text>
+                                        <Image style={styles.img} source={require("../images/bell.png")}/>
+                                    </View>
+
+                                </View>
+                             </View>
+
+                             <View style={{ flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+                                {(currentTimeIndex === index) ? 
+                                    <View style={[styles.timeview,  {backgroundColor:"orangered"}]}>
+                                        <Image style={ {tintColor:"white", height:20,width:20}} source={require("../images/clock.png")}/>
+                                        <Text style={{fontSize:24, fontWeight:500, color:"white"}}>{item.alarm}</Text>
+                                    </View>
+                                :   <View style={[styles.timeview,{backgroundColor: selected ? "darkgray" : "white"}]}>
+                                        <Image style={ {tintColor:selected? "white": "black", height:20,width:20}} source={require("../images/clock.png")}/>
+                                        <Text style={{fontSize:24, fontWeight:500, color: selected ? "white" : "black"}}>{item.alarm}</Text>
+                                    </View>
+                                }
+                                <View style={{ width:150,height:40, alignItems:"flex-end", justifyContent:"center",marginRight:8}}>
+                                    <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.text,{fontSize:14, fontWeight:"500"}]}>
+                                        Status: {selected ? <Text style={[styles.text,{fontSize:13, fontWeight:"bold", color:"lightgreen" }]}>COMPLETED</Text> : <Text style={[styles.text,{fontSize:12,fontWeight:"400", color:"lightgray"}]}>PENDING</Text>}</Text>
+                                </View>
+                             </View>
+                        </View>
+                        
+                     </Animated.View>
+                     :
                      <View style={[styles.view,{backgroundColor: selected ? 'gray' : "midnightblue"}]}>
 
                         <View style={styles.subview}> 
@@ -458,15 +558,76 @@ const TodoLists=({navigation, route}) =>{
                         </View>
                         
                      </View>
+                     }
                 </Pressable>
 
                 :
                 
-                item.header && <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
+                (item.header) && <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
                         onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
                             item.reminder,item.song,item.toggler); setDel(index.toString())}}>
 
-                    <View style={[styles.container, { marginTop:15,marginBottom:5}]}>
+                { (wiggle && index == currentTimeIndex) ? <Animated.View  style={[styles.container, { marginTop:15,marginBottom:5}, animatedStyle]}>
+                            <View style={[{width:"100%",paddingHorizontal:20,paddingVertical:10,elevation:6,borderRadius:30,shadowRadius:50,backgroundColor: selected ? 'gray' : "midnightblue"}]}>
+                                <View style={styles.compheader}>
+                                    <View style={styles.title}>
+                                        <Text style={[styles.header,{fontSize:25}]} adjustsFontSizeToFit={true} numberOfLines={1}>
+                                            {item.header.length > 20 ? `${item.header.slice(0, 20)} .....` : item.header}
+                                        </Text>
+                                    </View>
+                                    <View style={[styles.color, {backgroundColor: item.color , width:25,height:25, marginLeft:5}]}></View>
+                                </View>
+                                <View style={[styles.dateDescrip, { justifyContent:"space-between",marginTop:8,}]}>
+                                    <View>
+                                        <Text style={[styles.medtext,  { fontSize:15}]}>
+                                            {item.calendar}
+                                        </Text>
+                                    </View>
+
+                                    <View style={[styles.Alarm, {width:80,marginRight:4}]}>
+                                    
+                                    <View style={[styles.alarm,{width:80}]}>
+                                        <Text style={[styles.text, {fontSize:13, alignSelf:"center", flex:1}]} adjustsFontSizeToFit={true} numberOfLines={1}>{item.song}</Text>
+                                        <Image style={[styles.img,{width:16,height:16}]} source={require("../images/music.png")}/>
+                                    </View>
+
+                                    <View style={styles.alarm1}>
+                                        <Text style={styles.text}>{item.reminder}</Text>
+                                        <Image style={[styles.img,{width:18,height:18}]} source={require("../images/bell.png")}/>
+                                    </View>
+
+                                </View>
+                                 
+                                  
+                                </View>
+                                <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center" }}>
+                                
+                                {(currentTimeIndex === index) ? 
+                                    <View style={[styles.timeview,  {backgroundColor:"orangered", width:120, height:25}]}>
+                                        <Image style={ {tintColor:"white", height:15,width:15}} source={require("../images/clock.png")}/>
+                                        <Text style={{fontSize:15, fontWeight:"500", color:"white"}}>{item.alarm}</Text>
+                                    </View>
+                                :   <View style={[styles.timeview,{backgroundColor: selected ? "darkgray" : "white", width:120, height:25}]}>
+                                        <Image style={ {tintColor:selected? "white": "black", height:15,width:15}} source={require("../images/clock.png")}/>
+                                        <Text style={{fontSize:15, fontWeight:"500", color: selected ? "white" : "black"}}>{item.alarm}</Text>
+                                    </View>
+                                }
+                                    <View>
+                                        <View style={{ width:150,height:40, alignItems:"flex-end", justifyContent:"center",marginRight:5}}>
+                                            <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.text,{fontSize:14, fontWeight:"500"}]}>
+                                            Status: {selected ? <Text style={[styles.text,{fontSize:13, fontWeight:"bold", color:"lightgreen" }]}>COMPLETED</Text> : <Text style={[styles.text,{fontSize:12,fontWeight:"400", color:"lightgray"}]}>PENDING</Text>}</Text>
+                                        </View>
+                                    </View>
+
+                                    {(item.toggler)   ?
+                                        <View ><MaterialIcons name="star" size={25} color="white" /></View> : null}
+                                    
+                                        
+                                </View>
+                            </View>
+                        </Animated.View>
+                        :
+                        <View  style={[styles.container, { marginTop:15,marginBottom:5}]}>
                             <View style={[{width:"100%",paddingHorizontal:20,paddingVertical:10,elevation:6,borderRadius:30,shadowRadius:50,backgroundColor: selected ? 'gray' : "midnightblue"}]}>
                                 <View style={styles.compheader}>
                                     <View style={styles.title}>
@@ -525,19 +686,18 @@ const TodoLists=({navigation, route}) =>{
                                 </View>
                             </View>
                         </View>
+                }
                     </Pressable>
 
                 )
                 }}
             />
 
-            <View style={styles.add}>
-                <TouchableOpacity style={{width:60,height:60,position:"absolute",backgroundColor:"white",borderRadius:50,alignItems:"center",justifyContent:"center", elevation:6}} onPress={() => navigation.navigate("Add New Task")}>
+                <TouchableOpacity style={styles.add}  onPress={() => navigation.navigate("Add New Task")}>
                     <View>
                         <Ionicons name="add" size={25} color="black" />
                     </View>
                 </TouchableOpacity>
-            </View>
 
             {(isPopupVisible && del) &&  (
                    <BottomSheet
@@ -551,7 +711,7 @@ const TodoLists=({navigation, route}) =>{
                  
                  <View style={{flex:1,padding:15}}>
                         {/*view to display item selected*/}
-                   { newEdit && ( 
+                  {/* { newEdit && ( 
                     <View style={[styles.container, { paddingVertical:5,justifyContent:"flex-end",marginBottom:265 }]}>
                         <View style={styles.CompletedView}>
                             <View style={styles.compheader}>
@@ -593,6 +753,7 @@ const TodoLists=({navigation, route}) =>{
                         </View>
                     </View>
                     )}
+            */}
 
                     <View style={styles.popup}>
 
@@ -619,12 +780,12 @@ const TodoLists=({navigation, route}) =>{
                             </View>
                         </TouchableHighlight>
 
-                        <TouchableHighlight onPress={() => {handleOptionSelect('Important'); toggleImportant(del)}} underlayColor="#ccc" style={{width:"100%",borderBottomWidth: 1,borderBottomColor: '#ccc'}}>
+                        {/*<TouchableHighlight onPress={() => {handleOptionSelect('Important'); toggleImportant(del)}} underlayColor="#ccc" style={{width:"100%",borderBottomWidth: 1,borderBottomColor: '#ccc'}}>
                              <View style={{ flexDirection: "row", alignItems: "center", justifyContent:"space-between",justifyContent:"space-between",padding:10, }}>
                                 {(isImportant && newEdit.Toggler) ? <Text style={{fontSize:20, fontWeight:"500"}}>Unmark as important</Text> : <Text style={{fontSize:20, fontWeight:"500"}}>Mark as important </Text>}
                                 {(isImportant && newEdit.Toggler) ? <MaterialIcons name="star-border" size={30} color="darkblue" />: <MaterialIcons name="star" size={30} color="darkblue" />}
                             </View>
-                        </TouchableHighlight>
+                        </TouchableHighlight>*/}
                         
                         <TouchableHighlight onPress={() => handleOptionSelect('Stop')} underlayColor="#ccc" style={{width:"100%",borderBottomRightRadius:10,borderBottomLeftRadius:10}} disabled={currentTimeIndex === newEdit.Index ? false : true}>
                              <View style={{ flexDirection: "row", alignItems: "center", justifyContent:"space-between",justifyContent:"space-between",padding:10, }}>

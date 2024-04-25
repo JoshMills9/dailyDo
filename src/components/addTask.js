@@ -168,7 +168,7 @@ const AddTask = ({navigation}) => {
 
                         <Switch
                                 trackColor={{false: 'gray', true: '#81b0ff'}}
-                                thumbColor={isEnabled ? 'midnightblue' : 'white'}
+                                thumbColor={isEnabled ? 'white' : 'white'}
                                 ios_backgroundColor="#3e3e3e"
                                 onValueChange={toggleSwitch}
                                 value={isEnabled}
