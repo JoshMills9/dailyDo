@@ -145,7 +145,7 @@ const TodoLists=({navigation, route}) =>{
                               };showToast() 
                             }
                             }
-                        stop()
+                        stop();
                
                     }else{
                         loadSound();
