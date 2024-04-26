@@ -4,10 +4,10 @@
     "slug": "To-Do",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/images/to-do-list.png",
+    "icon": "./src/images/todo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./src/images/to-do-list.png",
+      "image": "./src/images/todo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/images/to-do-list.png",
+        "foregroundImage": "./src/images/todo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.joshmills.ToDo"
