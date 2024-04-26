@@ -92,7 +92,7 @@ const AddTask = ({navigation}) => {
     };
 
     return (
-        <View style={styles.bgImg}>
+        <View style={[styles.container, {paddingHorizontal:15}]}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "padding"}>
                 <ScrollView>
                     

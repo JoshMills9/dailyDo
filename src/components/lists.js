@@ -412,7 +412,7 @@ const TodoLists=({navigation, route}) =>{
 
 
     return(
-            <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={styles.bgImg}>
+            <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={styles.container}>
             <FlatList
                 data={list}
                 keyExtractor={(item, index) => {
@@ -568,7 +568,7 @@ const TodoLists=({navigation, route}) =>{
                             item.reminder,item.song,item.toggler); setDel(index.toString())}}>
 
                 { (wiggle && index == currentTimeIndex) ? <Animated.View  style={[styles.container, { marginTop:15,marginBottom:5}, animatedStyle]}>
-                            <View style={[{width:"100%",paddingHorizontal:20,paddingVertical:10,elevation:6,borderRadius:30,shadowRadius:50,backgroundColor: selected ? 'gray' : "midnightblue"}]}>
+                            <View style={[{width:"93%",alignSelf:"center",paddingHorizontal:20,paddingVertical:10,elevation:6,borderRadius:30,shadowRadius:50,backgroundColor: selected ? 'gray' : "midnightblue"}]}>
                                 <View style={styles.compheader}>
                                     <View style={styles.title}>
                                         <Text style={[styles.header,{fontSize:25}]} adjustsFontSizeToFit={true} numberOfLines={1}>
@@ -628,7 +628,7 @@ const TodoLists=({navigation, route}) =>{
                         </Animated.View>
                         :
                         <View  style={[styles.container, { marginTop:15,marginBottom:5}]}>
-                            <View style={[{width:"100%",paddingHorizontal:20,paddingVertical:10,elevation:6,borderRadius:30,shadowRadius:50,backgroundColor: selected ? 'gray' : "midnightblue"}]}>
+                            <View style={[{width:"93%",alignSelf:"center",paddingHorizontal:20,paddingVertical:10,elevation:6,borderRadius:30,shadowRadius:50,backgroundColor: selected ? 'gray' : "midnightblue"}]}>
                                 <View style={styles.compheader}>
                                     <View style={styles.title}>
                                         <Text style={[styles.header,{fontSize:25}]} adjustsFontSizeToFit={true} numberOfLines={1}>
@@ -704,8 +704,8 @@ const TodoLists=({navigation, route}) =>{
                         visible={isPopupVisible}
                         onBackButtonPress={togglePopup}
                         onBackdropPress={togglePopup}
-                        duration={300} // Adjust animation duration as needed
-                        elevation={8} // Adjust elevation for shadow effect
+                        duration={500} // Adjust animation duration as needed
+                        elevation={10} // Adjust elevation for shadow effect
                         style={{borderRadius: 10,  }}
                     >
                  

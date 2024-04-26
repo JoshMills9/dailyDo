@@ -4,17 +4,14 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
 
     container:{
-        flex:1,
-           
+        flex:1,   
     },
-    bgImg:{
-        flex:1,
-        paddingHorizontal:15
-    },
+
     view:{
         marginTop:15,
         backgroundColor:"midnightblue",
-        width:"100%",
+        alignSelf:"center",
+        width:"93%",
         minHeight:200,
         borderRadius:40,
         padding:20,
@@ -278,7 +275,7 @@ const styles = StyleSheet.create({
 
     popup: {
         position: 'absolute',
-        bottom:10,
+        bottom:8,
         left: 15,
         right: 15,
         backgroundColor: 'white',

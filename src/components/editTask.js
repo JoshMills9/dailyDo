@@ -97,7 +97,7 @@ const EditTask = ({navigation,route}) => {
 
 
     return (
-        <View style={styles.bgImg}>
+        <View style={[styles.container,{paddingHorizontal:15}]}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : null}>
                 <ScrollView style={{flexGrow:1}}>
                     
@@ -172,8 +172,8 @@ const EditTask = ({navigation,route}) => {
                         <Text style={[styles.medtext, {fontSize:20,fontWeight:"500",color:"black"}]}>Mark as Important?</Text>
 
                         <Switch
-                                trackColor={{false: 'darkgray', true: '#81b0ff'}}
-                                thumbColor={isEnabled ? 'navy' : 'gray'}
+                                trackColor={{false: 'gray', true: '#81b0ff'}}
+                                thumbColor={isEnabled ? 'white' : 'white'}
                                 ios_backgroundColor="#3e3e3e"
                                 onValueChange={toggleSwitch}
                                 value={isEnabled}
