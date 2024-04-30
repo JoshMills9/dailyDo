@@ -167,7 +167,7 @@ const EditTask = ({navigation,route}) => {
                         
                     </View>
 
-                    <View style={[styles.colors,{marginTop:20,justifyContent:"space-between",paddingHorizontal:15}]}>
+                   {/* <View style={[styles.colors,{marginTop:20,justifyContent:"space-between",paddingHorizontal:15}]}>
 
                         <Text style={[styles.medtext, {fontSize:20,fontWeight:"500",color:"black"}]}>Mark as Important?</Text>
 
@@ -180,7 +180,8 @@ const EditTask = ({navigation,route}) => {
                                 style={{ transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }] }}
                             />
                     </View>
-                    
+                    */}
+
                     <View style={styles.addtaskview}> 
                         <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>Edit Task</Text></TouchableOpacity>
                     </View>

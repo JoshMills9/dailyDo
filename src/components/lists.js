@@ -1,4 +1,4 @@
-import { Text,ToastAndroid, View, Image,FlatList, TouchableHighlight,Modal, TouchableOpacity, ImageBackground, Pressable, Alert, ScrollView } from "react-native";
+import { Text,ToastAndroid, View, Image,FlatList, TouchableHighlight,Modal, TouchableOpacity, ImageBackground, Pressable, Alert, ScrollView, Button } from "react-native";
 import styles from "../styles/styles";
 import { useEffect, useState } from "react";
 import { Audio } from "expo-av";
@@ -11,7 +11,11 @@ import Animated, {
     
   } from 'react-native-reanimated';
 
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
+import { FontAwesome } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -40,7 +44,7 @@ const TodoLists=({navigation, route}) =>{
             });
         }
     }, [header, description, alarm, calendar, color, reminder,song, index,toggler]);
-    
+
 
     
     const [usertime, setUsertime] = useState([]);
@@ -315,6 +319,13 @@ const TodoLists=({navigation, route}) =>{
             // Update the state with the modified list
             setlist(updatedList);
         };
+
+        const AlertDelete = (index) =>{
+                Alert.alert("Caution!!", "Do you want to delete this List?", [
+                  {text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: 'cancel'},
+                  {text: "Yes", onPress: () =>  deleteList(index)}
+                ])
+        }
         
             //function to show priority
         const [isImportant, setIsImportant] = useState(null);
@@ -351,7 +362,7 @@ const TodoLists=({navigation, route}) =>{
             if (option === "Edit") {
                 navigation.navigate("Edit Task", newEdit);
             } else if (option === "Delete") {
-                deleteList(del);
+                AlertDelete(del);
             } else if (option === "Completed") {
                 completed(del); // Pass the selected index (del) to the completed function
             }else if (option === "Important"){
@@ -359,6 +370,8 @@ const TodoLists=({navigation, route}) =>{
             }else if (option === "Stop"){
                  setstopSound(true)
                  setwiggle(false);
+            }else if(option === "Share"){
+                //shareTodoList(share);
             }
             setIsPopupVisible(false)
         };
@@ -407,8 +420,59 @@ const TodoLists=({navigation, route}) =>{
             clearInterval(interval)
         })
     }
-        },[currentTimeIndex])
+        },[currentTimeIndex]);
+
+        //function to share a task
+      
+        const shareTask = (index) =>{
+            const shareList = [...list];
+            const share = [shareList[index]]; 
+            if (share !== undefined){
+                shareTodoList(share)
+            }
+        }
        
+
+        const formatTodoList = (share) => {
+
+            if (share.length === 1) {
+                const formattedTextArray = share.map((item) => `******** My Task ********** \nHeader: ${item.header}\nDescription: ${item.description}\nAlarm: ${item.alarm}\nCalendar: ${item.calendar}`);
+                const formattedText = formattedTextArray.join('\n\n'); 
+                return formattedText;
+            } else if (share.length > 1) {
+                const formattedTextArray = share.map((item, index) => `Task ${index + 1}: \nHeader: ${item.header}\nDescription: ${item.description}\nAlarm: ${item.alarm}\nCalendar: ${item.calendar}`);
+                const formattedText = formattedTextArray.join('\n\n'); // Join formatted texts with double line breaks
+                return formattedText;
+            }
+        };
+        
+    
+        const shareTodoList = async (share) => {
+            try {
+                console.log(share)
+                if (share.length === 0) {
+                    console.warn('The todo list is empty. Nothing to share.');
+                    return; // Exit early if the list is empty
+                }
+        
+                const todoListText = formatTodoList(share);
+                const fileUri = FileSystem.cacheDirectory + 'todo_list.txt';
+        
+                await FileSystem.writeAsStringAsync(fileUri, todoListText);
+                await Sharing.shareAsync(fileUri);
+            } catch (error) {
+                console.error('Sharing failed:', error);
+                // Display an error message to the user
+                Alert.alert('Error', 'Failed to share todo list. Please try again later.');
+            }
+        };
+        //useEffect to share all tasks
+        useEffect(() =>{
+            navigation.setOptions({
+                headerRight: () =>{
+                    return(<TouchableOpacity onPress={() => shareTodoList(list)}><EvilIcons name="share-apple" size={40} color="black" /></TouchableOpacity>)
+                }  })
+        },[navigation,list])
 
 
     return(
@@ -786,6 +850,15 @@ const TodoLists=({navigation, route}) =>{
                                 {(isImportant && newEdit.Toggler) ? <MaterialIcons name="star-border" size={30} color="darkblue" />: <MaterialIcons name="star" size={30} color="darkblue" />}
                             </View>
                         </TouchableHighlight>*/}
+
+                        <TouchableHighlight onPress={() => {handleOptionSelect('Share'); shareTask(newEdit.Index)}} underlayColor="#ccc">
+
+                        <View style={{ flexDirection: "row", alignItems: "center" ,justifyContent:"space-between",padding:10, borderBottomWidth: 1,borderBottomColor: '#ccc',}}>
+                            <Text style={{fontSize:20, fontWeight:"500"}}>Share</Text>
+                            <FontAwesome name="share-square-o" size={25} color="darkblue" />
+                        </View>
+
+                        </TouchableHighlight>
                         
                         <TouchableHighlight onPress={() => handleOptionSelect('Stop')} underlayColor="#ccc" style={{width:"100%",borderBottomRightRadius:10,borderBottomLeftRadius:10}} disabled={currentTimeIndex === newEdit.Index ? false : true}>
                              <View style={{ flexDirection: "row", alignItems: "center", justifyContent:"space-between",justifyContent:"space-between",padding:10, }}>
