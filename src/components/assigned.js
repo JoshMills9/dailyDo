@@ -29,6 +29,7 @@ const Assigned = ({ route }) => {
                     const tasks = querySnapshot.docs.map(doc => doc.data());
                     setAssignedTasks(tasks);
                 } else {
+                    alert('No assigned tasks found for user:' + userEmail)
                     console.log('No assigned tasks found for user:', userEmail);
                 }
             } catch (error) {
