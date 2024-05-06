@@ -11,13 +11,17 @@ import Animated, {
     
   } from 'react-native-reanimated';
 
+import { FAB,Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
+import { getAuth, onAuthStateChanged,signOut } from 'firebase/auth';
+
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 
-import { FontAwesome } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+
+
 
 const TodoLists=({navigation, route}) =>{
 
@@ -320,12 +324,22 @@ const TodoLists=({navigation, route}) =>{
             setlist(updatedList);
         };
 
-        const AlertDelete = (index) =>{
-                Alert.alert("Caution!!", "Do you want to delete this List?", [
-                  {text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: 'cancel'},
-                  {text: "Yes", onPress: () =>  deleteList(index)}
-                ])
-        }
+
+            const [visible, setVisible] = useState(false);
+            const [deleteIndex, setDeleteIndex] = useState(null);
+
+            const showDialog = (index) => {
+                setVisible(true);
+                setDeleteIndex(index);
+            };
+
+            const hideDialog = () => setVisible(false);
+
+            const handleDelete = () => {
+                deleteList(deleteIndex);
+                hideDialog();
+            };
+        
         
             //function to show priority
         const [isImportant, setIsImportant] = useState(null);
@@ -362,7 +376,7 @@ const TodoLists=({navigation, route}) =>{
             if (option === "Edit") {
                 navigation.navigate("Edit Task", newEdit);
             } else if (option === "Delete") {
-                AlertDelete(del);
+                showDialog(del);
             } else if (option === "Completed") {
                 completed(del); // Pass the selected index (del) to the completed function
             }else if (option === "Important"){
@@ -395,7 +409,7 @@ const TodoLists=({navigation, route}) =>{
       
         const animatedStyle = useAnimatedStyle(() => {
           return {
-            transform: [{ translateX: translationX.value }],
+            transform: [{ translateX: translationX.value}],
           };
         });
 
@@ -472,11 +486,67 @@ const TodoLists=({navigation, route}) =>{
                 headerRight: () =>{
                     return(<TouchableOpacity onPress={() => shareTodoList(list)}><EvilIcons name="share-apple" size={40} color="black" /></TouchableOpacity>)
                 }  })
-        },[navigation,list])
+        },[navigation,list]);
 
+       const [open, setOpen] = useState(false);
+
+    
+       const [user, setUser] = useState(null);
+        
+        //useEffect to get login user
+       const auth = getAuth();
+
+       useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userEmail = user.email;
+                setUser(userEmail); // Set user email in state
+                console.log('User email:', userEmail);
+            } else {
+                setUserEmail(null); // Set user state to null when user is signed out
+                console.log('No user signed in');
+            }
+        });
+
+        // Clean up subscription
+        return () => unsubscribe();
+    }, [auth]); // Include auth in the dependency array
+
+
+    const handleSignOut = () => {
+        signOut(auth)
+            .then(() => {
+                // Sign-out successful.
+                console.log("User signed out successfully");
+            })
+            .catch((error) => {
+                // An error happened.
+                console.error("Error signing out user:", error);
+            });
+    }
 
     return(
-            <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={styles.container}>
+            <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={[styles.container]}>
+            <PaperProvider>
+                {visible &&
+            <Portal>
+                <Dialog visible={visible} onDismiss={hideDialog}>
+                    <Dialog.Icon icon="alert" size={30}/>
+                    <Dialog.Title style={{alignSelf:'center', fontWeight:"bold"}}>Caution!!</Dialog.Title>
+                    <Dialog.Content>
+                        <Text style={{alignSelf:'center', fontSize:16}}>Do you want to delete this task?</Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <View style={{flexDirection:"row", justifyContent:"space-evenly", width:100}}>
+                            <TouchableOpacity onPress={hideDialog}><Text style={{alignSelf:'center', fontSize:16}}>Cancel</Text></TouchableOpacity> 
+                            <TouchableOpacity  onPress={handleDelete}><Text style={{alignSelf:'center', fontSize:16}}>Yes</Text></TouchableOpacity> 
+                        </View>
+                        
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
+            }
+            
             <FlatList
                 data={list}
                 keyExtractor={(item, index) => {
@@ -495,7 +565,7 @@ const TodoLists=({navigation, route}) =>{
                         onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
                             item.reminder,item.song,item.toggler); setDel(index.toString());}}>
 
-                     { (wiggle && index == currentTimeIndex) ? <Animated.View style={[styles.view,{backgroundColor: selected ? 'gray' : "midnightblue"}, animatedStyle]}>
+                     { (wiggle && index == currentTimeIndex) ? <Animated.View style={[styles.view,{backgroundColor: selected ? 'gray' : 'midnightblue'}, animatedStyle]}>
 
                         <View style={styles.subview}> 
                             <View style={styles.headview}>
@@ -757,11 +827,34 @@ const TodoLists=({navigation, route}) =>{
                 }}
             />
 
-                <TouchableOpacity style={styles.add}  onPress={() => navigation.navigate("Add New Task")}>
+            </PaperProvider>
+                 <FAB.Group
+                    open={open}
+                    
+                    icon={open ? 'close' : 'pencil'}
+                    backdropColor="rgba(255, 255, 255, 0.8)"
+                    actions={[
+                            { icon: 'plus', color:'darkblue', style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress: () => {navigation.navigate("Add New Task"); setOpen(open)} },
+                            { icon: 'account-plus',label:"Assign", color:"darkblue", style:{backgroundColor:"white", marginLeft:-15, borderRadius:50}, onPress: () => {navigation.navigate("Assign Task",{ userEmail: user }); setOpen(open)} },
+                            { icon: 'bell', label:"Assigned", color:"darkblue", style:{backgroundColor:"white", marginLeft:-15, borderRadius:50}, onPress: () => {navigation.navigate("Assigned",{ userEmail: user }); setOpen(open)} },
+                            { icon: 'account', color:'darkblue',label:"SignOut", style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress:  () => {handleSignOut(); navigation.navigate("Login")} },
+                        ]}
+                    onStateChange={({ open }) => setOpen(open)}
+                    onPress={() => setOpen(true)}
+                    color="darkblue"
+                   variant="surface"
+                   fabStyle={{backgroundColor:"white", borderRadius:50}}
+                    
+                />
+                
+                
+              
+                {/*<TouchableOpacity style={styles.add}  onPress={() => navigation.navigate("Add New Task")}>
                     <View>
                         <Ionicons name="add" size={25} color="black" />
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity>*/}
+
 
             {(isPopupVisible && del) &&  (
                    <BottomSheet
@@ -855,7 +948,7 @@ const TodoLists=({navigation, route}) =>{
 
                         <View style={{ flexDirection: "row", alignItems: "center" ,justifyContent:"space-between",padding:10, borderBottomWidth: 1,borderBottomColor: '#ccc',}}>
                             <Text style={{fontSize:20, fontWeight:"500"}}>Share</Text>
-                            <FontAwesome name="share-square-o" size={25} color="darkblue" />
+                            <MaterialCommunityIcons name="share" size={30} color="darkblue" />
                         </View>
 
                         </TouchableHighlight>

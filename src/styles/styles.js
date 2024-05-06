@@ -4,7 +4,22 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
 
     container:{
-        flex:1,   
+        flex:1, 
+    },
+
+    loginView:{
+        flex:1,
+        alignItems:"center",
+        paddingHorizontal:20
+    },
+
+    mainLogin:{
+        width:"100%",
+        backgroundColor:"midnightblue",
+        padding:18,
+        borderRadius:30,
+        elevation:7,
+        shadowRadius:30,  
     },
 
     view:{

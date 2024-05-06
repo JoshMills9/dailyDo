@@ -5,7 +5,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/images/todo.png",
-    "userInterfaceStyle": "light",
+    "expo": {
+      "userInterfaceStyle": "automatic"
+    },
     "splash": {
       "image": "./src/images/todo.png",
       "resizeMode": "contain",
