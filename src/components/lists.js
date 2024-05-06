@@ -885,7 +885,7 @@ const TodoLists=({navigation, route}) =>{
                                     <IconButton icon="bell" iconColor="darkblue" size={23} style={{alignSelf:"center",justifyContent:"center", position:"absolute",top:-10}}/>
                                   </View>
                                 ),
-                                label: "Received Task",
+                                label: "Notification",
                                 style:{backgroundColor:"white",marginLeft:-15,borderRadius:50,},
                                 onPress: () => 
                                     {navigation.navigate("Assigned",{ userEmail: user }); setOpen(open); setAssignedTasks(false) }},

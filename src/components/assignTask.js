@@ -8,7 +8,13 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { FAB,Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
-
+import Animated, {
+    useSharedValue,
+    withTiming,
+    useAnimatedStyle,
+    Easing,
+    
+  } from 'react-native-reanimated';
 
 
 const AssignTask = ({navigation,route}) => {
@@ -216,7 +222,28 @@ const AssignTask = ({navigation,route}) => {
             hideDialog();
         };
     
+        
+        // Define a shared value for animation
+    const translationY = useSharedValue(-500);
+     console.log(translationY.value)
+    // Function to trigger the animation
+    const wiggleAnimation = () => {
+        if(translationY.value === -500){
+            translationY.value = withTiming(0, { duration: 300, easing: Easing.linear }, );
+            console.log(translationY.value)
+        }else{
+            translationY.value = withTiming(-800, { duration: 150, easing: Easing.linear}, ()=>{
+                translationY.value = withTiming(0, { duration: 300, easing: Easing.linear}, );
+            });
+        }
+    };
 
+    // Define animated style
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ translateY: translationY.value }],
+        };
+    });
 
     return (
         <PaperProvider>
@@ -232,7 +259,7 @@ const AssignTask = ({navigation,route}) => {
                
                     style={{ height:40, width:50 }}
                   
-                    onValueChange={(value)=> {setSelectedValue(value);setSearchQuery(value); setshowView(true); setShowAssigned(false)}}
+                    onValueChange={(value)=> {setSelectedValue(value);setSearchQuery(value); setshowView(true); setShowAssigned(false); wiggleAnimation()}}
                 >
                      <Picker.Item label="--Select User--" value={null} />
                 {users.map((user) => (
@@ -244,11 +271,11 @@ const AssignTask = ({navigation,route}) => {
            
 
             {enabled && (
-                
+                <View style={{flex:50}}>
                 <FlatList
                     data={emailsWithUsername.filter(user => (user.email && user.username ) && (user.email && user.username).toLowerCase().includes(searchQuery.toLowerCase()))}
                     renderItem={({ item }) => (
-                        <TouchableHighlight onPress={()=> {setSearchQuery(item.email);setSelectedValue(item.email); setEnabled(false);setshowView(true)}} underlayColor="transparent" >
+                        <TouchableHighlight onPress={()=> {setSearchQuery(item.email);setSelectedValue(item.email); setEnabled(false);setshowView(true); wiggleAnimation()}} underlayColor="transparent" >
                             <View style={{margin:10,backgroundColor:"white",flex:1,padding:10, elevation:9, }}>
                                 <View style={{flexDirection:"row",alignItems:"center",}}> 
                                     <Avatar.Text size={40} labelStyle={{fontSize:18, alignSelf:"center", fontWeight:"600"}} label={item.email[0].toUpperCase()}/>
@@ -263,15 +290,16 @@ const AssignTask = ({navigation,route}) => {
                     )}
                     
                     keyExtractor={(item) => item.id}
-                    style={{ flex: 1 }} // Take up all available space for scrolling
+                    style={{ flex: 50}} // Take up all available space for scrolling
                 />
+                </View>
                
            )}
 
         <ScrollView>
            {showview && 
            
-           <View style={{flex:1, backgroundColor:"royalblue", marginTop:20, borderRadius:20, padding:15, }}>
+           <Animated.View style={[animatedStyle, {flex:3, backgroundColor:"royalblue", marginTop:90, borderRadius:20, padding:15, elevation:9}]}>
                 
                 <View style={{flexDirection:"row" , justifyContent:"space-around",alignItems:"center"}}>
                     <View style={{flexDirection:"row"}}>
@@ -301,7 +329,7 @@ const AssignTask = ({navigation,route}) => {
                 <View style={styles.addtaskview}> 
                         <TouchableOpacity onPress={() => {assignTask(selectedValue || searchQuery); setAssigned(true); setSearchQuery("");setaddTask("");setdescrip("");setshowView(false); setShowAssigned(true);}} style={[styles.addtaskbtn,{width:150, height:55,backgroundColor:"white", elevation:6}]}><Text style={[styles.addbtn,{fontSize:20,color:"royalblue"}]}>Assign Task</Text></TouchableOpacity>
                 </View>
-           </View>
+           </Animated.View>
             }
              {show && (<DateTimePicker testID="dateTimePicker" value={date} mode={mode} 
                 is24Hour={false} display={display} onChange={onChange}/>
