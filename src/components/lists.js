@@ -11,8 +11,9 @@ import Animated, {
     
   } from 'react-native-reanimated';
 
-import { FAB,Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
+import { FAB,Portal,Provider as PaperProvider , Dialog , Badge,Icon, IconButton} from 'react-native-paper';
 import { getAuth, onAuthStateChanged,signOut } from 'firebase/auth';
+import { getFirestore, collection, getDocs,where,query} from 'firebase/firestore';
 
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
@@ -20,6 +21,7 @@ import * as FileSystem from 'expo-file-system';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import AssignTask from "./assignTask";
 
 
 
@@ -525,6 +527,41 @@ const TodoLists=({navigation, route}) =>{
             });
     }
 
+
+    const [assignedTasks, setAssignedTasks] = useState(false);
+    const [numberOfTasks, setNumOfTask] = useState(null)
+    console.log(numberOfTasks)
+    const db = getFirestore();
+
+    //useEffect to get assigned tasks from db
+    useEffect(() => {
+        const fetchAssignedTasks = async () => {
+            try {
+                // Construct a reference to the 'tasks' collection
+                const tasksCollectionRef = collection(db, 'users');
+                
+                // Query the tasks collection for documents where the 'assignedTo' field is equal to userEmail
+                const querySnapshot = await getDocs(query(tasksCollectionRef, where("assigned", "==", user)));
+                if (!querySnapshot.empty) {
+                    // If documents are found, extract their data and update the state with the tasks
+                    const tasks = querySnapshot.docs.map(doc => doc.data());
+                    const newTask = [];
+                    newTask.push(tasks)
+                    const lenght = newTask.length
+                    setNumOfTask(lenght)
+                    setAssignedTasks(true);
+                } else {
+                    console.log('No assigned tasks found for user:', user);
+                }
+            } catch (error) {
+                console.error('Error receiving assigned tasks:', error);
+            }
+        };
+    
+        // Call fetchAssignedTasks when the component mounts or when db or userEmail change
+        fetchAssignedTasks();
+    }, [db, user]);
+
     return(
             <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={[styles.container]}>
             <PaperProvider>
@@ -835,9 +872,27 @@ const TodoLists=({navigation, route}) =>{
                     backdropColor="rgba(255, 255, 255, 0.8)"
                     actions={[
                             { icon: 'plus', color:'darkblue', style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress: () => {navigation.navigate("Add New Task"); setOpen(open)} },
-                            { icon: 'account-plus',label:"Assign", color:"darkblue", style:{backgroundColor:"white", marginLeft:-15, borderRadius:50}, onPress: () => {navigation.navigate("Assign Task",{ userEmail: user }); setOpen(open)} },
-                            { icon: 'bell', label:"Assigned", color:"darkblue", style:{backgroundColor:"white", marginLeft:-15, borderRadius:50}, onPress: () => {navigation.navigate("Assigned",{ userEmail: user }); setOpen(open)} },
-                            { icon: 'account', color:'darkblue',label:"SignOut", style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress:  () => {handleSignOut(); navigation.navigate("Login")} },
+                            { icon: 'account-plus',label:"Assign Task", color:"darkblue", style:{backgroundColor:"white", marginLeft:-15, borderRadius:50}, onPress: () => {navigation.navigate("Assign Task",{ userEmail: user }); setOpen(open)} },
+                            {
+                                icon: () => (
+                                  <View>
+                                    {assignedTasks && <Badge
+                                     size={16}
+                                     style={{position:"absolute", right:-5}}
+                                      badgeStyle={{ backgroundColor: "red"}} // Adjust badge style as needed
+                                    >{numberOfTasks}</Badge>
+                                    }
+                                    <IconButton icon="bell" iconColor="darkblue" size={23} style={{alignSelf:"center",justifyContent:"center", position:"absolute",top:-10}}/>
+                                  </View>
+                                ),
+                                label: "Received Task",
+                                style:{backgroundColor:"white",marginLeft:-15,borderRadius:50,},
+                                onPress: () => 
+                                    {navigation.navigate("Assigned",{ userEmail: user }); setOpen(open); setAssignedTasks(false) }},
+                                    
+
+                            { icon: 'account', color:'darkblue',label:"Log Out", style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress:  () => {handleSignOut(); navigation.navigate("Login")} },
+                            
                         ]}
                     onStateChange={({ open }) => setOpen(open)}
                     onPress={() => setOpen(true)}
@@ -847,7 +902,7 @@ const TodoLists=({navigation, route}) =>{
                     
                 />
                 
-                
+                {assignedTasks &&  <Badge style={{position:"absolute", bottom:50,right:22}} size={8} /> }
               
                 {/*<TouchableOpacity style={styles.add}  onPress={() => navigation.navigate("Add New Task")}>
                     <View>

@@ -42,21 +42,25 @@ const Login = ({navigation, route}) =>{
         handleAddData();
         setSignUpEmail('');
         setSignUpPassword('');
-        setLogin(true)
+        navigation.navigate("To-Do List");
       } catch (error) {
+        setError(error.message)
         showDialog();
         console.error('Error signing up:' , error);
       }
     }
 
+    const [error,setError] = useState("")
+    console.log(error)
   // Function to log in a user
   const Login = async () => {
     try {
       await signInWithEmailAndPassword(auth, signUpEmail, signUpPassword)
+      navigation.navigate("To-Do List");
     } catch (error) {
+      setError(error.message)
       showDialog()
     }
-    navigation.navigate("To-Do List");
     setAnimate(false)
   };
 
@@ -133,9 +137,9 @@ const Login = ({navigation, route}) =>{
             <Portal>
                 <Dialog visible={isVisible} onDismiss={hideDialog}>
                     <Dialog.Icon icon="alert" size={30}/>
-                    <Dialog.Title style={{alignSelf:'center', fontWeight:"bold"}}>{login? "Oops!..Login Failed": "Sign Up Failed!"}</Dialog.Title>
+                    <Dialog.Title style={{alignSelf:'center', fontWeight:"bold"}}>{login? error : error}</Dialog.Title>
                     <Dialog.Content>
-                        <Text style={{alignSelf:'center', fontSize:16}}>{login? "User Not Found!..Please Sign Up instead.": "Error Creating User Account!"}</Text>
+                        <Text style={{alignSelf:'center', fontSize:16}}>{login? error : error}</Text>
                     </Dialog.Content>
                     <Dialog.Actions>
   
@@ -183,7 +187,7 @@ const Login = ({navigation, route}) =>{
                 </View>
 
                 <View style={{marginTop:20, flexDirection:"row", justifyContent:"space-around"}}>
-                    <TouchableOpacity onPress={() => {login ? Login() : SignUp(); setAnimate(true)}} style={{backgroundColor:"white", width:200, padding:10,borderRadius:10}}><Text style={{fontSize:18,fontWeight:"600", alignSelf:"center"}}>{login ? "Login" : "Sign Up"}</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={() => {login ? (Login(), setAnimate(true) ): SignUp()}} style={{backgroundColor:"white", width:200, padding:10,borderRadius:10}}><Text style={{fontSize:18,fontWeight:"600", alignSelf:"center"}}>{login ? "Login" : "Sign Up"}</Text></TouchableOpacity>
                 </View>
 
                 <View style={{marginTop:20, flexDirection:"row", alignItems:"center",justifyContent:"center"}}>
