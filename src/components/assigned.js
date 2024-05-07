@@ -11,6 +11,7 @@ const Assigned = ({ route }) => {
     const [assignedTasks, setAssignedTasks] = useState([]);
     console.log(assignedTasks)
     const [isVisible, setIsVisible] = useState(false);
+    const [pressed, setpressed] = useState(false)
 
 
     const db = getFirestore();
@@ -74,35 +75,38 @@ const Assigned = ({ route }) => {
 
 
     return (
+
+
         <PaperProvider>
         <View style={{flex:1,padding:10}}>
 
              {assignedTasks.map((task, index) => (
-                    <Pressable onPress={()=> setIsVisible(true)}>
-                        <View style={{width:"100%",alignSelf:"center", backgroundColor:"white",borderBottomWidth:1,borderBottomColor:"lightgray",padding:6, elevation:9 , borderRadius:15}}>
-                            <View style={{marginBottom:15,backgroundColor:"",flexDirection:"row",alignItems:"center", justifyContent:"flex-start",}}>
-                                <View style={{width:16,height:16, borderRadius:100,backgroundColor:"royalblue" ,marginRight:50}}></View>
+                 
+            <Pressable onLongPress={()=> {setpressed(true);showDialog(index)}} onPress={()=> setIsVisible(true)} >
+                    <View style={[{ width:"100%",alignSelf:"center", backgroundColor:"white",borderBottomWidth:1,borderBottomColor:"lightgray",padding:6, elevation: pressed ? 0 : 6,marginVertical:10,marginHorizontal:20,borderRadius:15,}]}>
+                        
+                        <View style={{marginBottom:15,backgroundColor:"",flexDirection:"row",alignItems:"flex-start", justifyContent:"space-between",}}>
+                            <View style={{width:16,height:16, borderRadius:50,backgroundColor: task.assignedTask.color }}></View>
+                            
+                            <View>
                                 <Text style={{fontWeight:"300"}}>From: {<FontAwesome6 name="circle-user" size={12} color="gray" />} {task.assignedTask.from}</Text>
-                            </View>
-                            <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
-                                <View style={{flex:1,marginLeft:20,}}>
-                                    <Text style={{fontSize:18, fontWeight:"bold"}}>{isVisible ? task.assignedTask.title : task.assignedTask.title.length > 20 ? `${task.assignedTask.title.slice(0, 20)} ...` : task.assignedTask.title }</Text>
-                                </View>
-
-                                <View style={{width:100}}>
-                                    <Text style={{fontSize:10}} >{task.assignedTask.date}</Text>
-                                </View>
-                            </View>
-
-                            <View style={{marginLeft:20, flexDirection:"row", alignItems:"center"}}>
-                                <View style={{flex:1}}>
-                                    <Text style={{fontSize:16, fontWeight:"300"}} >{isVisible ? task.assignedTask.description : task.assignedTask.description.length > 30 ? `${task.assignedTask.description.slice(0, 30)} ...` : task.assignedTask.description }</Text>
-                                </View>
-                                <TouchableOpacity onPress={()=> showDialog(index)}><Image style={[styles.delete,{width:30,height:30}]}  source={require("../images/trash.png")}/></TouchableOpacity>
+                                <Text style={{fontSize:11, alignSelf:"center",fontWeight:"300"}} >{task.assignedTask.date}</Text>
                             </View>
                             
+                            <Text style={{fontWeight:"300"}}>{task.assignedTask.time}</Text>
                         </View>
-                    </Pressable>
+
+                            <View style={{marginLeft:20,}}>
+                                <Text style={{fontSize:18, fontWeight:"bold"}}>{isVisible ? task.assignedTask.title : task.assignedTask.title.length > 20 ? `${task.assignedTask.title.slice(0, 20)} ...` : task.assignedTask.title }</Text>
+                            </View>
+
+                            <View style={{marginLeft:20,marginTop: 5}}>
+                                 <Text style={{fontSize:16, fontWeight:"300"}}>{task.assignedTask.description}</Text>
+                            </View>
+                     
+                        
+                    </View>
+                </Pressable>
                 ))}
            
            {visible &&

@@ -305,6 +305,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
       },
+      
 
 });
 

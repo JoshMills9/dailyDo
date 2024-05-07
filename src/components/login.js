@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, KeyboardAvoidingView,TouchableOpacity, Image , ScrollView} from "react-native";
-import styles from "../styles/styles";
-import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebaseConfig";
-import { ActivityIndicator, HelperText } from "react-native-paper";
+import { View, Text, TextInput, KeyboardAvoidingView,TouchableOpacity, Image , SafeAreaView} from "react-native";
+import styles from "../styles/signupStyles";
+import { FIREBASE_AUTH, } from "../../firebaseConfig";
+import {  HelperText } from "react-native-paper";
 import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
 import Animated, {
     useSharedValue,
@@ -11,44 +11,20 @@ import Animated, {
     Easing,
     
   } from 'react-native-reanimated';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import {  signInWithEmailAndPassword } from "firebase/auth";
 
-const Login = ({navigation, route}) =>{
 
-    const [users , setUsers]= useState([])
+
+const Login = ({navigation, }) =>{
+
+  
     const [signUpEmail, setSignUpEmail] = useState('');
     const [signUpPassword, setSignUpPassword] = useState("");
     const [login, setLogin] = useState(false);
     const auth = FIREBASE_AUTH;
-    const db = getFirestore();
+    
 
-    const handleAddData = async () => {
-      // Write data to Firebase Realtime Database
-      const usersCollectionRef = collection(db, 'users'); // Reference to 'users' collection
-      const newUserRef = await addDoc(usersCollectionRef, {
-        email: signUpEmail,
-        password: signUpPassword
-      });
-      console.log(newUserRef)
-    };
-
-
-         // Function to sign up a user
-  const SignUp = async () => {
-      try {
-        await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword)
-        alert('Please check your emails for verification!');
-        handleAddData();
-        setSignUpEmail('');
-        setSignUpPassword('');
-        navigation.navigate("To-Do List");
-      } catch (error) {
-        setError(error.message)
-        showDialog();
-        console.error('Error signing up:' , error);
-      }
-    }
+  
 
     const [error,setError] = useState("")
     console.log(error)
@@ -129,11 +105,56 @@ const Login = ({navigation, route}) =>{
     const [animate, setAnimate] = useState(false)
 
     return(
-      <KeyboardAvoidingView style={{flex:1}} behavior="height">
-        <PaperProvider>
-        <ScrollView contentContainerStyle={{height:680}}>
-           <View style ={styles.loginView}>
-           {isVisible &&
+      <PaperProvider>
+      <View style={styles.container}>
+       
+      <SafeAreaView>
+    
+        <Image source={require('../images/login.png')} style={styles.logo} />
+        <View style={styles.account}>
+          <Text style={styles.title}>Log In</Text>
+          <View style={styles.inputConLogIn}>
+            <TextInput
+              style={[styles.input, { color: 'black' }]}
+              placeholder="Enter your gmail"
+              placeholderTextColor={'black'}
+              value={signUpEmail}
+              onChangeText={searchQueryHandler}
+            />
+            <HelperText type="error" visible={enabled}>
+                        {enabled ? "Email address is invalid! ": ""}
+            </HelperText>
+
+            <TextInput
+              style={[styles.input, { color: 'black' }]}
+              placeholder="Enter your password"
+              placeholderTextColor={'black'}
+              value={signUpPassword}
+              onChangeText={(text) => setSignUpPassword(text)}
+              secureTextEntry={true}
+            />
+
+            <TouchableOpacity
+              style={styles.customBotton}
+              onPress={()=> Login()}
+            >
+              <Text style={styles.textt}>Log In</Text>
+            </TouchableOpacity>
+            <View style={styles.signupContainer}>
+              <Text style={styles.signText}>Don't have an account? </Text>
+
+              <TouchableOpacity
+                onPress={() => navigation.navigate('SignUp')}
+              >
+                <Text style={[styles.signText, styles.signupLink]}>
+                  SignUp Here
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        {isVisible &&
             <Portal>
                 <Dialog visible={isVisible} onDismiss={hideDialog}>
                     <Dialog.Icon icon="alert" size={30}/>
@@ -149,59 +170,11 @@ const Login = ({navigation, route}) =>{
                 </Dialog>
             </Portal>
             }
-     
-            {animate? (
-            <View style={{flex:1, alignItems:"center",justifyContent:"center", flexDirection:"row"}}>
-               <Image style={{width:80,height:80}} source={require("../images/todo.png")}/>
-              <Text style={{fontSize:18}}>
-                Please wait...
-              </Text>
-            </View>
-            
-            )
-            :
-
-           (
-            <>
-            <View>
-               <Image style={{width:150,height:150,marginTop:80}} source={require("../images/todo.png")}/>
-            </View>
-            <Animated.View style={[styles.mainLogin, animatedStyle]}>
-
-                <View style={{justifyContent:"flex-start", alignItems:"center", flexDirection:"row"}}>
-                    <View style={{width:25,height:25,backgroundColor:"white",borderRadius:50, marginRight:10}}></View>
-                    <Text style= {[styles.header,{color:"cyan",fontSize:25}]}>{login ? "Login" : "Sign Up"}</Text>
-                </View>
-
-                <View style={{marginTop:30,}}>
-                    <Text style={{fontSize:16, color:"white", fontWeight:"600"}}>Email</Text>
-                    <TextInput style={{marginTop:10,borderRadius:10,color:"white", fontSize:16, width:"100%",borderColor:"white",borderWidth:1,padding:10,paddingHorizontal:20}} value={signUpEmail} onChangeText={searchQueryHandler} placeholderTextColor={"white"}  placeholder="Enter your email..." />
-                    <HelperText type="error" visible={enabled}>
-                        {enabled ? "Email address is invalid! ": ""}
-                    </HelperText>
-                </View>
-
-                <View style={{marginTop:5, }}>
-                    <Text style={{fontSize:16, color:"white",fontWeight:"600"}}>Password</Text>
-                    <TextInput style={{marginTop:10,borderRadius:10,color:"white",fontSize:16, width:"100%",borderColor:"white",borderWidth:1,padding:10,paddingHorizontal:20}} value={signUpPassword} onChangeText={(text) => setSignUpPassword(text)} placeholderTextColor={"white"} placeholder="Enter your password..." secureTextEntry = {true}/>
-                </View>
-
-                <View style={{marginTop:20, flexDirection:"row", justifyContent:"space-around"}}>
-                    <TouchableOpacity onPress={() => {login ? (Login(), setAnimate(true) ): SignUp()}} style={{backgroundColor:"white", width:200, padding:10,borderRadius:10}}><Text style={{fontSize:18,fontWeight:"600", alignSelf:"center"}}>{login ? "Login" : "Sign Up"}</Text></TouchableOpacity>
-                </View>
-
-                <View style={{marginTop:20, flexDirection:"row", alignItems:"center",justifyContent:"center"}}>
-                    <Text style={{fontSize:12,color:"white"}}>{login ? "Don't have an account...? " : "Already have an account...?" }</Text><TouchableOpacity onPress={() => {login ? (setSignUpEmail(""), setSignUpPassword(''),  setLogin(false) ) : (setSignUpEmail(""), setSignUpPassword(''), setLogin(true))}} ><Text style={{fontSize:14,fontWeight:"600",  color:"cyan"}}>{login ? " Sign up" : " Login"} </Text></TouchableOpacity><Text style={{fontSize:12,color:"white"}}>{login? "here!" :"instead!" }</Text>
-                </View>
-            </Animated.View>
-           </>)
-             }
-           
-            </View>
-          </ScrollView>
-        </PaperProvider>
-      </KeyboardAvoidingView>
-        
+ 
+      </SafeAreaView>
+   
+    </View>
+    </PaperProvider>   
     )
 };
 

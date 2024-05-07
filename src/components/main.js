@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 
 import { EvilIcons } from '@expo/vector-icons';
 
+
+import SignUp from './signup';
 import Login from './login';
 import TodoLists from "./lists";
 import AddTask from "./addTask";
@@ -12,11 +14,8 @@ import EditTask from './editTask';
 import AssignTask from './assignTask';
 import Assigned from './assigned';
 
-import { SafeAreaView, StatusBar, Appearance, useColorScheme, TouchableOpacity } from 'react-native';
+import { SafeAreaView, StatusBar,  TouchableOpacity } from 'react-native';
 import styles from '../styles/styles';
-import { FIREBASE_AUTH } from '../../firebaseConfig';
-import { onAuthStateChanged } from 'firebase/auth';
-
 
 
 
@@ -25,14 +24,24 @@ const Stack = createNativeStackNavigator();
 const MainComponent= ()=> {
 
 
-
 return(
     <SafeAreaView style={[styles.container]}>
         <StatusBar  barStyle={"default"} showHideTransition={"fade"} hidden={false}/>
         <NavigationContainer>
-            <Stack.Navigator screenOptions={{headerTitleStyle:{fontWeight:"bold"}}}>
+            <Stack.Navigator screenOptions={{headerTitleStyle:{fontWeight:"bold"}}} initialRouteName='LogInScreen'>
 
-            <Stack.Screen name='Login' component={Login} options={{headerShown:false}}/>
+                <Stack.Screen 
+                    name="SignUp" 
+                    component={SignUp} 
+                    options={{ headerShown: false}} 
+                />
+
+                <Stack.Screen 
+                    name="LogInScreen" 
+                    component={Login} 
+                    options={{ headerShown: false}} 
+                />
+            
 
               <Stack.Screen 
                     name="To-Do List" 
@@ -53,6 +62,8 @@ return(
                 <Stack.Screen name="Assign Task" component={AssignTask} />
                 
                 <Stack.Screen name="Assigned" component={Assigned} />
+
+             
 
             </Stack.Navigator>
         </NavigationContainer>

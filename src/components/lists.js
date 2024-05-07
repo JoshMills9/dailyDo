@@ -494,7 +494,7 @@ const TodoLists=({navigation, route}) =>{
 
     
        const [user, setUser] = useState(null);
-        
+        console.log(user)
         //useEffect to get login user
        const auth = getAuth();
 
@@ -520,6 +520,7 @@ const TodoLists=({navigation, route}) =>{
             .then(() => {
                 // Sign-out successful.
                 console.log("User signed out successfully");
+                navigation.navigate("LogInScreen")
             })
             .catch((error) => {
                 // An error happened.
@@ -530,7 +531,7 @@ const TodoLists=({navigation, route}) =>{
 
     const [assignedTasks, setAssignedTasks] = useState(false);
     const [numberOfTasks, setNumOfTask] = useState(null)
-    console.log(numberOfTasks)
+    console.log(assignedTasks)
     const db = getFirestore();
 
     //useEffect to get assigned tasks from db

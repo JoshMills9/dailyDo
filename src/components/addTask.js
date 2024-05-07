@@ -1,13 +1,30 @@
 import { Image, KeyboardAvoidingView,  Platform,Switch,ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from "../styles/styles";
-import { useState ,} from "react";
+import { useEffect, useState ,} from "react";
 import {Picker} from '@react-native-picker/picker';
 
 
 
 
-const AddTask = ({navigation}) => {
+const AddTask = ({navigation, onPress, assignTitle, assignDescrip, assignColor,calendar,time}) => {
+   
+   const [Assign, setAssign] = useState(false)
+    useEffect(() => {
+        if(onPress !== undefined){
+            setAssign(true)
+        }
+    },[onPress])
+
+    const handlePress = () => {
+        if (Array.isArray(onPress)) {
+            onPress.forEach(({ callback, args }) => {
+                callback(...args); // Call each callback function with its arguments
+            });
+        }
+    };
+
+
 
     //state to update header input
     const [addTask, setaddTask] = useState("");
@@ -43,14 +60,14 @@ const AddTask = ({navigation}) => {
     }
 
     const formattedDate = `${dayOfWeek}, ${dayOfMonth}${suffix} ${monthOfYear}, ${year}`;
-    
+    calendar(formattedDate)
 
     let hour = date.getHours();
     const amOrPm = hour < 12 ? 'AM' : 'PM';
     hour = hour % 12 || 12;
     
     const formattedTime = `${hour}:${String(date.getMinutes()).padStart(2, '0')} ${amOrPm}`;
-    
+    time(formattedTime)
 
     const showMode = (currentMode) => {
         setShow(true);
@@ -97,22 +114,22 @@ const AddTask = ({navigation}) => {
                 <ScrollView>
                     
                     <View>
-                        <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => setaddTask(text)}  placeholder="Add Heading" />
+                        <TextInput style={styles.headingtext} value={addTask} onChangeText={(text) => {setaddTask(text); assignTitle(text)}}  placeholder="Add Heading" />
                     </View>
                    
                    
                     <View>
-                        <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => setdescrip(text)} placeholder="Add a short description" />
+                        <TextInput style={styles.descriptext} value={adddescrip} multiline={true} onChangeText={(text) => {setdescrip(text); assignDescrip(text)}} placeholder="Add a short description" />
                     </View>
                    
                    
                         <View style={styles.colors}>
-                            <TouchableOpacity  onPress={() => setColor("red")} style={[styles.pallets, Color==="red"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"red", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
-                            <TouchableOpacity  onPress={() => setColor("yellow")} style={[styles.pallets, Color==="yellow"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"yellow", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
-                            <TouchableOpacity  onPress={() => setColor("black")} style={[styles.pallets, Color==="black"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"black", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
-                            <TouchableOpacity  onPress={() => setColor("magenta")} style={[styles.pallets, Color==="magenta"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"magenta", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
-                            <TouchableOpacity  onPress={() => setColor("green")} style={[styles.pallets, Color==="green"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"green", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
-                            <TouchableOpacity  onPress={() => setColor("cyan")} style={[styles.pallets, Color==="cyan"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"cyan", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                            <TouchableOpacity  onPress={() => {setColor("red"),assignColor("red")}} style={[styles.pallets, Color==="red"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"red", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                            <TouchableOpacity  onPress={() => {setColor("yellow"); assignColor("yellow")}} style={[styles.pallets, Color==="yellow"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"yellow", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                            <TouchableOpacity  onPress={() => {setColor("black"); assignColor("black")}} style={[styles.pallets, Color==="black"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"black", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                            <TouchableOpacity  onPress={() => {setColor("magenta"); assignColor("magenta")}} style={[styles.pallets, Color==="magenta"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"magenta", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                            <TouchableOpacity  onPress={() => {setColor("green"); assignColor("green")}} style={[styles.pallets, Color==="green"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"green", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
+                            <TouchableOpacity  onPress={() => {setColor("cyan"); assignColor("cyan")}} style={[styles.pallets, Color==="cyan"? {elevation:5, backgroundColor:"white"}: "" ]} ><View style={[{backgroundColor:"cyan", width:30,height:30, borderRadius:50}]}></View></TouchableOpacity>
                         </View>
                      
                     <View style={styles.ac}>
@@ -179,7 +196,7 @@ const AddTask = ({navigation}) => {
                     */}
 
                     <View style={styles.addtaskview}> 
-                        <TouchableOpacity onPress={() => navigation.navigate("To-Do List", obj)} style={styles.addtaskbtn}><Text style={styles.addbtn}>Add Task</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => {Assign? handlePress()  :navigation.navigate("To-Do List", obj)}} style={styles.addtaskbtn}><Text style={styles.addbtn}>{Assign? "Assign Task" : "Add Task"}</Text></TouchableOpacity>
                     </View>
                    
                 </ScrollView>
