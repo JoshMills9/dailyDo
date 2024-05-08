@@ -90,7 +90,7 @@ const AssignTask = ({navigation,route, }) => {
      useEffect(() => {
          const assignTask = async (Email) => {
             try {
-                const user = users.find(user => user.email === Email);
+                const user = users.find(user => user.userDetails.email === Email);
                 if (user) {
                     const userDocRef = doc(db, 'users', user.id); // Assuming 'id' is the document ID of the user
         
@@ -103,7 +103,7 @@ const AssignTask = ({navigation,route, }) => {
                             color: Color,
                             time: Time
                         },
-                        assigned: user.email
+                        assigned: user.userDetails.email
                         
                     });
         
