@@ -32,7 +32,7 @@ const AssignTask = ({navigation,route, }) => {
     const [Time, setTime] = useState("")
     const [data,setData] = useState([]);
     const [showAssinged, setShowAssigned] = useState(false);
-    console.log(Task)
+    console.log(usernames)
 
     const [assiged, setAssigned] = useState(false)
     const [pressed, setpressed] = useState(false)
@@ -127,19 +127,27 @@ const AssignTask = ({navigation,route, }) => {
         const getUsernamesFromEmails = () => {
             if (users && users.length > 0) {
                 const extractedUsernames = users.map(user => {
-                    // Split the email address by '@' symbol
-                    const parts = user.email.split('@');
-                    // The username is the first part of the email
-                    return parts[0];
+                    if (user.userDetails && user.userDetails.email) {
+                        // Split the email address by '@' symbol
+                        const parts = user.userDetails.email.split('@');
+                        // The username is the first part of the email
+                        return parts[0];
+                    } else {
+                        return ''; // Return an empty string if email or userDetails is undefined
+                    }
                 });
-
-                setUsernames(extractedUsernames);
+    
+                // Filter out empty strings to ensure only valid usernames are included
+                const validUsernames = extractedUsernames.filter(username => username !== '');
+    
+                setUsernames(validUsernames);
                 // Do something with the extracted usernames if needed
             }
         }
-
+    
         getUsernamesFromEmails();
     }, [users]);
+    
 
     //useeffect to add usernames to users object
     useEffect(() => {

@@ -13,7 +13,7 @@ import Animated, {
 
 import { FAB,Portal,Provider as PaperProvider , Dialog , Badge, Avatar, IconButton} from 'react-native-paper';
 import { getAuth, onAuthStateChanged,signOut ,deleteUser} from 'firebase/auth';
-import { getFirestore, collection, getDocs,where,query, FieldValue,doc, updateDoc, deleteField} from 'firebase/firestore';
+import { getFirestore, collection, getDocs,where,query,doc, updateDoc, deleteField} from 'firebase/firestore';
 
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
@@ -31,7 +31,8 @@ const TodoLists=({navigation, route}) =>{
     //destructuring the route params
     const {header,description, alarm, calendar, color, reminder,song, index, toggler} = route.params || {};
     //state to handle list
-    const [list , setlist] = useState([])   
+    const [list , setlist] = useState([])  
+ 
     
     //using useEffect hook to automatically update the list with the properties header, description , alarm, calendar , color, reminder, song
     useEffect(() => {
