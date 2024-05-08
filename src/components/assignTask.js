@@ -271,8 +271,9 @@ const AssignTask = ({navigation,route, }) => {
                     assignTitle={handleInputTitle}
                     assignDescrip={handleInputDecrip}
                     assignColor={(value) => setColor(value)}
-                    calendar={(value) => setFormattedDate(value)}
-                    time={(value) => setTime(value)}
+                    Calendar={(value) => setFormattedDate(value)}
+                    time ={(value) => setTime(value)}
+                    
                 />
 
 

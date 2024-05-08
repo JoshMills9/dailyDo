@@ -7,7 +7,7 @@ import {Picker} from '@react-native-picker/picker';
 
 
 
-const AddTask = ({navigation, onPress, assignTitle, assignDescrip, assignColor,calendar,time}) => {
+const AddTask = ({navigation, onPress, assignTitle, assignDescrip, assignColor,Calendar,time}) => {
    
    const [Assign, setAssign] = useState(false)
     useEffect(() => {
@@ -60,14 +60,15 @@ const AddTask = ({navigation, onPress, assignTitle, assignDescrip, assignColor,c
     }
 
     const formattedDate = `${dayOfWeek}, ${dayOfMonth}${suffix} ${monthOfYear}, ${year}`;
-    calendar(formattedDate)
+    () => Calendar(formattedDate)
 
     let hour = date.getHours();
     const amOrPm = hour < 12 ? 'AM' : 'PM';
     hour = hour % 12 || 12;
     
     const formattedTime = `${hour}:${String(date.getMinutes()).padStart(2, '0')} ${amOrPm}`;
-    time(formattedTime)
+     () => time(formattedTime)
+    
 
     const showMode = (currentMode) => {
         setShow(true);
