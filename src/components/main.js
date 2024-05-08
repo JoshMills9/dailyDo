@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { useState, useEffect } from 'react';
 
 import { EvilIcons } from '@expo/vector-icons';
-
+import { FontAwesome6 } from '@expo/vector-icons';
 
 import SignUp from './signup';
 import Login from './login';
@@ -47,11 +47,6 @@ return(
                     name="To-Do List" 
                     component={TodoLists} 
                     options={({navigation, route }) => ({headerBackVisible: false,
-                        headerRight: () => (
-                            <TouchableOpacity>
-                                <EvilIcons name="share-apple" size={40} color="black" />
-                            </TouchableOpacity>
-                        ),
                     })}
                 /> 
 

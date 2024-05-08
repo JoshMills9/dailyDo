@@ -1,6 +1,6 @@
-import { Text,ToastAndroid, View, Image,FlatList, TouchableHighlight,Modal, TouchableOpacity, ImageBackground, Pressable, Alert, ScrollView, Button } from "react-native";
+import { Text,ToastAndroid, View, Image,FlatList,DrawerLayoutAndroid, TouchableHighlight,Modal, TouchableOpacity, ImageBackground, Pressable, Alert, ScrollView, Button } from "react-native";
 import styles from "../styles/styles";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import { BottomSheet } from 'react-native-btr';
 import Animated, {
@@ -11,18 +11,19 @@ import Animated, {
     
   } from 'react-native-reanimated';
 
-import { FAB,Portal,Provider as PaperProvider , Dialog , Badge,Icon, IconButton} from 'react-native-paper';
-import { getAuth, onAuthStateChanged,signOut } from 'firebase/auth';
+import { FAB,Portal,Provider as PaperProvider , Dialog , Badge, Avatar, IconButton} from 'react-native-paper';
+import { getAuth, onAuthStateChanged,signOut ,deleteUser} from 'firebase/auth';
 import { getFirestore, collection, getDocs,where,query} from 'firebase/firestore';
 
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { EvilIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
+import { Fontisto } from '@expo/vector-icons';
 import AssignTask from "./assignTask";
-
+import { AntDesign } from '@expo/vector-icons';
 
 
 const TodoLists=({navigation, route}) =>{
@@ -424,7 +425,7 @@ const TodoLists=({navigation, route}) =>{
             }
         },[normalTime])
 
-  
+        //useeffect to wiggle animation
         useEffect(()=>{
             if(currentTimeIndex !== undefined){
             setwiggle(true);
@@ -482,19 +483,47 @@ const TodoLists=({navigation, route}) =>{
                 Alert.alert('Error', 'Failed to share todo list. Please try again later.');
             }
         };
-        //useEffect to share all tasks
-        useEffect(() =>{
+
+        const [a, setActive] = useState('');
+
+        const drawer = useRef(null);
+        //function to render drawer view
+        const navigationView = () => (
+            <View style={[styles.container, {backgroundColor:"#ecf0f1", padding:10}]}>
+
+              <View style={{alignItems:"center", justifyContent:"center",}}>
+                <View><Avatar.Icon size={50} icon="account" /></View>
+                <Text style={{fontSize:18, marginTop:10}}>{Username}</Text>
+              </View>
+
+              <View></View>
+              <View></View>
+              <View style={{flex:1,justifyContent:"flex-end"}}>
+                <TouchableOpacity onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:20, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => deleteUserAccount()} style={{width:"100%",flexDirection:"row", marginTop:20,marginBottom:10,justifyContent:"center", alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:18, color:"red"}}> Delete Account</Text></TouchableOpacity>
+              </View>
+              
+            </View>
+          );
+        //useEffect to handle drawer
+        useEffect(() => {
             navigation.setOptions({
-                headerRight: () =>{
-                    return(<TouchableOpacity onPress={() => shareTodoList(list)}><EvilIcons name="share-apple" size={40} color="black" /></TouchableOpacity>)
-                }  })
-        },[navigation,list]);
+              headerRight: () => (
+                <TouchableOpacity onPress={() => drawer.current.openDrawer()}>
+                    <Fontisto name="nav-icon-list-a" size={20} color="black" />
+                </TouchableOpacity>
+              ),
+            });
+          }, [navigation]);
+{/*<TouchableOpacity onPress={() => {handleSignOut();  navigation.navigate("LogInScreen")}}><Entypo name="user" size={25} color="black" /></TouchableOpacity>*/}
 
-       const [open, setOpen] = useState(false);
 
-    
+       const [open, setOpen] = useState(false); 
        const [user, setUser] = useState(null);
+       const [Username, setUserName] = useState("")
         console.log(user)
+
+
         //useEffect to get login user
        const auth = getAuth();
 
@@ -503,7 +532,12 @@ const TodoLists=({navigation, route}) =>{
             if (user) {
                 const userEmail = user.email;
                 setUser(userEmail); // Set user email in state
-                console.log('User email:', userEmail);
+                const parts = userEmail.split('@');
+                const username = parts[0]
+                const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1)
+                setUserName(capitalizedUsername)    
+
+
             } else {
                 setUserEmail(null); // Set user state to null when user is signed out
                 console.log('No user signed in');
@@ -515,6 +549,32 @@ const TodoLists=({navigation, route}) =>{
     }, [auth]); // Include auth in the dependency array
 
 
+
+        // Function to delete user
+        const deleteUserAccount = async () => {
+            const user = auth.currentUser;
+
+            try {
+                // Check if user is signed in
+                if (user) {
+                    // Delete the user
+                    await deleteUser(user);
+                    Alert.alert("---- dailyDo ----",'User account deleted successfully.');
+                    navigation.navigate("LogInScreen")
+                } else {
+                    // User is not signed in
+                    console.log('No user signed in.');
+                }
+            } catch (error) {
+                // Handle error
+                console.error('Error deleting user:', error.message);
+                // Display error message to the user or handle it appropriately
+            }
+        };
+
+
+
+    //function to signout user
     const handleSignOut = () => {
         signOut(auth)
             .then(() => {
@@ -563,8 +623,28 @@ const TodoLists=({navigation, route}) =>{
         fetchAssignedTasks();
     }, [db, user]);
 
+
+
+
+
+
+
+
+
     return(
             <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={[styles.container]}>
+            
+            <DrawerLayoutAndroid
+                ref={drawer}
+                drawerWidth={200}
+                drawerPosition="left"
+                renderNavigationView={navigationView}
+                drawerBackgroundColor={"transparent"}
+                style={{width:400}}
+                onDrawerClose={() => drawer.current.closeDrawer()}
+               
+                >
+
             <PaperProvider>
                 {visible &&
             <Portal>
@@ -866,15 +946,23 @@ const TodoLists=({navigation, route}) =>{
             />
 
             </PaperProvider>
+
+
+       
+            
+            
                  <FAB.Group
                     open={open}
                     
                     icon={open ? 'close' : 'pencil'}
                     backdropColor="rgba(255, 255, 255, 0.8)"
                     actions={[
-                            { icon: 'plus', color:'darkblue', style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress: () => {navigation.navigate("Add New Task"); setOpen(open)} },
-                            { icon: 'account-plus',label:"Assign Task", color:"darkblue", style:{backgroundColor:"white", marginLeft:-15, borderRadius:50}, onPress: () => {navigation.navigate("Assign Task",{ userEmail: user }); setOpen(open)} },
-                            {
+                            
+                        { icon: 'plus', color:'darkblue', style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress: () => {navigation.navigate("Add New Task"); setOpen(open)} },
+                            
+                        { icon: 'account-plus',label:"Assign Task", color:"darkblue", style:{backgroundColor:"white", marginLeft:-15, borderRadius:50}, onPress: () => {navigation.navigate("Assign Task",{ userEmail: user }); setOpen(open)} },
+                            
+                        {
                                 icon: () => (
                                   <View>
                                     {assignedTasks && <Badge
@@ -892,7 +980,7 @@ const TodoLists=({navigation, route}) =>{
                                     {navigation.navigate("Assigned",{ userEmail: user }); setOpen(open); setAssignedTasks(false) }},
                                     
 
-                            { icon: 'account', color:'darkblue',label:"Log Out", style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress:  () => {handleSignOut(); navigation.navigate("Login")} },
+                            { icon: 'share', color:'darkblue',label:"Share All", style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress:  () => {shareTodoList(list)} },
                             
                         ]}
                     onStateChange={({ open }) => setOpen(open)}
@@ -1021,6 +1109,7 @@ const TodoLists=({navigation, route}) =>{
                   </BottomSheet>
       )}
 
+            </DrawerLayoutAndroid>
 
             </ImageBackground>
    

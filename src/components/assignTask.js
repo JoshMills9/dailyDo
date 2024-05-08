@@ -32,7 +32,7 @@ const AssignTask = ({navigation,route, }) => {
     const [Time, setTime] = useState("")
     const [data,setData] = useState([]);
     const [showAssinged, setShowAssigned] = useState(false);
-    console.log(data)
+    console.log(Task)
 
     const [assiged, setAssigned] = useState(false)
     const [pressed, setpressed] = useState(false)
@@ -89,35 +89,39 @@ const AssignTask = ({navigation,route, }) => {
     
 
       //function to assign task
-      const assignTask = async (Email) => {
-        try {
-            const user = users.find(user => user.email === Email);
-            if (user) {
-                const userDocRef = doc(db, 'users', user.id); // Assuming 'id' is the document ID of the user
-    
-                await updateDoc(userDocRef, {
-                    assignedTask: {
-                        title: Task,
-                        description: descrip,
-                        from: userEmail,
-                        date: formattedDate,
-                        color: Color,
-                        time: Time
-                    },
-                    assigned: user.email
-                    
-                });
-    
-                Alert.alert('Task Assigned', 'Task assigned successfully!');
-            } else {
-                Alert.alert('User not found', 'No user found with this email.');
+     useEffect(() => {
+         const assignTask = async (Email) => {
+            try {
+                const user = users.find(user => user.email === Email);
+                if (user) {
+                    const userDocRef = doc(db, 'users', user.id); // Assuming 'id' is the document ID of the user
+        
+                    await updateDoc(userDocRef, {
+                        assignedTask: {
+                            title: Task,
+                            description: descrip,
+                            from: userEmail,
+                            date: formattedDate,
+                            color: Color,
+                            time: Time
+                        },
+                        assigned: user.email
+                        
+                    });
+        
+                    Alert.alert('Task Assigned', 'Task assigned successfully!');
+                } else {
+                    console.log('User not found', 'No user found with this email.');
+                }
+            } catch (error) {
+                console.error(error);
+                Alert.alert('Error', error.message);
             }
-        } catch (error) {
-            console.error(error);
-            Alert.alert('Error', error.message);
-        }
-    };
-    
+        };
+        assignTask(searchQuery || selectedValue)
+    }, [Task, descrip])
+
+
     //get username from user email
     useEffect(() => {
         const getUsernamesFromEmails = () => {
@@ -203,6 +207,7 @@ const AssignTask = ({navigation,route, }) => {
      };
 
 
+
     return (
         <PaperProvider>
         <View style={{ flex:1, margin: 10 ,}}>
@@ -260,7 +265,6 @@ const AssignTask = ({navigation,route, }) => {
                 
                 <AddTask
                     onPress={[
-                        { callback: () => { assignTask(selectedValue || searchQuery); }, args: [] },
                         { callback: () => { setAssigned(true); }, args: [] },
                         { callback: () => { setSearchQuery(""); }, args: [] },
                         { callback: () => { setshowView(false); }, args: [] },
