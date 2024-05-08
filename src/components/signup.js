@@ -6,6 +6,7 @@ import {
  Image,
  SafeAreaView,
  Text,
+ Alert,
  
 } from 'react-native';
 import styles from '../styles/signupStyles';
@@ -29,10 +30,11 @@ const SignUp = ({ navigation }) => {
    // Write data to Firebase Realtime Database
    const usersCollectionRef = collection(db, 'users'); // Reference to 'users' collection
    const newUserRef = await addDoc(usersCollectionRef, {
+    userDetails:{
      email: signUpEmail,
      password: signUpPassword
+    }
    });
-   console.log(newUserRef)
  };
 
  const auth = getAuth(); 
@@ -40,7 +42,7 @@ const SignUp = ({ navigation }) => {
  const SignUp = async () => {
     try {
       await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword)
-      alert('Please check your emails for verification!');
+      Alert.alert("🎉Sign Up success!🎊",'Please check your emails for verification!');
       handleAddData();
       setSignUpEmail('');
       setSignUpPassword('');

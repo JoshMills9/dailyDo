@@ -13,7 +13,7 @@ import Animated, {
 
 import { FAB,Portal,Provider as PaperProvider , Dialog , Badge, Avatar, IconButton} from 'react-native-paper';
 import { getAuth, onAuthStateChanged,signOut ,deleteUser} from 'firebase/auth';
-import { getFirestore, collection, getDocs,where,query} from 'firebase/firestore';
+import { getFirestore, collection, getDocs,where,query, FieldValue,doc, updateDoc, deleteField} from 'firebase/firestore';
 
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
@@ -463,13 +463,13 @@ const TodoLists=({navigation, route}) =>{
             }
         };
         
-    
+        // function to share todo list
         const shareTodoList = async (share) => {
             try {
                 console.log(share)
                 if (share.length === 0) {
-                    console.warn('The todo list is empty. Nothing to share.');
-                    return; // Exit early if the list is empty
+                    alert('The todo list is empty. Nothing to share.')
+                    return; 
                 }
         
                 const todoListText = formatTodoList(share);
@@ -484,7 +484,7 @@ const TodoLists=({navigation, route}) =>{
             }
         };
 
-        const [a, setActive] = useState('');
+       
 
         const drawer = useRef(null);
         //function to render drawer view
@@ -500,11 +500,13 @@ const TodoLists=({navigation, route}) =>{
               <View></View>
               <View style={{flex:1,justifyContent:"flex-end"}}>
                 <TouchableOpacity onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:20, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => deleteUserAccount()} style={{width:"100%",flexDirection:"row", marginTop:20,marginBottom:10,justifyContent:"center", alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:18, color:"red"}}> Delete Account</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row", marginTop:20,marginBottom:10,justifyContent:"center", alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:18, color:"red"}}> Delete Account</Text></TouchableOpacity>
               </View>
               
             </View>
           );
+
+
         //useEffect to handle drawer
         useEffect(() => {
             navigation.setOptions({
@@ -514,8 +516,8 @@ const TodoLists=({navigation, route}) =>{
                 </TouchableOpacity>
               ),
             });
-          }, [navigation]);
-{/*<TouchableOpacity onPress={() => {handleSignOut();  navigation.navigate("LogInScreen")}}><Entypo name="user" size={25} color="black" /></TouchableOpacity>*/}
+          }, [navigation,drawer]);
+
 
 
        const [open, setOpen] = useState(false); 
@@ -526,7 +528,6 @@ const TodoLists=({navigation, route}) =>{
 
         //useEffect to get login user
        const auth = getAuth();
-
        useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -550,7 +551,7 @@ const TodoLists=({navigation, route}) =>{
 
 
 
-        // Function to delete user
+        // Function to delete user details from auth
         const deleteUserAccount = async () => {
             const user = auth.currentUser;
 
@@ -559,7 +560,7 @@ const TodoLists=({navigation, route}) =>{
                 if (user) {
                     // Delete the user
                     await deleteUser(user);
-                    Alert.alert("---- dailyDo ----",'User account deleted successfully.');
+                    Alert.alert("---- dailyDo ----",'😢 User account deleted successfully.💔');
                     navigation.navigate("LogInScreen")
                 } else {
                     // User is not signed in
@@ -571,6 +572,38 @@ const TodoLists=({navigation, route}) =>{
                 // Display error message to the user or handle it appropriately
             }
         };
+
+
+
+        // delete user details from db
+        const deleteFieldByEmail = async (emailToSearch, fieldToDelete) => {
+            const usersCollectionRef = collection(db, 'users');
+        
+            const q = query(usersCollectionRef, where('userDetails.email', '==', emailToSearch));
+        
+            try {
+                const querySnapshot = await getDocs(q);
+        
+                for (const document of querySnapshot.docs) {
+                    const docRef = doc(db, `users/${document.id}`); // Add db here
+        
+                    await updateDoc(docRef, {
+                        [fieldToDelete]: deleteField()
+                    });
+        
+                    console.log(`Field '${fieldToDelete}' deleted from document with ID: ${document.id}`);
+                }
+        
+                return true;
+            } catch (error) {
+                console.error('Error deleting field:', error);
+                return false;
+            }
+        };
+        
+        
+
+
 
 
 
@@ -591,7 +624,7 @@ const TodoLists=({navigation, route}) =>{
 
     const [assignedTasks, setAssignedTasks] = useState(false);
     const [numberOfTasks, setNumOfTask] = useState(null)
-    console.log(assignedTasks)
+
     const db = getFirestore();
 
     //useEffect to get assigned tasks from db
@@ -641,7 +674,6 @@ const TodoLists=({navigation, route}) =>{
                 renderNavigationView={navigationView}
                 drawerBackgroundColor={"transparent"}
                 style={{width:400}}
-                onDrawerClose={() => drawer.current.closeDrawer()}
                
                 >
 
@@ -974,13 +1006,13 @@ const TodoLists=({navigation, route}) =>{
                                     <IconButton icon="bell" iconColor="darkblue" size={23} style={{alignSelf:"center",justifyContent:"center", position:"absolute",top:-10}}/>
                                   </View>
                                 ),
-                                label: "Notification",
+                                label: "Notifications",
                                 style:{backgroundColor:"white",marginLeft:-15,borderRadius:50,},
                                 onPress: () => 
-                                    {navigation.navigate("Assigned",{ userEmail: user }); setOpen(open); setAssignedTasks(false) }},
+                                    {navigation.navigate("Notifications",{ userEmail: user }); setOpen(open); setAssignedTasks(false) }},
                                     
 
-                            { icon: 'share', color:'darkblue',label:"Share All", style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress:  () => {shareTodoList(list)} },
+                            { icon: 'share-all', color:'darkblue',label:"Share All", style:{backgroundColor:"white",marginLeft:-15,borderRadius:50}, onPress:  () => {shareTodoList(list)} },
                             
                         ]}
                     onStateChange={({ open }) => setOpen(open)}
