@@ -7,13 +7,7 @@ import styles from '../styles/styles';
 import { FontAwesome6 } from '@expo/vector-icons';
 
 import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
-import Animated, {
-    useSharedValue,
-    withTiming,
-    useAnimatedStyle,
-    Easing,
-    
-  } from 'react-native-reanimated';
+
 
 import AddTask from './addTask';
 
