@@ -32,8 +32,6 @@ const AssignTask = ({navigation,route, }) => {
     const [Time, setTime] = useState("")
     const [data,setData] = useState([]);
     const [showAssinged, setShowAssigned] = useState(false);
-    console.log(usernames)
-
     const [assiged, setAssigned] = useState(false)
     const [pressed, setpressed] = useState(false)
  
@@ -127,27 +125,20 @@ const AssignTask = ({navigation,route, }) => {
         const getUsernamesFromEmails = () => {
             if (users && users.length > 0) {
                 const extractedUsernames = users.map(user => {
-                    if (user.userDetails && user.userDetails.email) {
+                    if (user.userDetails.email) {
                         // Split the email address by '@' symbol
                         const parts = user.userDetails.email.split('@');
                         // The username is the first part of the email
-                        return parts[0];
-                    } else {
-                        return ''; // Return an empty string if email or userDetails is undefined
-                    }
+                        return parts[0];}
                 });
-    
-                // Filter out empty strings to ensure only valid usernames are included
-                const validUsernames = extractedUsernames.filter(username => username !== '');
-    
-                setUsernames(validUsernames);
+
+                setUsernames(extractedUsernames);
                 // Do something with the extracted usernames if needed
             }
         }
-    
+
         getUsernamesFromEmails();
     }, [users]);
-    
 
     //useeffect to add usernames to users object
     useEffect(() => {
@@ -234,7 +225,7 @@ const AssignTask = ({navigation,route, }) => {
                 >
                      <Picker.Item label="--Select User--" value={null} />
                 {users.map((user) => (
-                    <Picker.Item key={user.id} label={user.email} value={user.email} />
+                    <Picker.Item key={user.id} label={user.userDetails.email} value={user.userDetails.email} />
                 ))}
                 </Picker>)}
             />
@@ -244,15 +235,15 @@ const AssignTask = ({navigation,route, }) => {
             {enabled && (
                 <View style={{flex:1,}}>
                 <FlatList
-                    data={emailsWithUsername.filter(user => (user.email && user.username ) && (user.email && user.username).toLowerCase().includes(searchQuery.toLowerCase()))}
+                    data={emailsWithUsername.filter(user => (user.userDetails.email && user.username ) && (user.userDetails.email && user.username).toLowerCase().includes(searchQuery.toLowerCase()))}
                     renderItem={({ item }) => (
-                        <TouchableHighlight onPress={()=> {setSearchQuery(item.email);setSelectedValue(item.email); setEnabled(false);setshowView(true); }} underlayColor="transparent" >
+                        <TouchableHighlight onPress={()=> {setSearchQuery(item.userDetails.email);setSelectedValue(item.userDetails.email); setEnabled(false);setshowView(true); }} underlayColor="transparent" >
                             <View style={{margin:10,backgroundColor:"white",flex:1,padding:10, elevation:9, }}>
                                 <View style={{flexDirection:"row",alignItems:"center",}}> 
-                                    <Avatar.Text size={40} labelStyle={{fontSize:18, alignSelf:"center", fontWeight:"600"}} label={item.email[0].toUpperCase()}/>
+                                    <Avatar.Text size={40} labelStyle={{fontSize:18, alignSelf:"center", fontWeight:"600"}} label={item.userDetails.email[0].toUpperCase()}/>
                                     <View style={{flex:1,padding:5, justifyContent:"center"}}>
                                         <Text style={{fontSize:18,  fontWeight:"500"}}>{item.username}</Text>
-                                        <Text style={{fontSize:13}}>{item.email}</Text>
+                                        <Text style={{fontSize:13}}>{item.userDetails.email}</Text>
                                     </View>
                                 </View>
                               </View>  
