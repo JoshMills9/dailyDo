@@ -641,11 +641,9 @@ const TodoLists=({navigation, route}) =>{
                 const querySnapshot = await getDocs(query(tasksCollectionRef, where("assigned", "==", user)));
                 if (!querySnapshot.empty) {
                     // If documents are found, extract their data and update the state with the tasks
-                    const tasks = querySnapshot.docs.map(doc => doc.data());
-                    const newTask = [];
-                    newTask.push(tasks)
-                    const lenght = newTask.length
-                    setNumOfTask(lenght)
+                    const tasks = querySnapshot.docs.map(doc => doc.data().data);
+                    const  newTask = tasks[0].length;
+                    setNumOfTask(newTask)
                     setAssignedTasks(true);
                 } else {
                     console.log('No assigned tasks found for user:', user);
@@ -1002,7 +1000,7 @@ const TodoLists=({navigation, route}) =>{
                                   <View>
                                     {assignedTasks && <Badge
                                      size={16}
-                                     style={{position:"absolute", right:-5}}
+                                     style={{position:"absolute", right:-5, fontSize:12}}
                                       badgeStyle={{ backgroundColor: "red"}} // Adjust badge style as needed
                                     >{numberOfTasks}</Badge>
                                     }

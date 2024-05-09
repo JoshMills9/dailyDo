@@ -42,7 +42,7 @@ const SignUp = ({ navigation }) => {
  const SignUp = async () => {
     try {
       await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword)
-      Alert.alert("🎉Sign Up success!🎊",'Please check your emails for verification!');
+      console.log("🎉Sign Up success!🎊",'Please check your emails for verification!');
       handleAddData();
       setSignUpEmail('');
       setSignUpPassword('');

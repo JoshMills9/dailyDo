@@ -34,15 +34,14 @@ const AssignTask = ({navigation,route, }) => {
     const [showAssinged, setShowAssigned] = useState(false);
     const [assiged, setAssigned] = useState(false)
     const [pressed, setpressed] = useState(false)
-    console.log(usernames)
-    console.log(users)    
+      
 
 
     //useEffect to add assigned task to data array
     useEffect(()=>{
         if(Task !== undefined || descrip !== undefined || formattedDate !== undefined){
             if(assiged){
-                setData(prevList=> [{Task,descrip,formattedDate,selectedValue,Color,Time,},...prevList])
+                setData(prevList=> [{Task,descrip,formattedDate,selectedValue,Color,Time,userEmail},...prevList])
                 setAssigned(false)
             }else{
                 console.log("")

@@ -84,13 +84,13 @@ const Assigned = ({ route }) => {
              {assignedTasks.map((task, index) => (
                  
             <Pressable onLongPress={()=> {setpressed(true);showDialog(index)}} onPress={()=> setIsVisible(true)} >
-                    <View style={[{ width:"100%",alignSelf:"center", backgroundColor:"white",borderBottomWidth:1,borderBottomColor:"lightgray",padding:6, elevation: pressed ? 0 : 6,marginVertical:10,marginHorizontal:20,borderRadius:15,}]}>
+                    <View style={[{ width:"100%",alignSelf:"center", backgroundColor:"white",borderBottomWidth:1,borderBottomColor:"lightgray",padding:6, elevation: (pressed && index.toString()) ? 0 : 6,marginVertical:10,marginHorizontal:20,borderRadius:15,}]}>
                         
                         <View style={{marginBottom:15,backgroundColor:"",flexDirection:"row",alignItems:"flex-start", justifyContent:"space-between",}}>
                             <View style={{width:16,height:16, borderRadius:50,backgroundColor: task.Color }}></View>
                             
                             <View>
-                                <Text style={{fontWeight:"300"}}>From: {<FontAwesome6 name="circle-user" size={12} color="gray" />} {task.selectedValue}</Text>
+                                <Text style={{fontWeight:"300"}}>From: {<FontAwesome6 name="circle-user" size={12} color="gray" />} {task.userEmail}</Text>
                                 <Text style={{fontSize:11, alignSelf:"center",fontWeight:"300"}} >{task.formattedDate}</Text>
                             </View>
                             
