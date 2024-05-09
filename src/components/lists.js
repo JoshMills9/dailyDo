@@ -979,6 +979,10 @@ const TodoLists=({navigation, route}) =>{
             />
 
             </PaperProvider>
+
+
+       
+            
             
                  <FAB.Group
                     open={open}
@@ -1021,6 +1025,12 @@ const TodoLists=({navigation, route}) =>{
                 />
                 
                 {assignedTasks &&  <Badge style={{position:"absolute", bottom:50,right:22}} size={8} /> }
+              
+                {/*<TouchableOpacity style={styles.add}  onPress={() => navigation.navigate("Add New Task")}>
+                    <View>
+                        <Ionicons name="add" size={25} color="black" />
+                    </View>
+                </TouchableOpacity>*/}
 
 
             {(isPopupVisible && del) &&  (
@@ -1034,6 +1044,7 @@ const TodoLists=({navigation, route}) =>{
                     >
                  
                  <View style={{flex:1,padding:15}}>
+                 
 
                     <View style={styles.popup}>
 
