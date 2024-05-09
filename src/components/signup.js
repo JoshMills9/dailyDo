@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
  View,
  TextInput,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import styles from '../styles/signupStyles';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import {getAuth, createUserWithEmailAndPassword,} from "firebase/auth";
+import {getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
 import {  HelperText } from "react-native-paper";
 
@@ -25,6 +25,7 @@ const SignUp = ({ navigation }) => {
 
  //add user  to  database
  const db = getFirestore();
+ const auth = getAuth(); 
 
  const handleAddData = async () => {
    // Write data to Firebase Realtime Database
@@ -37,12 +38,11 @@ const SignUp = ({ navigation }) => {
    });
  };
 
- const auth = getAuth(); 
+
  //sign up func
- const SignUp = async () => {
+ const handleSignUp = async () => {
     try {
       await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword)
-      console.log("🎉Sign Up success!🎊",'Please check your emails for verification!');
       handleAddData();
       setSignUpEmail('');
       setSignUpPassword('');
@@ -53,6 +53,24 @@ const SignUp = ({ navigation }) => {
       console.error('Error signing up:' , error);
     }
   }
+
+
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
+        if (user) {
+            // User is signed in, navigate to the main screen
+            navigation.navigate('To-Do List');
+        } else {
+            // No user is signed in, stay on the signup screen
+        }
+    });
+
+    // Clean up the listener when the component unmounts
+    return () => unsubscribe();
+}, [auth,navigation]);
+
+
 
   //email validation
   const searchQueryHandler =(text) =>{
@@ -121,7 +139,7 @@ const SignUp = ({ navigation }) => {
 
             <TouchableOpacity
               style={styles.customBotton}
-              onPress={()=> {SignUp()}}
+              onPress={()=> {handleSignUp()}}
             >
               <Text style={styles.textt}>Sign Up</Text>
             </TouchableOpacity>

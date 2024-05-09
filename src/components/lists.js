@@ -979,10 +979,6 @@ const TodoLists=({navigation, route}) =>{
             />
 
             </PaperProvider>
-
-
-       
-            
             
                  <FAB.Group
                     open={open}
@@ -1025,12 +1021,6 @@ const TodoLists=({navigation, route}) =>{
                 />
                 
                 {assignedTasks &&  <Badge style={{position:"absolute", bottom:50,right:22}} size={8} /> }
-              
-                {/*<TouchableOpacity style={styles.add}  onPress={() => navigation.navigate("Add New Task")}>
-                    <View>
-                        <Ionicons name="add" size={25} color="black" />
-                    </View>
-                </TouchableOpacity>*/}
 
 
             {(isPopupVisible && del) &&  (
@@ -1044,50 +1034,6 @@ const TodoLists=({navigation, route}) =>{
                     >
                  
                  <View style={{flex:1,padding:15}}>
-                        {/*view to display item selected*/}
-                  {/* { newEdit && ( 
-                    <View style={[styles.container, { paddingVertical:5,justifyContent:"flex-end",marginBottom:265 }]}>
-                        <View style={styles.CompletedView}>
-                            <View style={styles.compheader}>
-                                <View style={styles.title}>
-                                    <Text style={[styles.header,{color:"black",fontSize:25}]} adjustsFontSizeToFit={true} numberOfLines={1}>
-                                        {newEdit.Header.length > 18 ? `${newEdit.Header.slice(0, 18)} .....` : newEdit.Header}
-                                    </Text>
-                                </View>
-                                <View style={[styles.color, {backgroundColor: newEdit.Colors , width:25,height:25, marginHorizontal:5}]}></View>
-                            </View>
-                            <View style={styles.dateDescrip}>
-                                <View>
-                                    <Text style={[styles.medtext,  {color:"black", fontSize:15}]}>
-                                        {newEdit.Calendar}
-                                    </Text>
-                                </View>
-                                <View style={{flex:1, flexDirection:"row", marginLeft:10, marginRight:5, justifyContent:"space-between"}} >
-                                    <Text style={[styles.description, {color:"black",fontSize:17, fontWeight:"500"}]}>
-                                        {newEdit.Description.length > 13 ? `${newEdit.Description.slice(0, 13)} .....` : newEdit.Description}
-                                    </Text>
-
-                                    {(newEdit.Toggler)   ?
-                                        <MaterialIcons name="star" size={25} color="white" />: null}
-                                </View>
-                            </View>
-                            <View style={{flexDirection:"row", marginBottom:5, justifyContent:"space-between", alignItems:"center"}}>
-                                   <View style={{flexDirection:"row", justifyContent:"center", alignItems:"center", backgroundColor:"lightgray",borderRadius:50,padding:5}}>
-                                     <Image style={ {tintColor: "black", height:15,width:15, marginRight:8}} source={require("../images/clock.png")}/>
-                                    <Text style={{fontSize:15, color:  "black"}}>{newEdit.Alarm}</Text>
-                                    </View>
-
-                                    <View>
-                                        <View style={{ width:150,height:40, alignItems:"flex-end", justifyContent:"center", marginRight:6}}>
-                                            <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.text,{color:"black",fontSize:14, fontWeight:"500"}]}>
-                                            Status: {complete ? <Text style={[styles.text,{fontSize:13, fontWeight:"bold", color:"green" }]}>COMPLETED</Text> : <Text style={[styles.text,{fontSize:12,fontWeight:"400", color:"white"}]}>PENDING</Text>}</Text>
-                                        </View>
-                                    </View>
-                            </View>
-                        </View>
-                    </View>
-                    )}
-            */}
 
                     <View style={styles.popup}>
 
