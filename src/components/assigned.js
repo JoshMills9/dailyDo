@@ -9,10 +9,10 @@ import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
 const Assigned = ({ route }) => {
     const { userEmail } = route.params;
     const [assignedTasks, setAssignedTasks] = useState([]);
-    console.log(assignedTasks)
+    console.log(assignedTasks[0])
     const [isVisible, setIsVisible] = useState(false);
     const [pressed, setpressed] = useState(false)
-
+    const [Data, setData] = useState([])
 
     const db = getFirestore();
 
@@ -27,8 +27,8 @@ const Assigned = ({ route }) => {
                 const querySnapshot = await getDocs(query(tasksCollectionRef, where("assigned", "==", userEmail)));
                 if (!querySnapshot.empty) {
                     // If documents are found, extract their data and update the state with the tasks
-                    const tasks = querySnapshot.docs.map(doc => doc.data());
-                    setAssignedTasks(tasks);
+                    const tasks = querySnapshot.docs.map(doc => doc.data().data);
+                    setAssignedTasks(tasks[0])
                 } else {
                     alert('No assigned tasks found for user:' + userEmail)
                     console.log('No assigned tasks found for user:', userEmail);
@@ -43,6 +43,7 @@ const Assigned = ({ route }) => {
     }, [db, userEmail]);
     
 
+   
        //function to delete item by index
        const deleteList = (index) => {
         
@@ -86,22 +87,22 @@ const Assigned = ({ route }) => {
                     <View style={[{ width:"100%",alignSelf:"center", backgroundColor:"white",borderBottomWidth:1,borderBottomColor:"lightgray",padding:6, elevation: pressed ? 0 : 6,marginVertical:10,marginHorizontal:20,borderRadius:15,}]}>
                         
                         <View style={{marginBottom:15,backgroundColor:"",flexDirection:"row",alignItems:"flex-start", justifyContent:"space-between",}}>
-                            <View style={{width:16,height:16, borderRadius:50,backgroundColor: task.assignedTask.color }}></View>
+                            <View style={{width:16,height:16, borderRadius:50,backgroundColor: task.Color }}></View>
                             
                             <View>
-                                <Text style={{fontWeight:"300"}}>From: {<FontAwesome6 name="circle-user" size={12} color="gray" />} {task.assignedTask.from}</Text>
-                                <Text style={{fontSize:11, alignSelf:"center",fontWeight:"300"}} >{task.assignedTask.date}</Text>
+                                <Text style={{fontWeight:"300"}}>From: {<FontAwesome6 name="circle-user" size={12} color="gray" />} {task.selectedValue}</Text>
+                                <Text style={{fontSize:11, alignSelf:"center",fontWeight:"300"}} >{task.formattedDate}</Text>
                             </View>
                             
-                            <Text style={{fontWeight:"300"}}>{task.assignedTask.time}</Text>
+                            <Text style={{fontWeight:"300"}}>{task.Time}</Text>
                         </View>
 
                             <View style={{marginLeft:20,}}>
-                                <Text style={{fontSize:18, fontWeight:"bold"}}>{isVisible ? task.assignedTask.title : task.assignedTask.title.length > 20 ? `${task.assignedTask.title.slice(0, 20)} ...` : task.assignedTask.title }</Text>
+                                <Text style={{fontSize:18, fontWeight:"bold"}}>{isVisible ? task.Task : task.Task.length > 20 ? `${task.Task.slice(0, 20)} ...` : task.Task}</Text>
                             </View>
 
                             <View style={{marginLeft:20,marginTop: 5}}>
-                                 <Text style={{fontSize:16, fontWeight:"300"}}>{task.assignedTask.description}</Text>
+                                 <Text style={{fontSize:16, fontWeight:"300"}}>{task.descrip}</Text>
                             </View>
                      
                         

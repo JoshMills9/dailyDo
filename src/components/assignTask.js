@@ -34,12 +34,15 @@ const AssignTask = ({navigation,route, }) => {
     const [showAssinged, setShowAssigned] = useState(false);
     const [assiged, setAssigned] = useState(false)
     const [pressed, setpressed] = useState(false)
- 
+    console.log(usernames)
+    console.log(users)    
+
+
     //useEffect to add assigned task to data array
     useEffect(()=>{
         if(Task !== undefined || descrip !== undefined || formattedDate !== undefined){
             if(assiged){
-                setData(prevList=> [{Task,descrip,formattedDate,selectedValue,Color,Time},...prevList])
+                setData(prevList=> [{Task,descrip,formattedDate,selectedValue,Color,Time,},...prevList])
                 setAssigned(false)
             }else{
                 console.log("")
@@ -58,9 +61,10 @@ const AssignTask = ({navigation,route, }) => {
                 const usersSnapshot = await getDocs(usersCollectionRef);
                 const userData = usersSnapshot.docs.map(doc => ({
                     id: doc.id,
-                    ...doc.data()
+                    ...doc.data().userDetails
                 }));
                 setUsers(userData);
+               
             } catch (error) {
                 alert(error)
                 console.error('Error fetching data:', error);
@@ -86,24 +90,18 @@ const AssignTask = ({navigation,route, }) => {
     };
     
 
+
       //function to assign task
      useEffect(() => {
          const assignTask = async (Email) => {
             try {
-                const user = users.find(user => user.userDetails.email === Email);
+                const user = users.find(user => user.email === Email);
                 if (user) {
                     const userDocRef = doc(db, 'users', user.id); // Assuming 'id' is the document ID of the user
         
                     await updateDoc(userDocRef, {
-                        assignedTask: {
-                            title: Task,
-                            description: descrip,
-                            from: userEmail,
-                            date: formattedDate,
-                            color: Color,
-                            time: Time
-                        },
-                        assigned: user.userDetails.email
+                        data,
+                        assigned: user.email
                         
                     });
         
@@ -117,7 +115,7 @@ const AssignTask = ({navigation,route, }) => {
             }
         };
         assignTask(searchQuery || selectedValue)
-    }, [Task, descrip])
+    }, [data])
 
 
     //get username from user email
@@ -125,9 +123,9 @@ const AssignTask = ({navigation,route, }) => {
         const getUsernamesFromEmails = () => {
             if (users && users.length > 0) {
                 const extractedUsernames = users.map(user => {
-                    if (user.userDetails.email) {
+                    if (user.email) {
                         // Split the email address by '@' symbol
-                        const parts = user.userDetails.email.split('@');
+                        const parts = user.email.split('@');
                         // The username is the first part of the email
                         return parts[0];}
                 });
@@ -225,7 +223,7 @@ const AssignTask = ({navigation,route, }) => {
                 >
                      <Picker.Item label="--Select User--" value={null} />
                 {users.map((user) => (
-                    <Picker.Item key={user.id} label={user.userDetails.email} value={user.userDetails.email} />
+                    <Picker.Item key={user.id} label={user.email} value={user.email} />
                 ))}
                 </Picker>)}
             />
@@ -235,15 +233,15 @@ const AssignTask = ({navigation,route, }) => {
             {enabled && (
                 <View style={{flex:1,}}>
                 <FlatList
-                    data={emailsWithUsername.filter(user => (user.userDetails.email && user.username ) && (user.userDetails.email && user.username).toLowerCase().includes(searchQuery.toLowerCase()))}
+                    data={emailsWithUsername.filter(user => (user.email && user.username ) && (user.email && user.username).toLowerCase().includes(searchQuery.toLowerCase()))}
                     renderItem={({ item }) => (
-                        <TouchableHighlight onPress={()=> {setSearchQuery(item.userDetails.email);setSelectedValue(item.userDetails.email); setEnabled(false);setshowView(true); }} underlayColor="transparent" >
+                        <TouchableHighlight onPress={()=> {setSearchQuery(item.email);setSelectedValue(item.email); setEnabled(false);setshowView(true); }} underlayColor="transparent" >
                             <View style={{margin:10,backgroundColor:"white",flex:1,padding:10, elevation:9, }}>
                                 <View style={{flexDirection:"row",alignItems:"center",}}> 
-                                    <Avatar.Text size={40} labelStyle={{fontSize:18, alignSelf:"center", fontWeight:"600"}} label={item.userDetails.email[0].toUpperCase()}/>
+                                    <Avatar.Text size={40} labelStyle={{fontSize:18, alignSelf:"center", fontWeight:"600"}} label={item.email[0].toUpperCase()}/>
                                     <View style={{flex:1,padding:5, justifyContent:"center"}}>
                                         <Text style={{fontSize:18,  fontWeight:"500"}}>{item.username}</Text>
-                                        <Text style={{fontSize:13}}>{item.userDetails.email}</Text>
+                                        <Text style={{fontSize:13}}>{item.email}</Text>
                                     </View>
                                 </View>
                               </View>  
