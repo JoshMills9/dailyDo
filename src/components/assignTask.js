@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Alert,View, Text, TouchableOpacity,TextInput, FlatList,Platform,Image, ScrollView,TouchableHighlight, Pressable } from 'react-native';
-import { getFirestore, collection, getDocs,doc,updateDoc} from 'firebase/firestore';
+import { Alert,View, Text, TouchableOpacity,TextInput, FlatList,Platform,Image, ScrollView,TouchableHighlight, Pressable, ImageBackground } from 'react-native';
+import { getFirestore, collection, getDocs,doc,updateDoc,} from 'firebase/firestore';
 import { Searchbar,Avatar } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import styles from '../styles/styles';
@@ -34,14 +34,13 @@ const AssignTask = ({navigation,route, }) => {
     const [showAssinged, setShowAssigned] = useState(false);
     const [assiged, setAssigned] = useState(false)
     const [pressed, setpressed] = useState(false)
-      
 
 
     //useEffect to add assigned task to data array
     useEffect(()=>{
         if(Task !== undefined || descrip !== undefined || formattedDate !== undefined){
             if(assiged){
-                setData(prevList=> [{Task,descrip,formattedDate,selectedValue,Color,Time,userEmail},...prevList])
+                setData(prevList => [{Task,descrip,formattedDate,selectedValue,Color,Time,userEmail},...prevList])
                 setAssigned(false)
             }else{
                 console.log("")
@@ -205,6 +204,8 @@ const AssignTask = ({navigation,route, }) => {
 
 
     return (
+        <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={[styles.container]}> 
+
         <PaperProvider>
         <View style={{ flex:1, margin: 10 ,}}>
 
@@ -348,7 +349,7 @@ const AssignTask = ({navigation,route, }) => {
         </View>
         </PaperProvider>
        
-        
+        </ImageBackground>
         
     );
 }

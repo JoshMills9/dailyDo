@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, KeyboardAvoidingView,TouchableOpacity, Image , SafeAreaView} from "react-native";
+import { View, Text, TextInput, KeyboardAvoidingView,TouchableOpacity, Image , SafeAreaView, ActivityIndicator} from "react-native";
 import styles from "../styles/signupStyles";
 import { FIREBASE_AUTH, } from "../../firebaseConfig";
 import {  HelperText } from "react-native-paper";
@@ -22,18 +22,20 @@ const Login = ({navigation, }) =>{
     const [signUpPassword, setSignUpPassword] = useState("");
     const [login, setLogin] = useState(false);
     const auth = FIREBASE_AUTH;
-    
+    const [showIndicator, setIndicator] = useState(false)
 
   
 
     const [error,setError] = useState("")
-    console.log(error)
+   
   // Function to log in a user
   const Login = async () => {
     try {
-      await signInWithEmailAndPassword(auth, signUpEmail, signUpPassword)
+      await signInWithEmailAndPassword(auth, signUpEmail, signUpPassword);
+      setIndicator(false)
       navigation.navigate("To-Do List");
     } catch (error) {
+      setIndicator(false);
       setError(error.message)
       showDialog()
     }
@@ -136,9 +138,11 @@ const Login = ({navigation, }) =>{
 
             <TouchableOpacity
               style={styles.customBotton}
-              onPress={()=> Login()}
+              onPress={()=> {Login(); setIndicator(true)}}
             >
-              <Text style={styles.textt}>Log In</Text>
+              {showIndicator ? <ActivityIndicator size={"large"} color={"white"} />
+              :
+              <Text style={styles.textt}>Log In</Text>}
             </TouchableOpacity>
             <View style={styles.signupContainer}>
               <Text style={styles.signText}>Don't have an account? </Text>

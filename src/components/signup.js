@@ -6,7 +6,7 @@ import {
  Image,
  SafeAreaView,
  Text,
- Alert,
+ ActivityIndicator,
  
 } from 'react-native';
 import styles from '../styles/signupStyles';
@@ -22,6 +22,7 @@ const SignUp = ({ navigation }) => {
  const [signUpPassword, setSignUpPassword] = useState("");
  const [enabled, setEnabled] = useState(false);
  const [login, setLogin] = useState(false);
+ const [showIndicator, setIndicator] = useState(false)
 
  //add user  to  database
  const db = getFirestore();
@@ -46,8 +47,10 @@ const SignUp = ({ navigation }) => {
       handleAddData();
       setSignUpEmail('');
       setSignUpPassword('');
+      setIndicator(false);
       navigation.navigate("To-Do List");
     } catch (error) {
+      setIndicator(false)
       setError(error.message)
       showDialog();
       console.error('Error signing up:' , error);
@@ -139,9 +142,11 @@ const SignUp = ({ navigation }) => {
 
             <TouchableOpacity
               style={styles.customBotton}
-              onPress={()=> {handleSignUp()}}
+              onPress={()=> {handleSignUp();setIndicator(true)}}
             >
-              <Text style={styles.textt}>Sign Up</Text>
+              {showIndicator ? <ActivityIndicator size={"large"} color={"white"} />
+              :
+              <Text style={styles.textt}>Sign Up</Text>}
             </TouchableOpacity>
             <View style={styles.signupContainer}>
               <Text style={styles.signText}>Do you have an account? </Text>

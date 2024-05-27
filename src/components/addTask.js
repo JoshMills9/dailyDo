@@ -184,22 +184,6 @@ const AddTask = ({navigation, onPress, assignTitle, assignDescrip, assignColor,C
                         </TouchableOpacity>
                         
                     </View>
-    
-                   {/* <View style={[styles.colors,{marginTop:20,justifyContent:"space-between",paddingHorizontal:15}]}>
-
-                        <Text style={[styles.medtext, {fontSize:20,fontWeight:"500",color:"black"}]}>Mark as Important?</Text>
-
-                        <Switch
-                                trackColor={{false: 'gray', true: '#81b0ff'}}
-                                thumbColor={isEnabled ? 'white' : 'white'}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={toggleSwitch}
-                                value={isEnabled}
-                                style={{ transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }] }}
-                            />
-                    </View>
-
-                    */}
 
                     <View style={styles.addtaskview}> 
                         <TouchableOpacity onPress={() => {Assign ? handlePress()  :navigation.navigate("To-Do List", obj)}} style={styles.addtaskbtn}><Text style={styles.addbtn}>{Assign? "Assign Task" : "Add Task"}</Text></TouchableOpacity>

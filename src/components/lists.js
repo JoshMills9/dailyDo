@@ -20,9 +20,7 @@ import * as FileSystem from 'expo-file-system';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
-import AssignTask from "./assignTask";
 import { AntDesign } from '@expo/vector-icons';
 
 
@@ -356,23 +354,6 @@ const TodoLists=({navigation, route}) =>{
         },[newEdit?.Toggler])
         
 
-        // Function to toggle important status for the corresponding item in the list
-        const toggleImportant = (index) => {
-            // Create a copy of the original list
-            const updatedList = [...list];
-            
-            // Toggle the toggler property of the item at the specified index
-            updatedList[index].toggler = !updatedList[index].toggler;
-            
-            // Update the state with the modified list
-            setlist(updatedList);
-        };
-
-        // Function to handle toggling important status
-        const handleToggleImportant = () => {
-            setIsImportant(true); // Toggle the state to show or hide important tasks
-        };
-
 
 
         //function to handle user choice from modal
@@ -502,8 +483,8 @@ const TodoLists=({navigation, route}) =>{
 
 
               <View style={{flex:1,justifyContent:"flex-end"}}>
-                <TouchableOpacity onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:20, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row", marginTop:20,marginBottom:10,justifyContent:"center", alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:18, color:"red"}}> Delete Account</Text></TouchableOpacity>
+                <TouchableOpacity  onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:20, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
+                <TouchableOpacity disabled={true} onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row", marginTop:20,marginBottom:10,justifyContent:"center", alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:18, color:"red"}}> Delete Account</Text></TouchableOpacity>
               </View>
               
             </View>
@@ -689,7 +670,7 @@ const TodoLists=({navigation, route}) =>{
                     </Dialog.Content>
                     <Dialog.Actions>
                         <View style={{flexDirection:"row", justifyContent:"space-evenly", width:100}}>
-                            <TouchableOpacity onPress={hideDialog}><Text style={{alignSelf:'center', fontSize:16}}>Cancel</Text></TouchableOpacity> 
+                            <TouchableOpacity onPress={hideDialog}><Text style={{alignSelf:'center', fontSize:16, marginLeft:-30, color:"red"}}>Cancel</Text></TouchableOpacity> 
                             <TouchableOpacity  onPress={handleDelete}><Text style={{alignSelf:'center', fontSize:16}}>Yes</Text></TouchableOpacity> 
                         </View>
                         
@@ -1026,11 +1007,6 @@ const TodoLists=({navigation, route}) =>{
                 
                 {assignedTasks &&  <Badge style={{position:"absolute", bottom:50,right:22}} size={8} /> }
               
-                {/*<TouchableOpacity style={styles.add}  onPress={() => navigation.navigate("Add New Task")}>
-                    <View>
-                        <Ionicons name="add" size={25} color="black" />
-                    </View>
-                </TouchableOpacity>*/}
 
 
             {(isPopupVisible && del) &&  (
@@ -1038,8 +1014,8 @@ const TodoLists=({navigation, route}) =>{
                         visible={isPopupVisible}
                         onBackButtonPress={togglePopup}
                         onBackdropPress={togglePopup}
-                        duration={500} // Adjust animation duration as needed
-                        elevation={10} // Adjust elevation for shadow effect
+                        duration={500}
+                        elevation={10} 
                         style={{borderRadius: 10,  }}
                     >
                  
@@ -1070,13 +1046,6 @@ const TodoLists=({navigation, route}) =>{
                                 {complete ? <MaterialIcons name="pending" size={30} color="darkblue" /> :<MaterialIcons name="done-all" size={30} color="darkblue" />}
                             </View>
                         </TouchableHighlight>
-
-                        {/*<TouchableHighlight onPress={() => {handleOptionSelect('Important'); toggleImportant(del)}} underlayColor="#ccc" style={{width:"100%",borderBottomWidth: 1,borderBottomColor: '#ccc'}}>
-                             <View style={{ flexDirection: "row", alignItems: "center", justifyContent:"space-between",justifyContent:"space-between",padding:10, }}>
-                                {(isImportant && newEdit.Toggler) ? <Text style={{fontSize:20, fontWeight:"500"}}>Unmark as important</Text> : <Text style={{fontSize:20, fontWeight:"500"}}>Mark as important </Text>}
-                                {(isImportant && newEdit.Toggler) ? <MaterialIcons name="star-border" size={30} color="darkblue" />: <MaterialIcons name="star" size={30} color="darkblue" />}
-                            </View>
-                        </TouchableHighlight>*/}
 
                         <TouchableHighlight onPress={() => {handleOptionSelect('Share'); shareTask(newEdit.Index)}} underlayColor="#ccc">
 
