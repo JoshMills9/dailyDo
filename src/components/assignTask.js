@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Alert,View, Text, TouchableOpacity,TextInput, FlatList,Platform,Image, ScrollView,TouchableHighlight, Pressable, ImageBackground } from 'react-native';
 import { getFirestore, collection, getDocs,doc,updateDoc,} from 'firebase/firestore';
 import { Searchbar,Avatar } from 'react-native-paper';
@@ -90,7 +90,7 @@ const AssignTask = ({navigation,route, }) => {
 
 
       //function to assign task
-     useEffect(() => {
+     useLayoutEffect(() => {
          const assignTask = async (Email) => {
             try {
                 const user = users.find(user => user.email === Email);
@@ -204,7 +204,6 @@ const AssignTask = ({navigation,route, }) => {
 
 
     return (
-        <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={[styles.container]}> 
 
         <PaperProvider>
         <View style={{ flex:1, margin: 10 ,}}>
@@ -349,7 +348,6 @@ const AssignTask = ({navigation,route, }) => {
         </View>
         </PaperProvider>
        
-        </ImageBackground>
         
     );
 }

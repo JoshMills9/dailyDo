@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs,where,query} from 'firebase/firestore';
-import { Text, View , Image, Pressable, TouchableOpacity} from 'react-native';
+import { Text, View , Image, Pressable, TouchableOpacity, ImageBackground} from 'react-native';
 import styles from '../styles/styles';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
@@ -76,7 +76,7 @@ const Assigned = ({ route }) => {
 
 
     return (
-
+        <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={[styles.container]}> 
 
         <PaperProvider>
         <View style={{flex:1,padding:10}}>
@@ -130,7 +130,9 @@ const Assigned = ({ route }) => {
             }
         
         </View>
-        </PaperProvider>       
+        </PaperProvider>      
+
+        </ImageBackground> 
     );
 };
 
