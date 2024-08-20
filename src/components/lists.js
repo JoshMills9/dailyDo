@@ -15,14 +15,18 @@ import { FAB,Portal,Provider as PaperProvider , Dialog , Badge, Avatar, IconButt
 import { getAuth, onAuthStateChanged,signOut ,deleteUser} from 'firebase/auth';
 import { getFirestore, collection, getDocs,where,query,doc, updateDoc, deleteField} from 'firebase/firestore';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
+import Entypo from '@expo/vector-icons/Entypo';
 import { AntDesign } from '@expo/vector-icons';
-
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const TodoLists=({navigation, route}) =>{
 
@@ -67,8 +71,43 @@ const TodoLists=({navigation, route}) =>{
     },[alarm,calendar])
 
 
+    //useEffect to fetch data from storage
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const data = await AsyncStorage.getItem('@storage_Key');
+            if (data !== null) {
+              const parsedData = JSON.parse(data);
+              setlist(parsedData);
+            }
+          } catch (e) {
+            console.error('Failed to fetch the data from storage', e);
+          }
+        };
+    
+        fetchData();
+      }, []);
+
+
+      //useEffect to save list to Storage
+      useEffect(() => {
+        const handleSave = async () => {
+            try {
+              const stringValue = JSON.stringify(list);
+              await AsyncStorage.setItem('@storage_Key', stringValue);
+        
+            } catch (e) {
+              console.error('Failed to save the data to the storage', e);
+            }
+          };
+          handleSave();
+        }, [list]);
+
+
         const [sound, setSound] = useState();
         const [currentTimeIndex, setCurrentTimeIndex] = useState("");
+
+
 
 
  
@@ -418,8 +457,13 @@ const TodoLists=({navigation, route}) =>{
         return (() =>{
             clearInterval(interval)
         })
+    }else{
+        setwiggle(false)
     }
         },[currentTimeIndex]);
+
+
+        
 
         //function to share a task
       
@@ -468,39 +512,15 @@ const TodoLists=({navigation, route}) =>{
 
        
 
-        const drawer = useRef(null);
-        //function to render drawer view
-        const navigationView = () => (
-            <View style={[styles.container, {backgroundColor:"#ecf0f1", padding:10}]}>
+        const [showProfile, setProfile] = useState(false)
 
-              <View style={{alignItems:"center", justifyContent:"center",}}>
-                <View><Avatar.Icon size={50} icon="account" /></View>
-                <Text style={{fontSize:18, marginTop:10}}>{Username}</Text>
-              </View>
-
-              <View></View>
-              <View></View>
-
-
-              <View style={{flex:1,justifyContent:"flex-end"}}>
-                <TouchableOpacity  onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:20, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
-                <TouchableOpacity disabled={false} onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row", marginTop:20,marginBottom:10,justifyContent:"center", alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:18, color:"red"}}> Delete Account</Text></TouchableOpacity>
-              </View>
-              
-            </View>
-          );
-
-
-        //useEffect to handle drawer
-        useEffect(() => {
-            navigation.setOptions({
-              headerRight: () => (
-                <TouchableOpacity onPress={() => drawer.current.openDrawer()}>
-                    <Fontisto name="nav-icon-list-a" size={20} color="black" />
-                </TouchableOpacity>
-              ),
-            });
-          }, [navigation,]);
+        const UserProfile = () =>{
+            return(
+            <View style={{backgroundColor:"white" ,zIndex:99, position:"absolute", width:200,justifyContent:"space-evenly", height:120,elevation:6, top:60, right:15, borderRadius:6}}>
+                <TouchableOpacity  onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center",}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:17, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
+                <TouchableOpacity  onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row",justifyContent:"center", alignItems:"center",}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:17, color:"red"}}> Delete Account</Text></TouchableOpacity>
+            </View>)
+        }
 
 
 
@@ -544,7 +564,7 @@ const TodoLists=({navigation, route}) =>{
                 if (user) {
                     // Delete the user
                     await deleteUser(user);
-                    Alert.alert("---- dailyDo ----",'😢 User account deleted successfully.💔');
+                    Alert.alert("---- dailyDo ----",'User account deleted successfully.');
                     navigation.navigate("LogInScreen")
                 } else {
                     // User is not signed in
@@ -584,7 +604,7 @@ const TodoLists=({navigation, route}) =>{
                 return false;
             }
         };
-        
+   
         
 
 
@@ -647,17 +667,19 @@ const TodoLists=({navigation, route}) =>{
 
 
     return(
-            <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={[styles.container]}>
-            
-            <DrawerLayoutAndroid
-                ref={drawer}
-                drawerWidth={200}
-                drawerPosition="left"
-                renderNavigationView={() => navigationView()}
-                drawerBackgroundColor={"transparent"}
-                style={{width:"100%"}}
+            <ImageBackground  source={require("../images/image 2-2.png")} resizeMode="repeat" style={[styles.container]}>
+
+            <View style={{backgroundColor:"white", height:60, padding:15}}>
+                <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+                    <Text style={{fontSize:20,color:"midnightblue" }}>To-Do List</Text>
+                   
+                    <TouchableOpacity style={{justifyContent:"center", alignItems:"center"}} onPress={()=> setProfile(!showProfile)} >
+                        <FontAwesome5 name="user-alt" size={22} color="midnightblue" />
+                        <Text style={{fontSize:9, color:"midnightblue"}}>{Username}</Text>
+                    </TouchableOpacity>
                 
-                >
+                </View>
+            </View>
 
             <PaperProvider>
                 {visible &&
@@ -695,7 +717,7 @@ const TodoLists=({navigation, route}) =>{
 
                      <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
                         onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
-                            item.reminder,item.song,item.toggler); setDel(index.toString());}}>
+                            item.reminder,item.song,item.toggler); setDel(index.toString());}} onPress={()=> UserProfile ?  setProfile(false) : null}>
 
                      { (wiggle && index == currentTimeIndex) ? <Animated.View style={[styles.view,{backgroundColor: selected ? 'gray' : 'midnightblue'}, animatedStyle]}>
 
@@ -831,7 +853,7 @@ const TodoLists=({navigation, route}) =>{
                 
                 (item.header) && <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
                         onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
-                            item.reminder,item.song,item.toggler); setDel(index.toString())}}>
+                            item.reminder,item.song,item.toggler); setDel(index.toString())}} onPress={()=> UserProfile ?  setProfile(false) : null}>
 
                 { (wiggle && index == currentTimeIndex) ? <Animated.View  style={[styles.container, { marginTop:15,marginBottom:5}, animatedStyle]}>
                             <View style={[{width:"93%",alignSelf:"center",paddingHorizontal:20,paddingVertical:10,elevation:6,borderRadius:30,shadowRadius:50,backgroundColor: selected ? 'gray' : "midnightblue"}]}>
@@ -998,7 +1020,7 @@ const TodoLists=({navigation, route}) =>{
                             
                         ]}
                     onStateChange={({ open }) => setOpen(open)}
-                    onPress={() => setOpen(true)}
+                    onPress={() => {setOpen(true); showProfile ? setProfile(false): null}}
                     color="darkblue"
                    variant="surface"
                    fabStyle={{backgroundColor:"white", borderRadius:50}}
@@ -1068,7 +1090,8 @@ const TodoLists=({navigation, route}) =>{
                   </BottomSheet>
       )}
 
-            </DrawerLayoutAndroid>
+            
+            {showProfile && UserProfile()}
 
             </ImageBackground>
    

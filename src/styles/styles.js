@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
         height:50,
         width:"100%",
         borderBottomWidth:1,
-        padding:15,
+        padding:10,
         fontSize:20,
         fontStyle:"italic",
         

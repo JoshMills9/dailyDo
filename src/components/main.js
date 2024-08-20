@@ -43,8 +43,7 @@ return(
               <Stack.Screen 
                     name="To-Do List" 
                     component={TodoLists} 
-                    options={({navigation, route }) => ({headerBackVisible: false,
-                    })}
+                    options={{headerShown:false}}
                 /> 
 
                 <Stack.Screen name="Add New Task" component={AddTask} />

@@ -7,7 +7,7 @@ import styles from '../styles/styles';
 import { FontAwesome6 } from '@expo/vector-icons';
 
 import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import AddTask from './addTask';
 
@@ -34,7 +34,7 @@ const AssignTask = ({navigation,route, }) => {
     const [showAssinged, setShowAssigned] = useState(false);
     const [assiged, setAssigned] = useState(false)
     const [pressed, setpressed] = useState(false)
-
+    const [fromStorage, setFromstorage] = useState(false)
 
     //useEffect to add assigned task to data array
     useEffect(()=>{
@@ -47,6 +47,42 @@ const AssignTask = ({navigation,route, }) => {
             }
         }
     },[assiged])
+
+    
+
+    //useEffect to fetch data from storage
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const data = await AsyncStorage.getItem('@storage_Key');
+            if (data !== null) {
+              const parsedData = JSON.parse(data);
+              setData(parsedData);
+              setFromstorage(true)
+            }
+          } catch (e) {
+            console.error('Failed to fetch the data from storage', e);
+          }
+        };
+    
+        fetchData();
+      }, []);
+
+
+      //useEffect to save list to Storage
+      useEffect(() => {
+        const handleSave = async () => {
+            try {
+              const stringValue = JSON.stringify(data);
+              await AsyncStorage.setItem('@storage_Key', stringValue);
+        
+            } catch (e) {
+              console.error('Failed to save the data to the storage', e);
+            }
+          };
+          handleSave();
+        }, [data]);
+
 
 
 
@@ -78,12 +114,13 @@ const AssignTask = ({navigation,route, }) => {
             setEnabled(true);
             setshowView(false)
             setShowAssigned(false)
-         
+            setFromstorage(false)
         } else {
             setEnabled(false);
             setSearchQuery("");
             setshowView(false);
             setShowAssigned(true)
+            setFromstorage(true);
         }
     };
     
@@ -188,9 +225,6 @@ const AssignTask = ({navigation,route, }) => {
         };
     
         
-
-
-
        
 
     const handleInputTitle = (value) => {
@@ -218,11 +252,11 @@ const AssignTask = ({navigation,route, }) => {
                
                     style={{ height:40, width:50 }}
                   
-                    onValueChange={(value)=> {setSelectedValue(value);setSearchQuery(value); setshowView(true); setShowAssigned(false);}}
+                    onValueChange={(value)=> {setSelectedValue(value);setSearchQuery(value); setshowView(true); setShowAssigned(false); setFromstorage(false),setShowAssigned(false)}}
                 >
                      <Picker.Item label="--Select User--" value={null} />
-                {users.map((user) => (
-                    <Picker.Item key={user.id} label={user.email} value={user.email} />
+                {emailsWithUsername?.map((user) => (
+                    <Picker.Item key={user.id} label={user?.username} value={user?.username} />
                 ))}
                 </Picker>)}
             />
@@ -234,13 +268,12 @@ const AssignTask = ({navigation,route, }) => {
                 <FlatList
                     data={emailsWithUsername.filter(user => (user.email && user.username ) && (user.email && user.username).toLowerCase().includes(searchQuery.toLowerCase()))}
                     renderItem={({ item }) => (
-                        <TouchableHighlight onPress={()=> {setSearchQuery(item.email);setSelectedValue(item.email); setEnabled(false);setshowView(true); }} underlayColor="transparent" >
+                        <TouchableHighlight onPress={()=> {setSearchQuery(item.username);setSelectedValue(item.username); setEnabled(false);setshowView(true); }} underlayColor="transparent" >
                             <View style={{margin:10,backgroundColor:"white",flex:1,padding:10, elevation:9, }}>
                                 <View style={{flexDirection:"row",alignItems:"center",}}> 
                                     <Avatar.Text size={40} labelStyle={{fontSize:18, alignSelf:"center", fontWeight:"600"}} label={item.email[0].toUpperCase()}/>
                                     <View style={{flex:1,padding:5, justifyContent:"center"}}>
-                                        <Text style={{fontSize:18,  fontWeight:"500"}}>{item.username}</Text>
-                                        <Text style={{fontSize:13}}>{item.email}</Text>
+                                        <Text style={{fontSize:18,  fontWeight:"500"}}>{item.username}</Text> 
                                     </View>
                                 </View>
                               </View>  
@@ -284,7 +317,7 @@ const AssignTask = ({navigation,route, }) => {
        
        
 
-          {(showAssinged) &&  
+          {(showAssinged || fromStorage) &&  
           <FlatList
            data={data.filter(item => item.Task)}
            keyExtractor={(item,index) => index.toString()}
