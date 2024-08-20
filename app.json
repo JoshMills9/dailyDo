@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "To-Do",
-    "slug": "To-Do",
+    "name": "dailyDo",
+    "slug": "dailyDo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/images/todo.png",
@@ -24,11 +24,16 @@
         "foregroundImage": "./src/images/todo.png",
         "backgroundColor": "#ffffff"
       },
+      "versionCode": 1,
       "package": "com.joshmills.ToDo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4f23979d-f14a-41cd-99f5-35ea2c8e8c72"
+      }
     }
-    
   }
 }

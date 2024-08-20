@@ -54,8 +54,7 @@ return(
                 <Stack.Screen name="Assign Task" component={AssignTask} />
                 
                 <Stack.Screen name="Notifications" component={Assigned} />
-
-             
+    
 
             </Stack.Navigator>
         </NavigationContainer>

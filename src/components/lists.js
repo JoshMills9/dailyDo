@@ -484,7 +484,7 @@ const TodoLists=({navigation, route}) =>{
 
               <View style={{flex:1,justifyContent:"flex-end"}}>
                 <TouchableOpacity  onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:20, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
-                <TouchableOpacity disabled={true} onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row", marginTop:20,marginBottom:10,justifyContent:"center", alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:18, color:"red"}}> Delete Account</Text></TouchableOpacity>
+                <TouchableOpacity disabled={false} onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row", marginTop:20,marginBottom:10,justifyContent:"center", alignItems:"center", backgroundColor:"white",borderRadius:20,elevation:2,height:50}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:18, color:"red"}}> Delete Account</Text></TouchableOpacity>
               </View>
               
             </View>
