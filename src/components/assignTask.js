@@ -36,6 +36,15 @@ const AssignTask = ({navigation,route, }) => {
     const [pressed, setpressed] = useState(false)
     const [fromStorage, setFromstorage] = useState(false)
 
+
+    const colors = ["red", "yellow", "green", "pink", "cyan","black", "gray"]
+
+    const getRandomColor = () => {
+        const randomIndex = Math.floor(Math.random() * colors.length);
+        return colors[randomIndex];
+      };
+      
+
     //useEffect to add assigned task to data array
     useEffect(()=>{
         if(Task !== undefined || descrip !== undefined || formattedDate !== undefined){
@@ -271,7 +280,7 @@ const AssignTask = ({navigation,route, }) => {
                         <TouchableHighlight onPress={()=> {setSearchQuery(item.username);setSelectedValue(item.username); setEnabled(false);setshowView(true); }} underlayColor="transparent" >
                             <View style={{margin:10,backgroundColor:"white",flex:1,padding:10, elevation:9, }}>
                                 <View style={{flexDirection:"row",alignItems:"center",}}> 
-                                    <Avatar.Text size={40} labelStyle={{fontSize:18, alignSelf:"center", fontWeight:"600"}} label={item.email[0].toUpperCase()}/>
+                                    <Avatar.Text size={40} labelStyle={{fontSize:18, alignSelf:"center", fontWeight:"600",backgroundColor:getRandomColor(), width:40, borderRadius:50}} label={item.email[0].toUpperCase()}/>
                                     <View style={{flex:1,padding:5, justifyContent:"center"}}>
                                         <Text style={{fontSize:18,  fontWeight:"500"}}>{item.username}</Text> 
                                     </View>

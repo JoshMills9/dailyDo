@@ -705,15 +705,15 @@ const TodoLists=({navigation, route}) =>{
                 data={list}
                 keyExtractor={(item, index) => {
                     // Generate a unique key using both the item's header and index
-                    return `${item.header.toString()}_${index}`;
+                    return `${item.header?.toString()}_${index}`;
                 }}
 
                 renderItem={({item, index})=> {
-                    const selectedKey = index.toString(); // Generate unique key
-                    const selected = selectedIndexes.includes(selectedKey); // Check if the item is selected
+                    const selectedKey = index?.toString(); // Generate unique key
+                    const selected = selectedIndexes?.includes(selectedKey); // Check if the item is selected
                     
                     return(
-                        (item.header && item.description && index.toString()) ? 
+                        (item?.header && item?.description && index?.toString()) ? 
 
                      <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
                         onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
