@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs,where,query} from 'firebase/firestore';
-import { Text, View , Image, Pressable, TouchableOpacity, ImageBackground} from 'react-native';
+import { Text, View ,ScrollView, Image, Pressable, TouchableOpacity, ImageBackground} from 'react-native';
 import styles from '../styles/styles';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
+
 
 
 const Assigned = ({ route }) => {
@@ -79,11 +80,13 @@ const Assigned = ({ route }) => {
         <ImageBackground source={require("../images/image 2-2.png")} resizeMode="repeat" style={[styles.container]}> 
 
         <PaperProvider>
+            <ScrollView>
         <View style={{flex:1,padding:10}}>
-
+          
              {assignedTasks.map((task, index) => (
-                 
-            <Pressable onLongPress={()=> {setpressed(true);showDialog(index)}} onPress={()=> setIsVisible(true)} >
+
+    
+            <Pressable id={index.toString()} onLongPress={()=> {setpressed(true);showDialog(index)}} onPress={()=> setIsVisible(true)} >
                     <View style={[{ width:"100%",alignSelf:"center", backgroundColor:"white",borderBottomWidth:1,borderBottomColor:"lightgray",padding:6, elevation: (pressed && index.toString()) ? 0 : 6,marginVertical:10,marginHorizontal:20,borderRadius:15,}]}>
                         
                         <View style={{marginBottom:15,backgroundColor:"",flexDirection:"row",alignItems:"flex-start", justifyContent:"space-between",}}>
@@ -108,6 +111,7 @@ const Assigned = ({ route }) => {
                         
                     </View>
                 </Pressable>
+               
                 ))}
            
            {visible &&
@@ -127,9 +131,11 @@ const Assigned = ({ route }) => {
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
-            }
         
+            }
+   
         </View>
+        </ScrollView>
         </PaperProvider>      
 
         </ImageBackground> 

@@ -20,10 +20,10 @@ const AssignTask = ({navigation,route, }) => {
     const [enabled, setEnabled] = useState(false);
     const [users, setUsers] = useState([]);
     const [selectedValue, setSelectedValue] = useState("");
-    const [adddescrip, setdescrip] = useState("");
+    const [notFound, setNotFound] = useState(false);
     const [showview, setshowView] = useState(false);
     const [addTask, setaddTask] = useState("");
-    const [usernames, setUsernames] = useState([]);
+    const [email, setEmail] = useState("");
     const [emailsWithUsername, setEmailsWithUsername] = useState(null);
     const [Task, setTask] = useState("");
     const [descrip, setDescrip] = useState("");
@@ -36,21 +36,17 @@ const AssignTask = ({navigation,route, }) => {
     const [pressed, setpressed] = useState(false)
     const [fromStorage, setFromstorage] = useState(false)
 
-
-    const colors = ["red", "yellow", "green", "pink", "cyan","black", "gray"]
-
-    const getRandomColor = () => {
-        const randomIndex = Math.floor(Math.random() * colors.length);
-        return colors[randomIndex];
-      };
       
 
+
+
+    
     //useEffect to add assigned task to data array
     useEffect(()=>{
         if(Task !== undefined || descrip !== undefined || formattedDate !== undefined){
             if(assiged){
-                setData(prevList => [{Task,descrip,formattedDate,selectedValue,Color,Time,userEmail},...prevList])
-                setAssigned(false)
+                setData(prevList => [{Task,descrip,formattedDate,selectedValue,Color,Time,userEmail,email},...prevList])
+                setAssigned(false);
             }else{
                 console.log("")
             }
@@ -63,7 +59,7 @@ const AssignTask = ({navigation,route, }) => {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const data = await AsyncStorage.getItem('@storage_Key');
+            const data = await AsyncStorage.getItem('Key');
             if (data !== null) {
               const parsedData = JSON.parse(data);
               setData(parsedData);
@@ -83,7 +79,7 @@ const AssignTask = ({navigation,route, }) => {
         const handleSave = async () => {
             try {
               const stringValue = JSON.stringify(data);
-              await AsyncStorage.setItem('@storage_Key', stringValue);
+              await AsyncStorage.setItem('Key', stringValue);
         
             } catch (e) {
               console.error('Failed to save the data to the storage', e);
@@ -92,7 +88,8 @@ const AssignTask = ({navigation,route, }) => {
           handleSave();
         }, [data]);
 
-
+ 
+    
 
 
     const db = getFirestore();
@@ -116,27 +113,12 @@ const AssignTask = ({navigation,route, }) => {
         fetchData();
     }, []);
 
-    //function to handle text input
-    const searchQueryHandler = (text) => {
-        if (text) {
-            setSearchQuery(text);
-            setEnabled(true);
-            setshowView(false)
-            setShowAssigned(false)
-            setFromstorage(false)
-        } else {
-            setEnabled(false);
-            setSearchQuery("");
-            setshowView(false);
-            setShowAssigned(true)
-            setFromstorage(true);
-        }
-    };
-    
+
+
 
 
       //function to assign task
-     useLayoutEffect(() => {
+     useEffect(() => {
          const assignTask = async (Email) => {
             try {
                 const user = users.find(user => user.email === Email);
@@ -148,59 +130,25 @@ const AssignTask = ({navigation,route, }) => {
                         assigned: user.email
                         
                     });
-        
+                    
                     Alert.alert('Task Assigned', 'Task assigned successfully!');
+                    setNotFound(true)
+                }else if(Email === ""){
+                    console.log("empty")
                 } else {
-                    console.log('User not found', 'No user found with this email.');
+                    Alert.alert("Ohh Snap!",'No user found with this email.');
                 }
             } catch (error) {
                 console.error(error);
                 Alert.alert('Error', error.message);
             }
         };
-        assignTask(searchQuery || selectedValue)
+        assignTask(email)
     }, [data])
 
 
-    //get username from user email
-    useEffect(() => {
-        const getUsernamesFromEmails = () => {
-            if (users && users.length > 0) {
-                const extractedUsernames = users.map(user => {
-                    if (user.email) {
-                        // Split the email address by '@' symbol
-                        const parts = user.email.split('@');
-                        // The username is the first part of the email
-                        return parts[0];}
-                });
 
-                setUsernames(extractedUsernames);
-                // Do something with the extracted usernames if needed
-            }
-        }
-
-        getUsernamesFromEmails();
-    }, [users]);
-
-    //useeffect to add usernames to users object
-    useEffect(() => {
-        const addUsernameToEmails = () => {
-            if (users.length === usernames.length) {
-                const updatedEmails = users.map((emailObj, index) => {
-                    const username = usernames[index];
-                    const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1); 
-                    return { ...emailObj, username: capitalizedUsername }; // Add username to the email object
-                });
-                setEmailsWithUsername(updatedEmails);
-            }
-        };
-
-        addUsernameToEmails();
-    }, [users, usernames]);
-
-
- 
-
+    
   
   
 
@@ -245,57 +193,41 @@ const AssignTask = ({navigation,route, }) => {
      };
 
 
+     //email validation
+  const searchqueryHandler =(text) =>{
+    if (text){
+        const validateEmail = (email) => {
+          // Regular expression pattern for basic email validation
+          const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return pattern.test(email);
+      };
+  
+      if (validateEmail(text)) {
+          setEmail(text)
+          setshowView(true)
+          setShowAssigned(false)
+          setFromstorage(false)
+      } else {
+          console.log("Invalid email");
+      }
+    }else{
+        setshowView(false)
+      
+    }
+  }
+
+
 
     return (
 
         <PaperProvider>
         <View style={{ flex:1, margin: 10 ,}}>
 
-            <Searchbar
-                placeholder="Search user"
-                onChangeText={searchQueryHandler}
-                value={searchQuery}
-                style={{ borderWidth: 1, backgroundColor: "white", borderColor: "lightgray" }}
-                icon={()=>( <Picker
-                    selectedValue={selectedValue}
-               
-                    style={{ height:40, width:50 }}
-                  
-                    onValueChange={(value)=> {setSelectedValue(value);setSearchQuery(value); setshowView(true); setShowAssigned(false); setFromstorage(false),setShowAssigned(false)}}
-                >
-                     <Picker.Item label="--Select User--" value={null} />
-                {emailsWithUsername?.map((user) => (
-                    <Picker.Item key={user.id} label={user?.username} value={user?.username} />
-                ))}
-                </Picker>)}
-            />
 
-           
-
-            {enabled && (
-                <View style={{flex:1,}}>
-                <FlatList
-                    data={emailsWithUsername.filter(user => (user.email && user.username ) && (user.email && user.username).toLowerCase().includes(searchQuery.toLowerCase()))}
-                    renderItem={({ item }) => (
-                        <TouchableHighlight onPress={()=> {setSearchQuery(item.username);setSelectedValue(item.username); setEnabled(false);setshowView(true); }} underlayColor="transparent" >
-                            <View style={{margin:10,backgroundColor:"white",flex:1,padding:10, elevation:9, }}>
-                                <View style={{flexDirection:"row",alignItems:"center",}}> 
-                                    <Avatar.Text size={40} labelStyle={{fontSize:18, alignSelf:"center", fontWeight:"600",backgroundColor:getRandomColor(), width:40, borderRadius:50}} label={item.email[0].toUpperCase()}/>
-                                    <View style={{flex:1,padding:5, justifyContent:"center"}}>
-                                        <Text style={{fontSize:18,  fontWeight:"500"}}>{item.username}</Text> 
-                                    </View>
-                                </View>
-                              </View>  
-                        </TouchableHighlight>
-                           
-                    )}
-                    
-                    keyExtractor={(item) => item.id}
-                    style={{ flex:1}} // Take up all available space for scrolling
-                />
-                </View>
-               
-           )}
+            <View style={{padding:10,height:50, borderBottomWidth:1, flexDirection:"row",alignItems:"center", borderColor:"lightgray"}}>
+                <Text style={{fontSize:18, marginRight:10}}>To:</Text>
+                <TextInput style={{fontSize:18,width:"90%", height:50, justifyContent:"center",alignItems:"center"}} placeholder='email' value={searchQuery} onChangeText={(txt)=> {setSearchQuery(txt);searchqueryHandler(txt)}}/>
+            </View>
 
 
            {showview && 
@@ -334,13 +266,13 @@ const AssignTask = ({navigation,route, }) => {
 
             return(
                 <Pressable onLongPress={()=> {setpressed(true);showDialog(index)}} >
-                <View style={[{ width:"100%",alignSelf:"center", backgroundColor:"white",borderBottomWidth:1,borderBottomColor:"lightgray",padding:6, elevation: pressed ? 0 : 6,marginVertical:10,marginHorizontal:20,borderRadius:15,}]}>
+                <View style={[{ width:"100%",alignSelf:"center", backgroundColor: "white",borderBottomWidth:1,borderBottomColor:"lightgray",padding:6, elevation: pressed ? 0 : 6,marginVertical:10,marginHorizontal:20,borderRadius:15,}]}>
                             
                             <View style={{marginBottom:15,backgroundColor:"",flexDirection:"row",alignItems:"flex-start", justifyContent:"space-between",}}>
                                 <View style={{width:16,height:16, borderRadius:50,backgroundColor: item.Color }}></View>
                                 
                                 <View>
-                                    <Text style={{fontWeight:"300"}}>To: {<FontAwesome6 name="circle-user" size={12} color="gray" />} {item.selectedValue}</Text>
+                                    <Text style={{fontWeight:"300"}}>To: {<FontAwesome6 name="circle-user" size={12} color="gray" />} {item.email}</Text>
                                     <Text style={{fontSize:11, alignSelf:"center",fontWeight:"300"}} >{item.formattedDate}</Text>
                                 </View>
                                 
@@ -357,7 +289,9 @@ const AssignTask = ({navigation,route, }) => {
                             
                             
                         </View>
+                    
                     </Pressable>
+                
             )
            }}
            

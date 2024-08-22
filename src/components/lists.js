@@ -35,7 +35,11 @@ const TodoLists=({navigation, route}) =>{
     //state to handle list
     const [list , setlist] = useState([])  
  
-    
+    const [open, setOpen] = useState(false); 
+    const [user, setUser] = useState(null);
+    const [Username, setUserName] = useState("")
+
+
     //using useEffect hook to automatically update the list with the properties header, description , alarm, calendar , color, reminder, song
     useEffect(() => {
         if ((header !== undefined || description !== undefined) && index === undefined) {
@@ -510,24 +514,7 @@ const TodoLists=({navigation, route}) =>{
             }
         };
 
-       
-
-        const [showProfile, setProfile] = useState(false)
-
-        const UserProfile = () =>{
-            return(
-            <View style={{backgroundColor:"white" ,zIndex:99, position:"absolute", width:200,justifyContent:"space-evenly", height:120,elevation:6, top:60, right:15, borderRadius:6}}>
-                <TouchableOpacity  onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center",}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:17, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
-                <TouchableOpacity  onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row",justifyContent:"center", alignItems:"center",}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:17, color:"red"}}> Delete Account</Text></TouchableOpacity>
-            </View>)
-        }
-
-
-
-       const [open, setOpen] = useState(false); 
-       const [user, setUser] = useState(null);
-       const [Username, setUserName] = useState("")
-       
+          
 
 
         //useEffect to get login user
@@ -660,6 +647,15 @@ const TodoLists=({navigation, route}) =>{
 
 
 
+    const [showProfile, setProfile] = useState(false)
+      
+    const UserProfile = () =>{
+        return(
+        <View style={{backgroundColor:"white" ,zIndex:99, position:"absolute", width:200,justifyContent:"space-evenly", height:120,elevation:6, top:60, right:15, borderRadius:6}}>
+            <TouchableOpacity  onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center",}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:17, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
+            <TouchableOpacity  onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row",justifyContent:"center", alignItems:"center",}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:17, color:"red"}}> Delete Account</Text></TouchableOpacity>
+        </View>)
+    }
 
 
 
@@ -705,7 +701,7 @@ const TodoLists=({navigation, route}) =>{
                 data={list}
                 keyExtractor={(item, index) => {
                     // Generate a unique key using both the item's header and index
-                    return `${item.header?.toString()}_${index}`;
+                    return `${item?.header?.toString()}_${index}`;
                 }}
 
                 renderItem={({item, index})=> {
@@ -1004,10 +1000,10 @@ const TodoLists=({navigation, route}) =>{
                                     {assignedTasks && <Badge
                                      size={16}
                                      style={{position:"absolute", right:-5, fontSize:12}}
-                                      badgeStyle={{ backgroundColor: "red"}} // Adjust badge style as needed
+                                     badgeStyle={{ backgroundColor: "red"}} // Adjust badge style as needed
                                     >{numberOfTasks}</Badge>
                                     }
-                                    <IconButton icon="bell" iconColor="darkblue" size={23} style={{alignSelf:"center",justifyContent:"center", position:"absolute",top:-10}}/>
+                                    <IconButton icon="bell" iconColor="darkblue" size={23} style={{alignSelf:"center",justifyContent:"center",zIndex:-1, position:"absolute",top:-10}}/>
                                   </View>
                                 ),
                                 label: "Notifications",
