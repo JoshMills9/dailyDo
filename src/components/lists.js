@@ -40,6 +40,23 @@ const TodoLists=({navigation, route}) =>{
     const [Username, setUserName] = useState("")
 
 
+
+
+      //useEffect to save list to Storage
+      useEffect(() => {
+        const handleSave = async () => {
+            try {
+              await AsyncStorage.setItem('Token','true');
+           
+            } catch (e) {
+              console.error('Failed to save the data to the storage', e);
+            }
+          };
+          handleSave();
+        }, []);
+
+ 
+
     //using useEffect hook to automatically update the list with the properties header, description , alarm, calendar , color, reminder, song
     useEffect(() => {
         if ((header !== undefined || description !== undefined) && index === undefined) {

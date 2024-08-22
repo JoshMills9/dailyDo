@@ -24,72 +24,43 @@ const Stack = createNativeStackNavigator();
 
 const MainComponent= ()=> {
 
+  const [hasSeenHomeScreen, setHasSeenHomeScreen] = useState(null);
 
-        const[user, setUser] =  useState(null)
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const value = await AsyncStorage.getItem('Token');
+        if (value === 'true') {
+          setHasSeenHomeScreen(true);
+        } else {
+          setHasSeenHomeScreen(false);
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status', error);
+        setHasSeenHomeScreen(false); // Default to showing onboarding if there's an error
+      }
+    };
 
-        const [hasLoggedIn, setHasLoggedIn] = useState(null)
-       
-        //useEffect to get login user
-        const auth = getAuth();
-        useEffect(() => {
-         const unsubscribe = onAuthStateChanged(auth, (user) => {
-             if (user) {
-               setUser(user)
-             } else {
-                 setUserEmail(null); // Set user state to null when user is signed out
-                 console.log('No user signed in');
-             }
-         });
- 
-         // Clean up subscription
-         return () => unsubscribe();
-     }, [auth]); // Include auth in the dependency array
-
-
-
-
-    //useEffect to fetch data from storage
-    useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const data = await AsyncStorage.getItem('Token');
-            if (data !== null) {
-              const parsedData = JSON.parse(data);
-              setHasLoggedIn(parsedData)
-            }
-          } catch (e) {
-            console.error('Failed to fetch the data from storage', e);
-          }
-        };
     
-        fetchData();
-      }, []);
+    checkLoginStatus()
+  }, []);
+
+  if (hasSeenHomeScreen === null) {
+    // Return null or a loading indicator while we check the onboarding status
+    return null;
+  }
 
 
 
 
-      //useEffect to save list to Storage
-      useEffect(() => {
-        const handleSave = async () => {
-            try {
-              const stringValue = JSON.stringify(user);
-              await AsyncStorage.setItem('Token', stringValue);
-           
-            } catch (e) {
-              console.error('Failed to save the data to the storage', e);
-            }
-          };
-          handleSave();
-        }, [user,auth]);
 
- 
 
 
 return(
     <SafeAreaView style={[styles.container]}>
         <StatusBar  barStyle={"default"} showHideTransition={"fade"} hidden={false}/>
         <NavigationContainer>
-            <Stack.Navigator screenOptions={{headerTitleStyle:{fontWeight:"bold"}}} initialRouteName={hasLoggedIn ? 'To-Do List' : 'LogInScreen'}>
+            <Stack.Navigator screenOptions={{headerTitleStyle:{fontWeight:"bold"}}} initialRouteName={hasSeenHomeScreen ? 'To-Do List' : 'LogInScreen'}>
 
                  <Stack.Screen 
                     name="LogInScreen" 
