@@ -16,7 +16,7 @@ import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
 import {  HelperText } from "react-native-paper";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 
 const SignUp = ({ navigation }) => {
@@ -127,6 +127,8 @@ const SignUp = ({ navigation }) => {
   const hideDialog = () => setVisible(false);
 
 
+  const [enable, setEnable] = useState(false)
+
  return (
     <PaperProvider>
     <View style={styles.container}>
@@ -155,8 +157,9 @@ const SignUp = ({ navigation }) => {
               placeholderTextColor={'#2F2E41'}
               value={signUpPassword}
               onChangeText={(text) => setSignUpPassword(text)}
-              secureTextEntry={true}
+              secureTextEntry={enable}
             />
+            <Ionicons name={enable ? "eye-sharp" :"eye-off-sharp"} size={24} onPress={()=> setEnable(!enable)} style={{position:"absolute", top:120, right:40, width:50, }} color="dimgray" />
 
             <TouchableOpacity
               style={styles.customBotton}

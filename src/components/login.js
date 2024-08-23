@@ -14,6 +14,8 @@ import Animated, {
 import {  signInWithEmailAndPassword } from "firebase/auth";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 
 
 const Login = ({navigation, }) =>{
@@ -123,6 +125,10 @@ const Login = ({navigation, }) =>{
 
     const [animate, setAnimate] = useState(false)
 
+
+
+    const [enable, setEnable] = useState(false)
+
     return(
       <PaperProvider>
       <View style={styles.container}>
@@ -150,8 +156,9 @@ const Login = ({navigation, }) =>{
               placeholderTextColor={'black'}
               value={signUpPassword}
               onChangeText={(text) => setSignUpPassword(text)}
-              secureTextEntry={true}
+              secureTextEntry={enable}
             />
+            <Ionicons name={enable ? "eye-sharp" :"eye-off-sharp"} size={24} onPress={()=> setEnable(!enable)} style={{position:"absolute", top:120, right:40, width:50, }} color="dimgray" />
 
             <TouchableOpacity
               style={styles.customBotton}
