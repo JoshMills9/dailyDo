@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Alert,View, Text, TouchableOpacity,TextInput, FlatList,Platform,Image, ScrollView,TouchableHighlight, Pressable, ImageBackground } from 'react-native';
+import { Alert,View, Text, TouchableOpacity,TextInput, FlatList,Platform,Image, ScrollView,TouchableHighlight, Pressable,ActivityIndicator, ImageBackground } from 'react-native';
 import { getFirestore, collection, getDocs,doc,updateDoc,} from 'firebase/firestore';
 import { Searchbar,Avatar } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
@@ -20,7 +20,7 @@ const AssignTask = ({navigation,route, }) => {
     const [enabled, setEnabled] = useState(false);
     const [users, setUsers] = useState([]);
     const [selectedValue, setSelectedValue] = useState("");
-    const [notFound, setNotFound] = useState(false);
+    const [search, setSearch] = useState(false);
     const [showview, setshowView] = useState(false);
     const [addTask, setaddTask] = useState("");
     const [email, setEmail] = useState("");
@@ -94,8 +94,9 @@ const AssignTask = ({navigation,route, }) => {
 
     const db = getFirestore();
     //useEffect to get data from db
-    useEffect(() => {
-        const fetchData = async () => {
+  
+        const fetchData = async (email) => {
+            setSearch(true)
             try {
                 const usersCollectionRef = collection(db, 'users');
                 const usersSnapshot = await getDocs(usersCollectionRef);
@@ -103,15 +104,16 @@ const AssignTask = ({navigation,route, }) => {
                     id: doc.id,
                     ...doc.data().userDetails
                 }));
-                setUsers(userData);
-               
+                const user = userData.find(user => user.email === email)
+                user ? (setSearch(false), setshowView(true) , setUsers(userData), setShowAssigned(false) , setFromstorage(false)) :
+                Alert.alert("Ohh Snap!",'No user found with this email.');setSearch(false)
             } catch (error) {
                 alert(error)
                 console.error('Error fetching data:', error);
             }
         };
-        fetchData();
-    }, []);
+ 
+
 
 
 
@@ -121,6 +123,7 @@ const AssignTask = ({navigation,route, }) => {
      useEffect(() => {
          const assignTask = async (Email) => {
             try {
+                
                 const user = users.find(user => user.email === Email);
                 if (user) {
                     const userDocRef = doc(db, 'users', user.id); // Assuming 'id' is the document ID of the user
@@ -132,11 +135,11 @@ const AssignTask = ({navigation,route, }) => {
                     });
                     
                     Alert.alert('Task Assigned', 'Task assigned successfully!');
-                    setNotFound(true)
+                  
                 }else if(Email === ""){
                     console.log("empty")
                 } else {
-                    Alert.alert("Ohh Snap!",'No user found with this email.');
+                    return null;
                 }
             } catch (error) {
                 console.error(error);
@@ -192,30 +195,25 @@ const AssignTask = ({navigation,route, }) => {
         setDescrip(value)
      };
 
-
-     //email validation
-  const searchqueryHandler =(text) =>{
-    if (text){
-        const validateEmail = (email) => {
-          // Regular expression pattern for basic email validation
-          const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          return pattern.test(email);
-      };
-  
-      if (validateEmail(text)) {
-          setEmail(text)
-          setshowView(true)
-          setShowAssigned(false)
-          setFromstorage(false)
-      } else {
-          console.log("Invalid email");
-      }
-    }else{
-        setshowView(false)
+     const searchqueryHandler = (text) => {
+        if (text) {
+          const validateEmail = (email) => {
+            // Check if the email ends with '@gmail.com'
+            const pattern = /^[^\s@]+@gmail\.com$/;
+            return pattern.test(email);
+          };
       
-    }
-  }
-
+          if (validateEmail(text)) {
+            fetchData(text);
+            setEmail(text);
+          } else {
+            console.log("Invalid email. Must be a Gmail address.");
+          }
+        } else {
+          setshowView(false);
+        }
+      };
+      
 
 
     return (
@@ -226,7 +224,8 @@ const AssignTask = ({navigation,route, }) => {
 
             <View style={{padding:10,height:50, borderBottomWidth:1, flexDirection:"row",alignItems:"center", borderColor:"lightgray"}}>
                 <Text style={{fontSize:18, marginRight:10}}>To:</Text>
-                <TextInput style={{fontSize:18,width:"90%", height:50, justifyContent:"center",alignItems:"center"}} placeholder='email' value={searchQuery} onChangeText={(txt)=> {setSearchQuery(txt);searchqueryHandler(txt)}}/>
+                <TextInput style={{fontSize:18,width:"85%", height:50, justifyContent:"center",alignItems:"center"}} placeholder='email' value={searchQuery} onChangeText={(txt)=> {setSearchQuery(txt);searchqueryHandler(txt)}}/>
+                {search &&  <ActivityIndicator  size={'small'} color={"gray"} />}
             </View>
 
 

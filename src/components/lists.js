@@ -13,7 +13,7 @@ import Animated, {
 
 import { FAB,Portal,Provider as PaperProvider , Dialog , Badge, Avatar, IconButton} from 'react-native-paper';
 import { getAuth, onAuthStateChanged,signOut ,deleteUser} from 'firebase/auth';
-import { getFirestore, collection, getDocs,where,query,doc, updateDoc, deleteField} from 'firebase/firestore';
+import { getFirestore, collection, getDocs,where,query,doc,deleteDoc,} from 'firebase/firestore';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -100,6 +100,7 @@ const TodoLists=({navigation, route}) =>{
             if (data !== null) {
               const parsedData = JSON.parse(data);
               setlist(parsedData);
+              console.log(parsedData)
             }
           } catch (e) {
             console.error('Failed to fetch the data from storage', e);
@@ -534,35 +535,34 @@ const TodoLists=({navigation, route}) =>{
           
 
 
-        //useEffect to get login user
-       const auth = getAuth();
-       useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const userEmail = user.email;
-                setUser(userEmail); // Set user email in state
-                const parts = userEmail.split('@');
-                const username = parts[0]
-                const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1)
-                setUserName(capitalizedUsername)    
 
 
-            } else {
-                setUserEmail(null); // Set user state to null when user is signed out
-                console.log('No user signed in');
+    //useEffect to fetch data from storage
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const data = await AsyncStorage.getItem('userEmail');
+            if (data !== null) {
+              const parsedData = JSON.parse(data);
+              setUser(parsedData);
+              const parts = parsedData.split('@');
+              const username = parts[0]
+              const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1)
+              setUserName(capitalizedUsername)   
+            
             }
-        });
-
-        // Clean up subscription
-        return () => unsubscribe();
-    }, [auth]); // Include auth in the dependency array
-
+          } catch (e) {
+            console.error('Failed to fetch the data from storage', e);
+          }
+        };
+    
+        fetchData();
+      }, []);
 
 
         // Function to delete user details from auth
         const deleteUserAccount = async () => {
-            const user = auth.currentUser;
-
+             const user = auth.currentUser
             try {
                 // Check if user is signed in
                 if (user) {
@@ -582,41 +582,53 @@ const TodoLists=({navigation, route}) =>{
         };
 
 
-
-        // delete user details from db
-        const deleteFieldByEmail = async (emailToSearch, fieldToDelete) => {
+        // Delete user documents from the Firestore collection based on email
+        const deleteDocumentByEmail = async (emailToSearch) => {
             const usersCollectionRef = collection(db, 'users');
-        
+
+            // Query to find documents where the 'userDetails.email' field matches the given email
             const q = query(usersCollectionRef, where('userDetails.email', '==', emailToSearch));
-        
+
             try {
                 const querySnapshot = await getDocs(q);
-        
+
                 for (const document of querySnapshot.docs) {
-                    const docRef = doc(db, `users/${document.id}`); // Add db here
-        
-                    await updateDoc(docRef, {
-                        [fieldToDelete]: deleteField()
-                    });
-        
-                    console.log(`Field '${fieldToDelete}' deleted from document with ID: ${document.id}`);
+                    const docRef = doc(db, `users/${document.id}`); // Reference to the document
+
+                    await deleteDoc(docRef); // Delete the entire document
+
+                    console.log(`Document with ID ${document.id} deleted.`);
+                    navigation.navigate("LogInScreen")
+                    clearAllData()
+
                 }
-        
-                return true;
+
+                return true; // Indicate success
             } catch (error) {
-                console.error('Error deleting field:', error);
-                return false;
+                console.error('Error deleting document:', error);
+                return false; // Indicate failure
             }
         };
-   
-        
 
 
+        //functio to clear Async data
+        const clearAllData = async () => {
+            try {
+              await AsyncStorage.clear();
+              console.log('All data cleared!');
+            } catch (error) {
+              console.error('Error clearing data:', error);
+            }
+          };
+          
+    
+          
 
 
-
+    const auth = getAuth()
     //function to signout user
     const handleSignOut = () => {
+        clearAllData()
         signOut(auth)
             .then(() => {
                 // Sign-out successful.
@@ -670,7 +682,7 @@ const TodoLists=({navigation, route}) =>{
         return(
         <View style={{backgroundColor:"white" ,zIndex:99, position:"absolute", width:200,justifyContent:"space-evenly", height:120,elevation:6, top:60, right:15, borderRadius:6}}>
             <TouchableOpacity  onPress={()=> {handleSignOut();  navigation.navigate("LogInScreen")}} style={{width:"100%",flexDirection:"row", justifyContent:"center",  alignItems:"center",}}><AntDesign name="logout" size={18} color="darkblue" /><Text style={{fontSize:17, color:"darkblue"}}> Sign Out</Text></TouchableOpacity>
-            <TouchableOpacity  onPress={() => {deleteFieldByEmail(user, "userDetails") ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row",justifyContent:"center", alignItems:"center",}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:17, color:"red"}}> Delete Account</Text></TouchableOpacity>
+            <TouchableOpacity  onPress={() => {deleteDocumentByEmail(user) ;deleteUserAccount()}} style={{width:"100%",flexDirection:"row",justifyContent:"center", alignItems:"center",}}><MaterialCommunityIcons name="account-remove" size={24} color="red" /><Text style={{fontSize:17, color:"red"}}> Delete Account</Text></TouchableOpacity>
         </View>)
     }
 

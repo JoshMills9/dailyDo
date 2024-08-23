@@ -10,7 +10,6 @@ import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
 const Assigned = ({ route }) => {
     const { userEmail } = route.params;
     const [assignedTasks, setAssignedTasks] = useState([]);
-    console.log(assignedTasks[0])
     const [isVisible, setIsVisible] = useState(false);
     const [pressed, setpressed] = useState(false)
     const [Data, setData] = useState([])

@@ -15,6 +15,10 @@ import {getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "fire
 import { Portal,Provider as PaperProvider , Dialog,} from 'react-native-paper';
 import {  HelperText } from "react-native-paper";
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+
 const SignUp = ({ navigation }) => {
 
  const [error, setError] = useState('');
@@ -74,6 +78,20 @@ const SignUp = ({ navigation }) => {
 }, [auth,navigation]);
 
 
+
+ //useEffect to save list to Storage
+ useEffect(() => {
+  const handleSave = async () => {
+      try {
+        const stringValue = JSON.stringify(signUpEmail);
+        await AsyncStorage.setItem('userEmail', stringValue);
+  
+      } catch (e) {
+        console.error('Failed to save the data to the storage', e);
+      }
+    };
+    handleSave();
+  }, [signUpEmail]);
 
   //email validation
   const searchQueryHandler =(text) =>{

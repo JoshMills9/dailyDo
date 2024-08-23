@@ -13,6 +13,7 @@ import Animated, {
   } from 'react-native-reanimated';
 import {  signInWithEmailAndPassword } from "firebase/auth";
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Login = ({navigation, }) =>{
@@ -41,6 +42,22 @@ const Login = ({navigation, }) =>{
     }
     setAnimate(false)
   };
+
+
+      //useEffect to save list to Storage
+      useEffect(() => {
+        const handleSave = async () => {
+            try {
+              const stringValue = JSON.stringify(signUpEmail);
+              await AsyncStorage.setItem('userEmail', stringValue);
+        
+            } catch (e) {
+              console.error('Failed to save the data to the storage', e);
+            }
+          };
+          handleSave();
+        }, [signUpEmail]);
+
 
   //useEffect to check validity of email
   const [enabled, setEnabled] = useState(false);
