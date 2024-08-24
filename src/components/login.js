@@ -158,7 +158,7 @@ const Login = ({navigation, }) =>{
               onChangeText={(text) => setSignUpPassword(text)}
               secureTextEntry={enable}
             />
-            <Ionicons name={enable ? "eye-sharp" :"eye-off-sharp"} size={24} onPress={()=> setEnable(!enable)} style={{position:"absolute", top:120, right:40, width:50, }} color="dimgray" />
+            <Ionicons name={enable ? "eye-off-sharp" :"eye-sharp"} size={24} onPress={()=> setEnable(!enable)} style={{position:"absolute", top:120, right:40, width:50, }} color="dimgray" />
 
             <TouchableOpacity
               style={styles.customBotton}
