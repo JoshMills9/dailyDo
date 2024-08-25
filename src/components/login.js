@@ -127,7 +127,7 @@ const Login = ({navigation, }) =>{
 
 
 
-    const [enable, setEnable] = useState(false)
+    const [enable, setEnable] = useState(true)
 
     return(
       <PaperProvider>
