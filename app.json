@@ -2,7 +2,7 @@
   "expo": {
     "name": "dailyDo",
     "slug": "dailyDo",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/images/todo.png",
     "expo": {
@@ -24,8 +24,8 @@
         "foregroundImage": "./src/images/todo.png",
         "backgroundColor": "#ffffff"
       },
-      "versionCode": 2,
-      "package": "com.joshmills.ToDo"
+      "versionCode": 1,
+      "package": "com.app.dailyDo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
