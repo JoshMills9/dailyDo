@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius:10,
         borderBottomLeftRadius:10,
         zIndex: 10,
-        elevation: 9, // For Android elevation
+        elevation: 9, 
       },
       option: {
         borderBottomWidth: 1,
