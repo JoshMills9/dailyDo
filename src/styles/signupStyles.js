@@ -9,8 +9,9 @@ const styles = StyleSheet.create({
 
   logo: {
     width: '100%',
-    top: -200,
-    height: 500,
+    top: -300,
+    height: 250,
+    resizeMode: 'contain',
   },
 
   
@@ -26,7 +27,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'black',
     height: 550,
-    top: 150,
+    top: 50,
     borderTopLeftRadius: 100,
     position: 'absolute',
     backgroundColor: 'white',

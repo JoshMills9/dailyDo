@@ -7,6 +7,7 @@ import {
  SafeAreaView,
  Text,
  ActivityIndicator,
+ Alert
  
 } from 'react-native';
 import styles from '../styles/signupStyles';
@@ -44,6 +45,20 @@ const SignUp = ({ navigation }) => {
  };
 
 
+
+ const checkError = (error) =>{
+  if (error.includes("auth/invalid-email")){
+    setError("Invalid email or password")
+  }else if (error.includes("auth/network-request-failed")){
+    setError("No internet connection")
+  }else if (error.includes("auth/missing-password")){
+    setError("Enter Username and password")
+  }else if (error.includes("auth/email-already-in-use")){
+    setError("Email already in use")
+  }
+
+}
+
  //sign up func
  const handleSignUp = async () => {
     try {
@@ -55,7 +70,7 @@ const SignUp = ({ navigation }) => {
       navigation.navigate("To-Do List");
     } catch (error) {
       setIndicator(false)
-      setError(error.message)
+      checkError(error.message)
       showDialog();
       console.error('Error signing up:' , error);
     }
@@ -134,7 +149,7 @@ const SignUp = ({ navigation }) => {
     <View style={styles.container}>
       <SafeAreaView>
        
-        <Image source={require('../images/signup.png')} style={styles.logo} />
+        <Image source={require('../images/todo.png')} style={styles.logo} />
         <View style={styles.account}>
           <Text style={styles.title}>Sign Up</Text>
 
@@ -181,21 +196,9 @@ const SignUp = ({ navigation }) => {
           </View>
         </View>
 
+
         {isVisible &&
-            <Portal>
-                <Dialog visible={isVisible} onDismiss={hideDialog}>
-                    <Dialog.Icon icon="alert" size={30}/>
-                    <Dialog.Title style={{alignSelf:'center', fontWeight:"bold"}}>{login? error : error}</Dialog.Title>
-                    <Dialog.Content>
-                        <Text style={{alignSelf:'center', fontSize:16}}>{login? error : error}</Text>
-                    </Dialog.Content>
-                    <Dialog.Actions>
-  
-                            <TouchableOpacity onPress={hideDialog}><Text style={{alignSelf:'center', fontSize:16}}>{login ? "OK" : "CLOSE"}</Text></TouchableOpacity> 
-                        
-                    </Dialog.Actions>
-                </Dialog>
-            </Portal>
+            Alert.alert("Error", error)
             }
       
       </SafeAreaView>

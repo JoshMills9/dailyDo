@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, KeyboardAvoidingView,TouchableOpacity, Image , SafeAreaView, ActivityIndicator} from "react-native";
+import { View, Text, TextInput, KeyboardAvoidingView,TouchableOpacity, Image , SafeAreaView, ActivityIndicator, Alert} from "react-native";
 import styles from "../styles/signupStyles";
 import { FIREBASE_AUTH, } from "../../firebaseConfig";
 import {  HelperText } from "react-native-paper";
@@ -30,35 +30,46 @@ const Login = ({navigation, }) =>{
   
 
     const [error,setError] = useState("")
+
+
+    const checkError = (error) =>{
+      if (error.includes("auth/invalid-email")){
+        setError("Invalid email or password")
+      }else if (error.includes("auth/network-request-failed")){
+        setError("No internet connection")
+      }else if (error.includes("auth/invalid-credential")){
+        setError("Invalid credential")
+      }
+    }
+
+
+
+       //useEffect to save list to Storage
+       const handleSave = async () => {
+        try {
+          const stringValue = JSON.stringify(signUpEmail);
+          await AsyncStorage.setItem('userEmail', stringValue);
+    
+        } catch (e) {
+          console.error('Failed to save the data to the storage', e);
+        }
+      };
    
   // Function to log in a user
   const Login = async () => {
     try {
+      handleSave()
       await signInWithEmailAndPassword(auth, signUpEmail, signUpPassword);
       setIndicator(false)
       navigation.navigate("To-Do List");
     } catch (error) {
       setIndicator(false);
-      setError(error.message)
+      checkError(error.message)
       showDialog()
     }
     setAnimate(false)
   };
 
-
-      //useEffect to save list to Storage
-      useEffect(() => {
-        const handleSave = async () => {
-            try {
-              const stringValue = JSON.stringify(signUpEmail);
-              await AsyncStorage.setItem('userEmail', stringValue);
-        
-            } catch (e) {
-              console.error('Failed to save the data to the storage', e);
-            }
-          };
-          handleSave();
-        }, [signUpEmail]);
 
 
   //useEffect to check validity of email
@@ -135,7 +146,7 @@ const Login = ({navigation, }) =>{
        
       <SafeAreaView>
     
-        <Image source={require('../images/login.png')} style={styles.logo} />
+        <Image width={300} height={200} source={require('../images/todo.png')} style={styles.logo} />
         <View style={styles.account}>
           <Text style={styles.title}>Log In</Text>
           <View style={styles.inputConLogIn}>
@@ -183,20 +194,7 @@ const Login = ({navigation, }) =>{
         </View>
 
         {isVisible &&
-            <Portal>
-                <Dialog visible={isVisible} onDismiss={hideDialog}>
-                    <Dialog.Icon icon="alert" size={30}/>
-                    <Dialog.Title style={{alignSelf:'center', fontWeight:"bold"}}>{login? error : error}</Dialog.Title>
-                    <Dialog.Content>
-                        <Text style={{alignSelf:'center', fontSize:16}}>{login? error : error}</Text>
-                    </Dialog.Content>
-                    <Dialog.Actions>
-  
-                            <TouchableOpacity onPress={hideDialog}><Text style={{alignSelf:'center', fontSize:16}}>{login ? "OK" : "CLOSE"}</Text></TouchableOpacity> 
-                        
-                    </Dialog.Actions>
-                </Dialog>
-            </Portal>
+            Alert.alert("Error",error)
             }
  
       </SafeAreaView>

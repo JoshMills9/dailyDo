@@ -130,7 +130,7 @@ const AssignTask = ({navigation,route, }) => {
         
                     await updateDoc(userDocRef, {
                         data,
-                        assigned: user.email
+                        assigned: Email
                         
                     });
                     
@@ -196,6 +196,7 @@ const AssignTask = ({navigation,route, }) => {
      };
 
      const searchqueryHandler = (text) => {
+
         if (text) {
           const validateEmail = (email) => {
             // Check if the email ends with '@gmail.com'
@@ -216,6 +217,55 @@ const AssignTask = ({navigation,route, }) => {
       
 
 
+      const [popupData, setPopupData] = useState(null);
+      const [view, setView] = useState(false)
+
+      const handlePress = (item) => {
+        setPopupData(item);
+        setView(true);
+    };
+
+    const PopUp = () => {
+        if (!popupData) return null; // Prevent rendering if there's no data
+        return (
+            <View style={{
+                position: "absolute", bottom:0,borderTopRightRadius:50,borderTopLeftRadius:50, alignSelf: "center", height: 400,width:"100%",
+                backgroundColor: "royalblue", elevation: 5, borderRadius: 10,
+                justifyContent:"space-around", paddingHorizontal:10
+            }}>
+                <View style={{flexDirection:"row", justifyContent:"space-between",alignItems:"center",flex:1}}>
+                    <View style={{flexDirection:"row",alignItems:"center"}}>
+                        <View style={{
+                            width: 50, height: 50, borderRadius: 50, backgroundColor: popupData.Color,
+                            alignItems: "center", justifyContent: "center", marginRight:15
+                        }}>
+                            <Text style={{ fontSize: 18, fontWeight: "500", color: "white" }}>
+                                {popupData.email?.slice(0, 1).toUpperCase()}
+                            </Text>
+                        </View>
+
+                        <Text style={{ fontSize: 18, fontWeight: "500", color: "white" }} adjustsFontSizeToFit={true}>
+                                {popupData.email}
+                        </Text>
+                    </View>
+                    <Text style={{fontSize:16, fontWeight: "bold" ,color:"white"}}>{popupData.Time}</Text>
+                </View>
+
+                <View style={{flex:2}}>
+                    <Text style={{ fontSize: 18, fontWeight: "bold" ,textAlign:"justify",color:"white"}}>{popupData.Task}</Text>
+                    <Text style={{color:"white",marginTop:10,textAlign:"justify",}} adjustsFontSizeToFit={true}>{popupData.descrip}</Text>
+                </View>
+                <TouchableOpacity style={{flexDirection:"row",backgroundColor:"white",marginVertical:15,
+                    alignSelf:"center",height:40,alignItems:"center",borderRadius:15,elevation:2,
+                     justifyContent:"center",width:"50%", marginRight:20}} onPress={() => setView(false)}>
+                    <Text style={{color:"red", fontSize:16}}>Close</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    };
+
+
+
     return (
 
         <PaperProvider>
@@ -224,7 +274,7 @@ const AssignTask = ({navigation,route, }) => {
 
             <View style={{padding:10,height:50, borderBottomWidth:1, flexDirection:"row",alignItems:"center", borderColor:"lightgray"}}>
                 <Text style={{fontSize:18, marginRight:10}}>To:</Text>
-                <TextInput style={{fontSize:18,width:"85%", height:50, justifyContent:"center",alignItems:"center"}} placeholder='email' value={searchQuery} onChangeText={(txt)=> {setSearchQuery(txt);searchqueryHandler(txt)}}/>
+                <TextInput onFocus={()=> setView(false)} style={{fontSize:18,width:"85%", height:50, justifyContent:"center",alignItems:"center"}} placeholder='email' value={searchQuery} onChangeText={(txt)=> {setSearchQuery(txt);searchqueryHandler(txt)}}/>
                 {search &&  <ActivityIndicator  size={'small'} color={"gray"} />}
             </View>
 
@@ -264,39 +314,65 @@ const AssignTask = ({navigation,route, }) => {
            renderItem={({item,index})=>{
 
             return(
-                <Pressable onLongPress={()=> {setpressed(true);showDialog(index)}} >
-                <View style={[{ width:"100%",alignSelf:"center", backgroundColor: "white",borderBottomWidth:1,borderBottomColor:"lightgray",padding:6, elevation: pressed ? 0 : 6,marginVertical:10,marginHorizontal:20,borderRadius:15,}]}>
+                <TouchableHighlight  underlayColor="#DDDDDD" 
+                onPress={()=> handlePress(item)}
+                style={{borderRadius:15,borderBottomWidth:1,borderBottomColor:"lightgray",paddingHorizontal:10, height:90,}} 
+                onLongPress={()=> {setpressed(true);showDialog(index)}} >
+            
                             
-                            <View style={{marginBottom:15,backgroundColor:"",flexDirection:"row",alignItems:"flex-start", justifyContent:"space-between",}}>
-                                <View style={{width:16,height:16, borderRadius:50,backgroundColor: item.Color }}></View>
-                                
+                            <View style={{flexDirection:"row", justifyContent:"space-between", marginVertical:20}}>
+
+                                <View style={{width:40,height:40, borderRadius:50,backgroundColor: item.Color , alignItems:"center",justifyContent:"center"}}>
+                                    <Text style={{fontSize:18, fontWeight:"500", color:"white"}}>{item.email.slice(0,1).toUpperCase()}</Text></View>
+
+                                <View style={{width:260,  height:80}}>
+
+                                    <View>
+                                        <Text style={{fontSize:18, fontWeight:"bold"}}>{item.Task.length > 25 ? `${item.Task.slice(0, 25)}....` : item.Task}</Text>
+                                    </View>
+
+                                    <View>
+                                        <Text numberOfLines={1}>{item.descrip.length > 30 ? `${item.descrip.slice(0, 30)}....` : item.descrip}</Text>
+                                    </View>
+
+                                </View>
+
                                 <View>
-                                    <Text style={{fontWeight:"300"}}>To: {<FontAwesome6 name="circle-user" size={12} color="gray" />} {item.email}</Text>
-                                    <Text style={{fontSize:11, alignSelf:"center",fontWeight:"300"}} >{item.formattedDate}</Text>
+                                    <Text style={{fontWeight:"bold",}}>{item.Time}</Text>
                                 </View>
                                 
-                                <Text style={{fontWeight:"300"}}>{item.Time}</Text>
+                               
+
+                               
                             </View>
-
-                                <View style={{marginLeft:20,}}>
-                                    <Text style={{fontSize:18, fontWeight:"bold"}}>{item.Task}</Text>
-                                </View>
-
-                                <View style={{marginLeft:20,marginTop: 5}}>
-                                    <Text style={{fontSize:16, fontWeight:"300"}} >{item.descrip}</Text>
-                                </View>
-                            
-                            
-                        </View>
+                        
+                                
                     
-                    </Pressable>
+                    </TouchableHighlight>
+                    
                 
             )
            }}
            
            />
         }
+
+
+
+
+
+      
          
+                        {
+                        
+                        
+                        
+                        /*<View>
+                                    <Text style={{fontWeight:"300"}}>To: {<FontAwesome6 name="circle-user" size={12} color="gray" />} {item.email}</Text>
+                                    <Text style={{fontSize:11, alignSelf:"center",fontWeight:"300"}} >{item.formattedDate}</Text>
+                         </View>*/}
+
+        
     
 
 
@@ -306,12 +382,12 @@ const AssignTask = ({navigation,route, }) => {
                     <Dialog.Icon icon="alert" size={30}/>
                     <Dialog.Title style={{alignSelf:'center', fontWeight:"bold"}}>Caution!!</Dialog.Title>
                     <Dialog.Content>
-                        <Text style={{alignSelf:'center', fontSize:16}}>Do you want to delete this task?</Text>
+                        <Text style={{alignSelf:'center', fontSize:16,color:"white"}}>Do you want to delete this task?</Text>
                     </Dialog.Content>
                     <Dialog.Actions>
                         <View style={{flexDirection:"row", justifyContent:"space-evenly", width:100}}>
-                            <TouchableOpacity onPress={() => {hideDialog() ;setpressed(false)}}><Text style={{alignSelf:'center', fontSize:16}}>Cancel</Text></TouchableOpacity> 
-                            <TouchableOpacity  onPress={() => {handleDelete() ;setpressed(false)}}><Text style={{alignSelf:'center', fontSize:16}}>Yes</Text></TouchableOpacity> 
+                            <TouchableOpacity onPress={() => {hideDialog() ;setpressed(false)}}><Text style={{alignSelf:'center', fontSize:16, color:"orangered",marginLeft:-100}}>Cancel</Text></TouchableOpacity> 
+                            <TouchableOpacity  onPress={() => {handleDelete() ;setpressed(false)}}><Text style={{alignSelf:'center', fontSize:16, color:"white"}}>Yes</Text></TouchableOpacity> 
                         </View>
                         
                     </Dialog.Actions>
@@ -321,6 +397,8 @@ const AssignTask = ({navigation,route, }) => {
       
 
         </View>
+
+         {view && <PopUp />}
         </PaperProvider>
        
         

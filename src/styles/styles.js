@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
         borderBottomWidth:1,
         padding:10,
         fontSize:20,
-        fontStyle:"italic",
+       
         
     },
     descriptext:{
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
         borderWidth:1,
         padding:15,
         fontSize:20,
-        fontStyle:"italic",
+        
         textAlignVertical:"top"
     },
     colors:{

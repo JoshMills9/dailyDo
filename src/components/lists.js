@@ -1,6 +1,6 @@
 import { Text,ToastAndroid, View, Image,FlatList,DrawerLayoutAndroid, TouchableHighlight,Modal, TouchableOpacity, ImageBackground, Pressable, Alert, ScrollView, Button } from "react-native";
 import styles from "../styles/styles";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import { BottomSheet } from 'react-native-btr';
 import Animated, {
@@ -37,9 +37,9 @@ const TodoLists=({navigation, route}) =>{
     const [open, setOpen] = useState(false); 
     const [user, setUser] = useState(null);
     const [Username, setUserName] = useState("")
+    const [assignedTask, setAssignedTask] = useState([]);
 
-
-
+    console.log(assignedTask)
 
       //useEffect to save list to Storage
       useEffect(() => {
@@ -99,7 +99,6 @@ const TodoLists=({navigation, route}) =>{
             if (data !== null) {
               const parsedData = JSON.parse(data);
               setlist(parsedData);
-              console.log(parsedData)
             }
           } catch (e) {
             console.error('Failed to fetch the data from storage', e);
@@ -513,7 +512,6 @@ const TodoLists=({navigation, route}) =>{
         // function to share todo list
         const shareTodoList = async (share) => {
             try {
-                console.log(share)
                 if (share.length === 0) {
                     alert('The todo list is empty. Nothing to share.')
                     return; 
@@ -537,12 +535,13 @@ const TodoLists=({navigation, route}) =>{
 
 
     //useEffect to fetch data from storage
-    useEffect(() => {
+    useLayoutEffect(() => {
         const fetchData = async () => {
           try {
             const data = await AsyncStorage.getItem('userEmail');
             if (data !== null) {
               const parsedData = JSON.parse(data);
+              console.log(parsedData)
               setUser(parsedData);
               const parts = parsedData.split('@');
               const username = parts[0]
@@ -559,29 +558,32 @@ const TodoLists=({navigation, route}) =>{
       }, []);
 
 
-        // Function to delete user details from auth
+       // Function to delete user details from auth
         const deleteUserAccount = async () => {
-             const user = auth.currentUser
+            const user = auth.currentUser;
+
             try {
                 // Check if user is signed in
                 if (user) {
                     // Delete the user
                     await deleteUser(user);
-                    Alert.alert("---- dailyDo ----",'User account deleted successfully.');
-                    navigation.navigate("LogInScreen")
+                    Alert.alert("---- dailyDo ----", 'User account deleted successfully.');
+                    navigation.navigate("LogInScreen");
                 } else {
                     // User is not signed in
                     console.log('No user signed in.');
+                    Alert.alert("---- dailyDo ----", 'No user is currently signed in.');
                 }
             } catch (error) {
                 // Handle error
                 console.error('Error deleting user:', error.message);
-                // Display error message to the user or handle it appropriately
+                Alert.alert("---- dailyDo ----", `Error deleting account: ${error.message}`);
             }
         };
 
 
-        // Delete user documents from the Firestore collection based on email
+
+      // Delete user documents from the Firestore collection based on email
         const deleteDocumentByEmail = async (emailToSearch) => {
             const usersCollectionRef = collection(db, 'users');
 
@@ -590,24 +592,27 @@ const TodoLists=({navigation, route}) =>{
 
             try {
                 const querySnapshot = await getDocs(q);
+                const deletions = []; // Store deletion promises
 
                 for (const document of querySnapshot.docs) {
                     const docRef = doc(db, `users/${document.id}`); // Reference to the document
-
-                    await deleteDoc(docRef); // Delete the entire document
-
-                    console.log(`Document with ID ${document.id} deleted.`);
-                    navigation.navigate("LogInScreen")
-                    clearAllData()
-
+                    deletions.push(deleteDoc(docRef).then(() => {
+                        console.log(`Document with ID ${document.id} deleted.`);
+                    })); // Push promise to array
                 }
 
-                return true; // Indicate success
+                await Promise.all(deletions); // Wait for all deletions to complete
+
+                navigation.navigate("LogInScreen");
+                clearAllData();
+
+                return true; // Indicate success if at least one document was deleted
             } catch (error) {
                 console.error('Error deleting document:', error);
                 return false; // Indicate failure
             }
         };
+
 
 
         //functio to clear Async data
@@ -661,6 +666,7 @@ const TodoLists=({navigation, route}) =>{
                     const  newTask = tasks[0].length;
                     setNumOfTask(newTask)
                     setAssignedTasks(true);
+                    setAssignedTask(tasks[0])
                 } else {
                     console.log('No assigned tasks found for user:', user);
                 }
@@ -672,6 +678,24 @@ const TodoLists=({navigation, route}) =>{
         // Call fetchAssignedTasks when the component mounts or when db or userEmail change
         fetchAssignedTasks();
     }, [db, user]);
+
+
+
+    //useEffect to save list to Storage
+    useEffect(() => {
+        const handleSave = async () => {
+            try {
+              const stringValue = JSON.stringify(assignedTask);
+              await AsyncStorage.setItem('assignedTask', stringValue);
+        
+            } catch (e) {
+              console.error('Failed to save the data to the storage', e);
+            }
+          };
+          handleSave();
+
+          
+        }, [assignedTask]);
 
 
 
@@ -712,12 +736,12 @@ const TodoLists=({navigation, route}) =>{
                     <Dialog.Icon icon="alert" size={30}/>
                     <Dialog.Title style={{alignSelf:'center', fontWeight:"bold"}}>Caution!!</Dialog.Title>
                     <Dialog.Content>
-                        <Text style={{alignSelf:'center', fontSize:16}}>Do you want to delete this task?</Text>
+                        <Text style={{alignSelf:'center', fontSize:16, color:"white"}}>Do you want to delete this task?</Text>
                     </Dialog.Content>
                     <Dialog.Actions>
                         <View style={{flexDirection:"row", justifyContent:"space-evenly", width:100}}>
-                            <TouchableOpacity onPress={hideDialog}><Text style={{alignSelf:'center', fontSize:16, marginLeft:-30, color:"red"}}>Cancel</Text></TouchableOpacity> 
-                            <TouchableOpacity  onPress={handleDelete}><Text style={{alignSelf:'center', fontSize:16}}>Yes</Text></TouchableOpacity> 
+                            <TouchableOpacity onPress={hideDialog}><Text style={{alignSelf:'center', fontSize:16, marginLeft:-100, color:"red"}}>Cancel</Text></TouchableOpacity> 
+                            <TouchableOpacity  onPress={handleDelete}><Text style={{alignSelf:'center', fontSize:16, color:"white"}}>Yes</Text></TouchableOpacity> 
                         </View>
                         
                     </Dialog.Actions>
@@ -740,8 +764,8 @@ const TodoLists=({navigation, route}) =>{
                         (item?.header && item?.description && index?.toString()) ? 
 
                      <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
-                        onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
-                            item.reminder,item.song,item.toggler); setDel(index.toString());}} onPress={()=> UserProfile ?  setProfile(false) : null}>
+                        onPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
+                            item.reminder,item.song,item.toggler); setDel(index.toString()); UserProfile ?  setProfile(false) : null}}>
 
                      { (wiggle && index == currentTimeIndex) ? <Animated.View style={[styles.view,{backgroundColor: selected ? 'gray' : 'midnightblue'}, animatedStyle]}>
 
@@ -875,9 +899,9 @@ const TodoLists=({navigation, route}) =>{
 
                 :
                 
-                (item.header) && <Pressable style={({pressed}) => ({opacity: pressed ? 0.9 : 1 })} 
-                        onLongPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
-                            item.reminder,item.song,item.toggler); setDel(index.toString())}} onPress={()=> UserProfile ?  setProfile(false) : null}>
+                (item.header) && <Pressable style={({pressed}) => ({opacity: pressed ? 0.95 : 1 })} 
+                        onPress={() => {editFunc( index, item.header, item.description,item.alarm,item.calendar,item.color,
+                            item.reminder,item.song,item.toggler); setDel(index.toString()); UserProfile ?  setProfile(false) : null}}>
 
                 { (wiggle && index == currentTimeIndex) ? <Animated.View  style={[styles.container, { marginTop:15,marginBottom:5}, animatedStyle]}>
                             <View style={[{width:"93%",alignSelf:"center",paddingHorizontal:20,paddingVertical:10,elevation:6,borderRadius:30,shadowRadius:50,backgroundColor: selected ? 'gray' : "midnightblue"}]}>
